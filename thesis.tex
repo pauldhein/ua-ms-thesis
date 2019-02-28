@@ -74,32 +74,28 @@
 {DEPARTMENT OF COMPUTER SCIENCE}	% Title of your department.
 {2019}
 
-% Insert the approval form.  Note that for electronic submission
-% of your Ph. D. dissertation, you must bring *two* copies of the
-% approval page to your final defense.  These must be signed by
-% the committee.  Make two photocopies: one for Pam and the othe		r
-% for your records.  Then, bring the two signed originals to the
-% graduate college when you submit the final version of the
-% dissertation to the University of Arizona.
+% Insert the approval form.
 \approval
 {3 May 2019}		% Defense Date
 {Clayton Morrison}		% Dissertation Director
 {Clayton Morrison}		% Dissertation Director
 {Mihai Surdeanu}		% 1st committee member
 {Saumya Debray}		% 2nd committee member
+{Associate Professor}
+{School of Information}
 
 % Include the ``Statement by Author'' for Dissertations
-% \statementbyauthor
-% If this is a Thesis, use the following form, with your thesis director's
-% name and title in the square brackets like so (you should also omit the
-% approval form insertion above):
-\statementbyauthor[Clayton T. Morrison\\Professor of Information]
+% NOTE: Apparently I only need this if I want to file for copyright
+% \statementbyauthor[Clayton T. Morrison\\Professor of Information]
 
 % Include the ``Acknowledgements''
-\incacknowledgements{acknowledgements}
+% NOTE: Only need this if I need to acknowledge any one or any group
+% TODO: Ask Clay if I should acknowledge anyone (maybe UA HPC or some group members?)
+% \incacknowledgements{acknowledgements}
 
 % Include the ``Dedication''
-\incdedication{dedication}
+% NOTE: Don't need this and don't think it's warranted
+% \incdedication{dedication}
 
 % Create a ``Table of Contents''
 \tableofcontents
@@ -115,6 +111,11 @@
 
 % Include the various chapters
 \include{mainmatter/introduction}
+\include{mainmatter/mapping}
+\include{mainmatter/grounding}
+\include{mainmatter/comparison}
+\include{mainmatter/analysis}
+\include{mainmatter/summarization}
 
 % Include the various appendices
 \appendix
