@@ -615,13 +615,13 @@ THE UNIVERSITY OF ARIZONA
 %% This creates the Committee Approval form, the arguments are as
 %% follows:	#1	defense date
 %%			#2	Dissertation Director's name
-%%			#3	1st committee member's name
+%%			#3	Dissertation Director's name (again)
 %%			#4	2nd committee member's name
 %%			#5	3rd committee member's name
-%%			#6	4th committee member's name
-%%			#7	5th committee member's name
+%%			#6	Directors title
+%%			#7	Directors dept
 
-\newcommand{\approval}[5]{%
+\newcommand{\approval}[7]{%
 
 {
 \renewcommand{\baselinestretch}{1}	% single spaced here
@@ -635,10 +635,10 @@ THE UNIVERSITY OF ARIZONA
 }
 
 
-As members of the Dissertation Committee, we certify that we have
+As members of the Master’s Committee, we certify that we have
 read the \MakeLowercase{\ThesisType} prepared by \FullName,
 titled \CompleteTitle~and recommend that it be accepted as fulfilling the
-\MakeLowercase{\ThesisType} requirement for the Degree of \DegreeName.
+\MakeLowercase{\ThesisType} requirement for the Master’s Degree.
 
 % Before the final oral defense you must obtain the Approval Pages
 % from the Degree Certification Office. Original signatures are
@@ -691,7 +691,7 @@ contingent upon the candidate's submission of the final copies of the
 
 \noindent I hereby certify that I have read this \MakeLowercase{\ThesisType} prepared
 under my direction and recommend that it be accepted as fulfilling the
-\MakeLowercase{\ThesisType} requirement.
+Master’s requirement.
 
 \vfill
 
@@ -700,7 +700,9 @@ under my direction and recommend that it be accepted as fulfilling the
 \begin{tabular*}{\textwidth}{p{4in}@{\extracolsep{\fill}}l}
 							& Date: #1	\\
 \cline{1-1}
-Dissertation Director: #2	&			\\
+#2	&			\\
+#6	&			\\
+#7	&			\\
 \end{tabular*}
 \end{flushleft}
 \vspace{0.5in} % This accounts for the 0.5in larger bottom margin on this page.
