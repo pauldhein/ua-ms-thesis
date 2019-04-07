@@ -615,13 +615,12 @@ THE UNIVERSITY OF ARIZONA
 %% This creates the Committee Approval form, the arguments are as
 %% follows:	#1	defense date
 %%			#2	Dissertation Director's name
-%%			#3	Dissertation Director's name (again)
 %%			#4	2nd committee member's name
 %%			#5	3rd committee member's name
 %%			#6	Directors title
 %%			#7	Directors dept
 
-\newcommand{\approval}[7]{%
+\newcommand{\approval}[6]{%
 
 {
 \renewcommand{\baselinestretch}{1}	% single spaced here
@@ -655,17 +654,17 @@ titled \CompleteTitle~and recommend that it be accepted as fulfilling the
 \begin{tabular*}{\textwidth}{p{4in}@{\extracolsep{\fill}}l}
 	& Date: #1	\\
 \cline{1-1}
+#2	& 			\\
+	&			\\
+	&			\\
+	& Date: #1	\\
+\cline{1-1}
 #3	& 			\\
 	&			\\
 	&			\\
 	& Date: #1	\\
 \cline{1-1}
 #4	& 			\\
-	&			\\
-	&			\\
-	& Date: #1	\\
-\cline{1-1}
-#5	& 			\\
 	& 			\\
 	& 			\\
 % 	& Date: #1	\\
@@ -701,8 +700,8 @@ Master’s requirement.
 							& Date: #1	\\
 \cline{1-1}
 #2	&			\\
+#5	&			\\
 #6	&			\\
-#7	&			\\
 \end{tabular*}
 \end{flushleft}
 \vspace{0.5in} % This accounts for the 0.5in larger bottom margin on this page.
