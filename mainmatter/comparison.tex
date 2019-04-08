@@ -1,6 +1,11 @@
-\chapter{AUTOMATED MODEL COMPARISON\label{chapter:comparison}}
+\chapter{GRAPH-BASED METHODS OF MODEL COMPARISON\label{chapter:comparison}}
 
-Some intro about the task of comparing two or more GrFN models that have been extracted from source code.
+While analytical methods can provide a large amount of useful information to modelers about a single model, the real benefit of the AutoMATES system comes from the ability to automate comparisons among competing models. Competing models can be identified from the output variables of their computation graphs. After identifying a selection of competing models the comparison phase can begin.
+
+For any two competing models of the same phenomena the comparison phase consists of the following:
+$1.)$ Identify the overlap between the variables in each models computation graphs. This corresponds to overlap in observable real-world phenomena.
+$2.)$ Extract the sub computation graphs for each model based on the variable node overlap.
+$3.)$ Perform analysis on the overlapping computation graphs and compare the results with the analysis results from the models whole computation graphs.
 
 \section{Variable Node Identification\label{sec:var_ident}}
 
@@ -8,7 +13,7 @@ Some text about the task of unifying variable nodes that may have different name
 
 \section{Common Subnetwork Isolation\label{sec:subnet_iso}}
 
-Some text about identifying the Forward Influence Blanket of two or more models that isolates the shared components of two models in a markov blanket that allows for forward inference.
+Some text about identifying the Forward Influence Blanket of two or more models that isolates the shared components of two models in a Markov blanket that allows for forward inference.
 
 \section{Unrelated Subgraph Diff\label{sec:unrelated_diff}}
 

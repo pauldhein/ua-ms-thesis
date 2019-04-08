@@ -1,11 +1,54 @@
-\chapter{SOURCE CODE MAPPING\label{chapter:mapping}}
+\chapter{MODEL EXTRACTION FROM SOURCE CODE\label{chapter:extraction}}
 
-Some intro about the task of mapping a program in Fortran (or some other language) to our GrFN interlingua.
+In order to perform analysis on scientific models found in software we must first build a system that is able to detect source code that corresponds to scientific models, extract that necessary associated source code, and then represent the model in a form that allows analysis to take place. In the following sections I will outline the AutoMATES systems approach for handling this problem.
 
-\section{Function Extraction\label{sec:func_extract}}
+\section{Grounded Function Network Extraction\label{sec:grfn_extract}}
 
 Some text about extracting lambda functions and a GrFN spec from source code.
 
-\section{Grounded Function Network Generation\label{sec:grfn_gen}}
+\section{Computation Graph Generation\label{sec:cg_gen}}
 
-Some text about creating GrFNs.
+Some text about creating GrFN CGs.
+
+\subsection{Assignment Statements\label{sec:assg_stmts}}
+Assignment statements can be handled by loading the assignment statement found in the source code into the function node so that values can propagate from the input variable nodes to the output variable node during computation graph execution.
+
+\subsection{Conditional Statements\label{sec:cond_stmts}}
+Conditional statements are handled via a set of two lambda evaluations. The first evaluation is known as a \texttt{conditional} function node, that will actually evaluate the conditional property. The second is a \texttt{decision} function node that takes as input the evaluation from the \texttt{condition} function as well as the two possible assignments for an output variable. The \texttt{decision} function will be responsible for assigning the appropriate value to the output variable node based upon the conditional input.
+
+Both the \texttt{decision} function node and the \texttt{conditional} function nodes output variable node are artifacts that did not exist in the original source program that have been added to the computation graph. Thus these will not be displayed when rendering the function node or variable node views of the computation graph.
+
+\subsection{Function Calls\label{sec:func_calls}}
+Function calls can be thought of as containers, notated as plates when drawing a DBN. The only intricacy here deals with the correct wiring of variable inputs into the containers plate, and the correct wiring of outputs from the container to the current position in the computation graph.
+
+\subsection{Indexed Loops\label{sec:idx_loops}}
+Indexed loops require a loop plate and have a specific index variable as well as a number of iterations through the loop. They can easily be handled like containers as mentioned above, but require additional storage to handle information about the number of executions needed to satisfy the plate during compuation.
+
+\subsection{Open-ended Loops\label{sec:open_loops}}
+Open ended loops are hard. Here we can have conditional exit cases defined at a start or end point of a loop, which presents a much larger challenge than loops with an index and pre-defined amount of iterations.
+
+An extra challenge is added when dealing with open-ended loops that can include multiple exit points (introduced either by \texttt{break} statements or \texttt{goto}s) as well conditional skip points where parts of the loop are skipped on an iteration (introduced either by \texttt{continue} statements or \texttt{goto}s).
+
+\subsection{Unstructured Branching\label{sec:branching}}
+The usage of the \texttt{goto} statement has been hotly debated by computer scientists for nearly half a century. In most modern programming languages the usage of  \texttt{goto} or other such statements that allow for unstructured branching is prohibited. However, the AutoMATES system seeks to handle source code inputs from languages that do allow for unstructured branching, and thus this paradigm must be handled during the wiring phase of a GrFN computation graph.
+
+\subsection{Recursive Functions\label{sec:rec_func}}
+Recursion is a commonly used software practice that must be handled for our computation graphs. Most importantly, recursion must be identified and recursive edges that would create loops in the computation graph must be pruned.
+
+\subsection{Indirect Recursive Functions\label{sec:ind_rec_func}}
+Possibly the most difficult challenge for our graph wiring is the identification and handling of indirect recursion.
+
+\section{Call Stack Creation\label{sec:call_stack}}
+
+Creating a computation graph from a GrFN specification allows us to formally represent an extracted scientific model as a graph data structure. However, if we wish to analyze the extracted model, then we will need the ability to compute information over this data structure. To accomplish this we introduce the idea of execution over a computation graph. The computation graph contains a set of function nodes. Computing the lambda function stored at each function node is analogous to executing the computation graph from the set of inputs to the output. However, the function nodes rely upon having values populated at each of their input variable nodes in order to perform their computation. Therefore the task of executing a GrFN CG can be rephrased as determining how to order and execute the functions nodes contained in the computation graph.
+
+A Naïve first-pass solution to accomplish this goal would be to use a graph traversal from the output to the inputs where at each function node, the node will determine whether values for each input variable node have been populated. For any input variable nodes that have not been populated, the function node will call the parent function node responsible for computing the value of the input variable node. Once all such calls have returned, the function itself will evaluate. This recursive calling procedure is very similar to message-passing, a method for inference on factor graphs. While this will ensure correct model execution, this method of handling execution is not as efficient as possible. To start the recursive call structure adds additional function setup and calls to the execution, on the order of the number of functions included in the computation graph.
+
+The computation graph has the form of a factor graph with variable and function nodes, such that no variable node is adjacent to another variable node and vice-versa for a function node. Therefore representing a computation graph in terms of just the contained function nodes
+
+\section{Variable Domain and Range Detection\label{sec:var_domain_range}}
+% TODO: Consider moving this section to future work if we run out of time to implement a solution to this problem
+
+\section{Vectorized Computation Graph Execution\label{sec:cg_execution}}
+
+\section{Discussion of Time and Space Complexity\label{sec:cg_complexity}}

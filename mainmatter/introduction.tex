@@ -1,7 +1,38 @@
 \chapter{INTRODUCTION\label{chapter:introduction}}
 
-Some intro.
+Below we see an example of a model being used to study the yield of crops by observing changes in multiple input variables.
 
-\section{Overview\label{sec:overview}}
+
+% Simple Crop Yield model example
+\begin{figure}[ht]
+  \begin{center}
+    \begin{tabular}{cc}
+      \tikz{ %
+        \tikzstyle{readable}=[rectangle, thick, rounded corners]
+        \node[latent, readable] (crop_yield) {$Yield$} ; %
+        \node[latent, readable, above=of crop_yield] (total_rain) {$Rain_{total}$} ; %
+        \node[latent, readable, above=of total_rain] (rain) {$Rain$} ; %
+        \node[obs, readable, above=of rain] (max_rain) {$Rain_{max}$} ; %
+        \node[obs, readable, left=of max_rain] (absorption) {$Absorption$} ; %
+        \node[obs, readable, right=of max_rain] (consistency) {$Consistency$} ; %
+        \node[obs, readable, right=of rain] (day) {$Day$} ; %
+        \edge {day, consistency, absorption, max_rain} {rain} ; %
+        \edge {rain} {total_rain} ; %
+        \path [->] (total_rain) edge  [loop right] (total_rain);
+        \edge {total_rain} {crop_yield} ; %
+
+        \plate {loop} {(rain)(day)(total_rain)} {$Day$} ;
+      }
+    \end{tabular}
+  \end{center}
+  \caption[Crop yield model]{A model depicting the affects of rain over a span of days given observed values for absorption and consistency constants.}
+\end{figure}
+
+\section{Problem Definition\label{sec:problem_def}}
+
+Some text.
+
+
+\section{This Work\label{sec:this_work}}
 
 Some text.
