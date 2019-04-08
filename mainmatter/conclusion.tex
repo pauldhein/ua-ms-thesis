@@ -7,5 +7,18 @@ Some intro.
 Some text.
 
 \section{Future Work\label{sec:future_work}}
+As discussed above, AutoMATES project has created an excellent framework for the extraction and comparison of scientific models found in source code. While many methods for analysis already exist in the AutoMATES system, as well as information necessary to facilitate automated model selection, there are still plenty of directions for future work. Many of the opportunities for extending the AutoMATES system build upon one another, and all are focused on expanding the scope of modeler questions that AutoMATES is able to handle without additional input from the modeler. Below I catalog some of the immediately visible extensions to the AutoMATES program improve the power of the AutoMATES model selection capabilities.
 
-Some text.
+\subsection{Model Selection via Uncertainty Analysis \label{auto_uncert_analysis}}
+The current analysis methods employed by AutoMATES allow for automated model selection based upon behavior of model inputs or sets of model inputs. While this advanced capability is likely desired by modelers in many situations, it only allows for indirect comparison between models. A method for direct comparison such as error propagation that includes an estimate of metrics such as variance in model output allows for stronger comparison statements that will likely be more acceptable metrics for automated model selection.
+
+\subsection{Iterative Model Improvement\label{sec:auto_improve}}
+After gathering enough information about various competing models as well as error information of model improvements,AutoMATES should be able to begin learning how to update models to lower uncertainty in model outputs.
+
+A key component to this enhancement would be to identify similar function nodes or series of function nodes in a computation graph that correspond to the same overall computation. This, along with the grounding of variable nodes, which has been assumed, will enable modular computation components for variables to be added, removed, or mutated in order to improve model accuracy, efficiency, or other metrics of choice to modelers.
+
+\subsection{Input Space Division\label{sec:auto_isd}}
+Modelers would likely benefit from the AutoMATES being able to answer more general questions about what models to use to study a certain phenomena. For instance, modelers may not be able to provide bound information for the variables of interest to them when gathering data to study a particular phenomena. AutoMATES could assist modelers in this regard by discovering the furthest possible extent of all possible variables for each competing model of a phenomena and then partition the input variable space based upon peak model performance, such that each separate partition has an identified ideal model for studying the phenomena given inputs contained in that range. As previously stated the partition criterion would be some aspect of model fitness.
+
+\subsection{Data Space Discovery\label{sec:auto_dsd}}
+An extension of the idea of automatically discovering the input bounds of a set of input variables for a model is the idea of discovering the total possible data space for a phenomena of interest. Modelers would benefit from future versions of AutoMATES being able to identify potential additional variables for a given phenomena, other than just those identified by the modeler. A potential example would be the identification of a combination of variables that can be used to model a given model input with higher precision.
