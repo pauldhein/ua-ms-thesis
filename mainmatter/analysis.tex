@@ -1,32 +1,77 @@
 \chapter{VARIATIONAL ANALYSIS OF MODEL UNCERTAINTY\label{chapter:analysis}}
 
-The greatest benefit researchers receive from modeling is being able to reason about the uncertainty involved in observing a phenomena of choice. From the modeling perspective, explicit statements about the uncertainty of a phenomena can be made by adding inputs to the model of the phenomena that represent a source of variance upon the phenomena. A powerful tool used by modelers to quantify the uncertainty present in models is sensitivity analysis. Broadly speaking, sensitivity analysis is the study of how variance in the inputs of a model affect the variance, or uncertainty in the output of the model.
-
-\section{Sampling Techniques\label{sec:samp_overview}}
-
-Some text about the basic method for sampling from the inputs to a GrFN given little information.
-
-\subsection{Saltelli Sampling\label{sec:saltelli_samp}}
-
-This section should introduce Saltelli sampling and go into great detail on the process.
-
-\subsection{Data Informed Sampling Techniques\label{sec:data_samp}}
-
-This section should introduce the methods that we can use to sample from pre-existing data files associated with the codebase that we are working with.
-
-\subsection{Grounded Sampling Techniques\label{sec:grounded_samp}}
-
-This section should go into detail on how we can use the grounded nature of our variables to get information about how they exists in the real world that we can use to constrain the domains for our inputs.
-
-\section{Sensitivity Analysis\label{sec:sensitivity_overview}}
-
-Some text that discusses our methods for conducting Sensitivity analysis of our extracted GrFNs.
-
-\subsection{Variance Based Analysis\label{sec:sobol_sensitivity}}
-
-This section will go in depth on the Sobol method of Sensitivity analysis.
+The greatest benefit researchers receive from modeling is being able to reason about the uncertainty involved in observing a phenomena of choice. From the modeling perspective, explicit statements about the uncertainty of a phenomena can be made by adding inputs to the model of the phenomena that represent a source of variance upon the phenomena.
 
 
-\section{Output Surface Analysis\label{sec:surface_analysis}}
+\section{Sensitivity Analysis\label{sec:sens_analysis}}
+A powerful tool used by modelers to quantify the uncertainty present in models is sensitivity analysis. Broadly speaking, sensitivity analysis is the study of how variance in the inputs of a model affect the variance, or uncertainty in the output of the model. Since the goal of the SMS pipeline is to provide modelers with a tool select a model that lowers the amount of uncertainty in estimation of a given phenomena we have chosen to use sensitivity analysis in order to evaluate the extracted models.
 
-This section will introduce the idea of generating output surfaces that scientists can view and interact with in order to better understand the sensitivity of their models based upon key inputs. The choice in which surfaces to show will be directed by sensitivity analysis.
+For this thesis we employ variance-based methods of sensitivity analysis.
+% TODO: give a good definition of variational methods of sensitivity analysis
+Variance-based methods of sensitivity analysis focus on the computation of sensitivity indices. Sensitivity indices are numerical values assigned to each model input, or set of inputs, that denote how sensitive the output of the model is to that input, or set of inputs. The first order sensitivity index, commonly denoted by $S1$, notates the sensitivity of the model output from each individual input. Similarly the second order sensitivity index, commonly denoted $S2$, notates the sensitivity of the model output from each pair of model inputs. This pattern continues for any given model for all higher order sensitivity indices.
+
+The final sensitivity index is the total sensitivity index, commonly denoted as $ST$. This index has an entry that corresponds to each model input. Each entry tracks the total amount of sensitivity on the model output contributed by the input as a portion of the first, second, and all higher order sensitivity indices.
+
+While other methods of sensitivity analysis exist, such as Variogram Analysis of Response Surfaces (VARS), the variance-based methods fit well within the scope of our problem domain as we are conducting sensitivity analysis over probabilisitic models. While the VARS method does claim a significant faster computation time, it does not reveal as information about the affects of model inputs upon the model output. This is due to the lack of pairwise-information that the variance-based methods are able to capture.
+
+In the following subsections I will discuss three different variance-based methods of sensitivity analysis employed by the SMS pipeline.
+
+\subsection{Sobol's Method for Index Calculation\label{sec:sobol_analysis}}
+Some text.
+
+\subsection{FAST S1 Index Calculation\label{sec:fast_analysis}}
+Some text.
+
+\subsection{RBD-FAST S1 Index Calculation\label{sec:rbd_fast_analysis}}
+Some text.
+
+
+\section{Model Output Surface\label{sec:out_surf}}
+A Model Output Surface (MOS) plot is a 3D plot where the z-axis is the output variable of a model and the remaining axes are input variables. A MOS plot consists of the plotted outputs over a predefined range for each of the two inputs which creates a smooth surface object in three dimensions. Evaluation to create this surface is done using a mesh grid of finite points. extrapolation between point evaluations can then be conducted to create the smooth surface visualization. As expected, a higher number of input samples over the same input space range will lead to a smoother surface that is a more accurate representation of the true output surface for the input pair. In this section I will cover the process of selecting which input variables to study with MOS plots, how to set values for the additional inputs not under study, and how to efficiently perform the evaluations necessary to generate a MOS plot.
+
+\subsection{Input Variable Selection\label{sec:inp_var_sel}}
+Most models will have more than two input variables and thus when creating a MOS plot a decision must be made about which two input variables should be varied during output surface creation. Generally speaking, for a model with $N$ input variables, a user could generate $\frac{N(N+1)}{2}$ plots to expose all possible pairs of variable interactions and examine how those interactions affect the output surface. For most sizes of $N$ this study is likely to not be computationally feasible, and modelers are unlikely to desire to view such a large number of output plots when performing model selection. A better use-case for MOS plots would be to showcase the pairs of variables that have the greatest combined affect on the model output.
+
+In order to accomplish this task we need a way to rank the pairs of inputs in order of how greatly they affect model output. Fortunately we can attain this ranking directly from the second order sensitivity index, $S2$. Utilizing the $S2$ index as our ranking schema we can either create MOS plots for the top $k$ variable pairs, or we can use a threshold cutoff and create MOS plots for all pairs on input variables that exceed this cutoff. An appropriate cutoff could be a pre-defined value, or it could be based upon a difference between neighboring values of the sorted $S2$ indices. An example of such a cutoff would be to generate MOS plots for all input pairs, until seeing a drop in $S2$ index score of at least an order of magnitude.
+
+It is important to note that utilizing the $S2$ index is not the only way to select which input pairs to generate a MOS plot for, and is likely not the only metric of interest to modelers. If we have additional information, such as which inputs can be most or least accurately measured by the modelers then we may want to generate MOS plots for the modelers based upon this criterion so they can observe how output varies for input variables that they can measure well, vs those that they can measure poorly. This will become even more important for the task of model selection when competing models have differing sets of inputs, some of which may be easier or harder to measure than others.
+
+\subsection{Input parameter estimation\label{sec:inp_param_est}}
+Once the input variables for a given MOS plot are selected, the remaining inputs must have values assigned to them to allow for the model to be evaluated for MOS plot generation. To avoid confusion, I will refer to this set of input variables that will no longer be varied as the input parameters for the model.
+
+There are many options present for assigning values to each of the input parameters. Unfortunately the nature of models also demands that either one or few values be chosen for each of the input parameters due to the high number of input parameters that are likely to be present. Even if we wished to allow for only two values for each input parameter, and wanted to study all possible combinations of them
+
+\subsection{Surface Generation and Evaluation\label{sec:surf_usage}}
+Some text.
+
+
+
+% TODO: remove and restructure the content below
+% \section{Sampling Techniques\label{sec:samp_overview}}
+%
+% Some text about the basic method for sampling from the inputs to a GrFN given little information.
+%
+% \subsection{Saltelli Sampling\label{sec:saltelli_samp}}
+%
+% This section should introduce Saltelli sampling and go into great detail on the process.
+%
+% \subsection{Data Informed Sampling Techniques\label{sec:data_samp}}
+%
+% This section should introduce the methods that we can use to sample from pre-existing data files associated with the codebase that we are working with.
+%
+% \subsection{Grounded Sampling Techniques\label{sec:grounded_samp}}
+%
+% This section should go into detail on how we can use the grounded nature of our variables to get information about how they exists in the real world that we can use to constrain the domains for our inputs.
+%
+% \section{Sensitivity Analysis\label{sec:sensitivity_overview}}
+%
+% Some text that discusses our methods for conducting Sensitivity analysis of our extracted GrFNs.
+%
+% \subsection{Variance Based Analysis\label{sec:sobol_sensitivity}}
+%
+% This section will go in depth on the Sobol method of Sensitivity analysis.
+%
+%
+% \section{Output Surface Analysis\label{sec:surface_analysis}}
+%
+% This section will introduce the idea of generating output surfaces that scientists can view and interact with in order to better understand the sensitivity of their models based upon key inputs. The choice in which surfaces to show will be directed by sensitivity analysis.
