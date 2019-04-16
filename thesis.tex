@@ -50,7 +50,9 @@
 \usepackage{placeins}
 \graphicspath{ {mainmatter/figs/} }
 
+\usepackage{amssymb}
 \usepackage{amsmath}
+\usepackage{amsfonts}
 \usepackage{algorithm}
 \usepackage[noend]{algpseudocode}
 \usepackage[T1]{fontenc}
@@ -98,17 +100,10 @@
 % NOTE: Don't need this and don't think it's warranted
 % \incdedication{dedication}
 
-% Create a ``Table of Contents''
-\tableofcontents
-
-% Create a ``List of Figures''
-\listoffigures
-
-% Create a ``List of Tables''
-\listoftables
-
-% Include the ``Abstract''
-\incabstract{abstract}
+\tableofcontents        % Create a ``Table of Contents''
+\listoffigures          % Create a ``List of Figures''
+\listoftables           % Create a ``List of Tables''
+\incabstract{abstract}  % Include the ``Abstract''
 
 % Include the various chapters
 \include{mainmatter/introduction}

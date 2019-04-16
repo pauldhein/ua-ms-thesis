@@ -29,9 +29,11 @@ Sobol analysis is the most widely used version of variance-based sensitivity ana
 \end{figure}
 \FloatBarrier
 
-Notice that the red, blue, and green draws from the Sobol sequence are much more evenly dispersed across the sample space than the same draws from a uniform random sample. This allows the Sobol sampling method to achieve much better coverage of the search space, while still maintaining some variability in sample locations. The SMS pipeline employs a variant of the Sobol sequence introduced by Saltelli et al. that is designed to minimize the error when utilizing the samples to calculate the sensitivity indices of a function. The complete algorithm for the sampling step is shown below.
+Notice that the red, blue, and green draws from the Sobol sequence are much more evenly dispersed across the sample space than the same draws from a uniform random sample. This allows the Sobol sampling method to achieve much better coverage of the search space, while still maintaining some variability in sample locations. The SMS pipeline employs a variant of the Sobol sequence introduced by Saltelli et al. that is designed to minimize the error when utilizing the samples to calculate the sensitivity indices of a function.
 
-\FloatBarrier
+% TODO: maybe a little revising here
+The sample matrices that must be computed for analysis are defined in algorithm \ref{sobol_sample_alg}. We can see that this sampling algorithm draws $N$ samples of $d$ dimension from the Sobol sequence and then creates $N(d+2)$ samples total to be evaluated by the model. The matrices returned from the sampling step can then be evaluated using the model computation graph. These evaluations will be represented as $f(A) \text{, } f(B) \text{, } f(\textbf{A}_{B}) \text{, and } f(\textbf{B}_{A})$. Once the evaluation step is completed, the evaluations will be analyzed according to the Sobol analyzer. The Sobol analyzer computes three different sensitivity indices using approximation equations.
+
 \begin{algorithm}
   \caption{Sobol Sampling Algorithm}
   \label{sobol_sample_alg}
@@ -41,13 +43,38 @@ Notice that the red, blue, and green draws from the Sobol sequence are much more
     \Require $R \gets $ set of sample space ranges for all $d$ input variables
     \State $A \gets N$ samples from $R$ using the Saltelli corrected Sobol sequence
     \State $B \gets $ shuffled rows from $A$
-    \State $\forall i = 1 \ldots d$ $A_{B}^i \gets A_{B}^i[i] = B[i]$ and $A_{B}^i[j] = A[j]$ $\forall j \neq i$
-    \Return $A \oplus B \oplus (A_{B}^i | \forall i = 1 \ldots d)$
+    \State $\textbf{A}_{B} \gets \forall i = 1 \ldots d$ $A_{B}^i = \forall j < i \; A[j] \oplus B[i] \oplus \forall j > i \; A[j]$
+    \State $\textbf{B}_{A} \gets \forall i = 1 \ldots d$ $B_{A}^i = \forall j < i \; B[j] \oplus A[i] \oplus \forall j > i \; B[j]$
+    \State \Return $A, B, \textbf{A}_{B}, \textbf{B}_{A}$
   \end{algorithmic}
 \end{algorithm}
-\FloatBarrier
 
-We can see that this sampling algorithm draws $N$ samples of $d$ dimension from the Sobol sequence and then creates $N(d+2)$ samples total to be evaluated by the model. The model evaluations will then be analyzed according to the Sobol analyzer. The Sobol analyzer computes the sensitivity indices using the following equations; for the $S_i$ indices the
+The $i^{\text{th}}$ element of the first order sensitivity index, $S_i$, is computed using equation \ref{sobol_s1_eqn}. Notice that this function will approximate the variance $w.r.t$ the $i^{\text{th}}$ input of the expectation $w.r.t$ all other inputs.
+
+\begin{equation} \label{sobol_s1_eqn}
+  \begin{split}
+    S_i & = \frac{\mathbb{V}_{X_i}(\mathbb{E}_{X_{\sim i}}(Y | X_i))}{\mathbb{V}(Y)} \\
+     & \approx \frac{1}{N * \mathbb{V}(Y)} \sum_{j=1}^{N} f(B)_j (f(A_{B}^{i})_j - f(A)_j)
+  \end{split}
+\end{equation}
+
+Once all of the first order sensitivity indices have been computed, they can be used to calculate the second order sensitivity indices. This calculation is done using equation \ref{sobol_s2_eqn} as defined below. A second order sensitivity index, $S_{ij}$, can be described as the variance of the $ij$ input pair without the variance of the separate $i^{\text{th}}$ and $j^{\text{th}}$ components.
+
+\begin{equation} \label{sobol_s2_eqn}
+  \begin{split}
+    S_{ij} & = \frac{\mathbb{V}_{ij}(\mathbb{E}_{X_{\sim ij}}(Y | X_i X_j))  - (S_i + S_j)}{\mathbb{V}(Y)} \\
+     & \approx \frac{\sum_{k=1}^{N} (f(B_{A}^{i})_j * f(A_{B}^{k})_j) - (f(A)_j * f(B)_j)}{N * \mathbb{V}(Y)} - (S_i + S_j)
+  \end{split}
+\end{equation}
+
+The total sensitivity indices, $S^T$, can also be calculated from the sampled matrices. The $i^{\text{th}}$ total sensitivity index can be computed using equation \ref{sobol_st_eqn} as defined below. By inspecting the result from this equation we can see that the $i^{\text{th}}$ total sensitivity index is an approximation of the expected variance caused by the $i^{\text{th}}$ input upon all other inputs $j$ such that $j\neq i$.
+
+\begin{equation} \label{sobol_st_eqn}
+  \begin{split}
+    S_i^T & = \frac{\mathbb{E}_{\sim i}(\mathbb{V}_{X_i}(Y | X_{\sim i}))}{\mathbb{V}(Y)} \\
+    & \approx \frac{1}{2N * \mathbb{V}(Y)} \sum_{j=1}^{N} (f(A)_j - f(A_{B}^{i})_j)^2
+  \end{split}
+\end{equation}
 
 \subsection{FAST S1 Index Calculation\label{sec:fast_analysis}}
 Some text.
