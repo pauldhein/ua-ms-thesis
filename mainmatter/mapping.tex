@@ -57,7 +57,7 @@ During the processing of a container, when an assignment statement is reached it
   \item The name of a lambda function
   \item A target variable node
 \end{itemize}
-Using these items the wiring for an assignment statement performs the following tasks to fully incorporate the information contained in the assignment statement into the computation graph:
+Using these items the wiring for an assignment statement performs the following tasks to fully incorporate the information contained in the assignment statement into the GrFN CG:
 \begin{itemize}
   \item Create a new function node for the lambda function
   \item Create a new variable node for target variable
@@ -65,7 +65,8 @@ Using these items the wiring for an assignment statement performs the following 
   \item Create a directed edge from each input variable node to the function node
   \item Create a directed edge from the function node to the target variable node.
 \end{itemize}
-Assignment statements can be handled by loading the assignment statement found in the source code into the function node so that values can propagate from the input variable nodes to the output variable node during computation graph execution.
+The computation required for an assignment statements can be handled by loading the assignment statement found in the source code into the function node generated during the wiring process of an assignment statement.
+This allows values to propagate from the input variable nodes to the output variable node during GrFN CG execution.
 
 \subsection{Conditional Statements\label{sec:cond_stmts}}
 Conditional statements are handled via a set of two lambda evaluations. The first evaluation is known as a \texttt{conditional} function node, that will actually evaluate the conditional property. The second is a \texttt{decision} function node that takes as input the evaluation from the \texttt{condition} function as well as the two possible assignments for an output variable. The \texttt{decision} function will be responsible for assigning the appropriate value to the output variable node based upon the conditional input.
@@ -98,14 +99,48 @@ The infrastructure to represent complex data types such as Arrays, user-defined 
 Once the wiring stage for a GrFN has been completed, the GrFN CG must be made executable. The execution of a GrFN CG requires the execution of all functions stored at the function nodes of the computation graph. Therefore the problem of executing a GrFN CG can be simplified to the problem of determining an ordering of execution of the function nodes that allows for all of the function nodes to be executed without any failures. Of course a GrFN CG also needs to save the state of variables during execution in a way that allows the function nodes to access the information stored for each variable they require. In this section I will present the methods developed for the GrFN CG to handle the function evaluation ordering problem and the variable storage access problem.
 
 \subsection{Call Stack Creation\label{sec:call_stack}}
-Creating a computation graph from a GrFN specification allows us to formally represent an extracted scientific model as a graph data structure. However, if we wish to analyze the extracted model, then we will need the ability to compute information over this data structure. To accomplish this we introduce the idea of execution over a computation graph. The computation graph contains a set of function nodes. Computing the lambda function stored at each function node is analogous to executing the computation graph from the set of inputs to the output. However, the function nodes rely upon having values populated at each of their input variable nodes in order to perform their computation. Therefore the task of executing a GrFN CG can be rephrased as determining how to order and execute the functions nodes contained in the computation graph.
+Creating a computation graph from a GrFN specification allows us to formally represent an extracted scientific model as a graph data structure.
+However, if we wish to analyze the extracted model, then we will need the ability to compute information over this data structure.
+To accomplish this we introduce the idea of execution over a computation graph. The computation graph contains a set of function nodes.
+Computing the lambda function stored at each function node is analogous to executing the computation graph from the set of inputs to the output.
+However, the function nodes rely upon having values populated at each of their input variable nodes in order to perform their computation.
+Therefore the task of executing a GrFN CG can be rephrased as determining how to order and execute the functions nodes contained in the computation graph.
 
-A Naïve first-pass solution to accomplish this goal would be to use a graph traversal from the output to the inputs where at each function node, the node will determine whether values for each input variable node have been populated. For any input variable nodes that have not been populated, the function node will call the parent function node responsible for computing the value of the input variable node. Once all such calls have returned, the function itself will evaluate. This recursive calling procedure is very similar to message-passing, a method for inference on factor graphs. While this will ensure correct model execution, this method of handling execution is not as efficient as possible. To start the recursive call structure adds additional function setup and calls to the execution, on the order of the number of functions included in the computation graph.
+A Naïve first-pass solution to accomplish this goal would be to use a graph traversal from the output to the inputs where at each function node, the node will determine whether values for each input variable node have been populated.
+For any input variable nodes that have not been populated, the function node will call the parent function node responsible for computing the value of the input variable node.
+Once all such calls have returned, the function itself will evaluate. This recursive calling procedure is very similar to message-passing, a method for inference on factor graphs.
+While this will ensure correct model execution, this method of handling execution is not as efficient as possible.
+To start the recursive call structure adds additional function setup and calls to the execution, on the order of the number of functions included in the computation graph.
+The second obvious inefficiency with this execution is that the recursive operations must be done for each execution, and they require all function nodes to be executed sequentially.
 
-As defined above, the GrFN CG is bipartite with respect to the variable and function nodes, such that no variable node is adjacent to another variable node and vice-versa for a function node. Therefore the GrFN CG wiring remains in-tact when only representing the graph with the function nodes. For this representation the parent functions of a variable node will have an edge leading to the child function of the same variable node. This representation that includes only function nodes is called the GrFN Control Flow Graph (CFG). Using the GrFN CFG
+These two concerns can be addressed by creating a call stack comprised of all the function nodes contained in the GrFN CG.
+The order of computation between function nodes implies that the call stack is equivalent to a partially ordered set (poset) upon the function nodes.
+Once this poset is recovered, execution of the GrFN CG can occur by executing all functions at the first level in the poset, then moving to the next level in the poset, and then repeating the sequence until reaching the end of the call stack.
+This allows all function nodes at the same level in the poset to be executed concurrently, and the computation required to create this call stack only needs to occur once.
 
-\subsection{Input Set Execution\label{sec:input_execution}}
-During execution, a GrFN utilizes a value storage tag at each variable node. During computation, function nodes pull their input data from the value tag of each parent variable node of the function node. The output from the function node is stored in the value tag of the variable node that is the child of the function node.
+Computing the call stack requires a series of separate computations.
+First a control flow graph (CFG) must be extracted from the GrFN CG.
+As defined above, the GrFN CG is bipartite with respect to the variable and function nodes, such that no variable node is adjacent to another variable node and vice-versa for a function node.
+Therefore a GrFN CFG can be extracted from the GrFN CG by simply squashing any variable node between a pair of function nodes into a singular edge connecting the two function nodes.
+Since the GrFN CFG is derived from the GrFN CG it will have a set of input nodes.
+Starting from this set of input nodes an index is assigned to each node, beginning at zero.
+Each time an edge is traversed the index increases.
+If a function node is reached and it already has an index the index is updated to the maximum of the current index and the newly calculated index.
+Once the full graph traversal is complete we have an index for the poset.
+Function node sets are created according to the index values, and the index values also provide the ordering of the function node sets.
+Smaller index values correspond to the function node sets that are to be computed first.
+Function sets can then be placed into the call stack by pushing the sets with the largest index value onto the stack first.
+The GrFN CG now has access to a call stack that can be used to execute an input set.
+During execution, when the call stack is being used, it can be maintained by pushing popped values from the stack onto a different empty stack.
+After execution, the values can be popped from the temporary stack and pushed back on to the original call stack. This ensures that the call stack order will be maintained for the next execution.
 
-\subsection{Vectorized Input Execution\label{sec:vector_input_execution}}
-While a GrFN CG is perfectly capable of executing one set of inputs at a time, the CG can also handle executing over multiple sets of inputs at once. The SMS pipeline accomplishes this by making use of the PyTorch tensor computation framework. It is advantageous to compute multiple inputs at once using vectorized computations because pooling like computations lowers overall compute time.
+\subsection{Computation Graph Input Execution\label{sec:input_execution}}
+During execution, a GrFN utilizes a value storage tag at each variable node.
+During computation, function nodes pull their input data from the value tag of each parent variable node of the function node.
+The output from the function node is stored in the value tag of the variable node that is the child of the function node.
+Function nodes are guaranteed to have access to the variable node input data at the time of their execution by the call stack execution order discussed in the previous section.
+After all function nodes have been executed the output variable node of the GrFN CG will have the computed output value stored in its value tag.
+
+While a GrFN CG is perfectly capable of executing one set of inputs at a time, as described in the method above, the CG can also handle executing over multiple sets of inputs at once.
+The SMS pipeline accomplishes this by making use of the PyTorch tensor computation framework.
+It is advantageous to compute multiple inputs at once using vectorized computations because pooling like computations lowers overall compute time.
