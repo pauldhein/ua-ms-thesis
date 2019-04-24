@@ -102,8 +102,16 @@ The task of input parameter estimation is now the task of finding the best-fit s
 % \subsection{Surface Generation and Evaluation\label{sec:surf_usage}}
 % Some text.
 
-\section{Model report generation\label{sec:report_gen}}
-Some text
+\section{Model Report Generation\label{sec:report_gen}}
+Utilizing the information provided by the sensitivity indices of a model allows the SMS pipeline to gain insight about how the uncertainty in the output of the model is caused by the various inputs of the model.
+However, this information alone is likely still too opaque to be useful to modelers when selecting a model for an experiment.
+Ultimately the task of model selection comes down to an optimization problem for modelers based upon the desires they have for a models performance.
+These tasks will likely differ between different modelers, but will almost certainly have some common themes.
+For instance, when a modeler uses a model in an experiment they will need some method of collecting data for the inputs.
+In almost all cases this immediately requires a modelers to address the question of: "how confident are you in your ability to measure input phenomena $x$?"
+A modeler will likely want to select a model whose output is less sensitive to errors in measurements upon the inputs that they are least able to measure accurately.
+Only the modeler is aware of the measurement error associated with the devices used to measure each of their inputs; however, the information recovered in the sensitivity indices can be combined with the measurement error of each input to give the modeler a clear view of which model will perform best for them based upon minimizing the impact of measurement error.
+Therefore, providing the sensitivity index information in an interperable table as part of the model report is crucial for modelers.
 
 \subsection{Comparative Sensitivity Index Assessment\label{sec:comp_sens_ind}}
 Some text.
