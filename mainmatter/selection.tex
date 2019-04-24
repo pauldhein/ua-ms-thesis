@@ -2,46 +2,10 @@
 
 Some intro about the task of selecting a model given the information from model analysis
 
-\section{Model Overlap Identification\label{sec:overlap_identification}}
-
-While analytical methods can provide a large amount of useful information to modelers about a single model, the real benefit of the AutoMATES system comes from the ability to automate comparisons among competing models. Competing models can be identified from the output variables of their computation graphs. After identifying a selection of competing models the comparison phase can begin.
-
-For any two competing models of the same phenomena the comparison phase consists of the following:
-
-$1.)$ Identify the overlap between the variables in each models computation graphs. This corresponds to overlap in observable real-world phenomena.
-
-$2.)$ Extract the sub computation graphs for each model based on the variable node overlap.
-
-$3.)$ Perform analysis on the overlapping computation graphs and compare the results with the analysis results from the models whole computation graphs.
-
-In order to accomplish the tasks outlined above, I will introduce a new construct, known as a Forward Influence Blanket (FIB). A FIB is a specific instance of a Markov blanket, derived from a GrFN computation graph, that can be used for forward analysis.  % TODO: possibly define forward analysis and markov blanket
-After the completion of these tasks the information gained from the comparative study of these models can be added to the final model report, or used for automatic model selection. In this chapter I discuss model comparison in terms of two models compared directly with one another. At the end of the chapter I will elucidate on the necessary steps to generalize this form of binary model comparison to a set of $N$ models.
-
-\subsection{Forward Influence Blanket Creation\label{sec:fib_creation}}
-Imagine the structure of two computational models of the same phenomena in the most general sense. We can say with certainty that both models will have the same output variable, namely the variable that represents the phenomena of interest. From this there are three options for how the set of input variables between the two computational graphs can overlap. The least interesting option is that the two models could share no inputs variables. This would mean that the computations involved in each model are wholly independent and could be combined if necessary in a trivial manner, at least at the input level. The more interesting option is that a subset of the inputs are shared between the two models. This entails that the models will make use of the same data, though the computations used to transform that data into a model output will almost certainly differ. It is possible that the set of input variables will overlap exactly between the two models; however, it is much more likely that there will be some input variables that are not contained in both. In the following subsections I will discuss how to build a computation graph that represents the computation present in a GrFN that corresponds to utilization of shared variable nodes with another model.
-
-% TODO: Add material about Shared Structure Identification here
-Some text.
-
-% TODO: The section discusses Cover Set Variables
-The key aspect of a FIB that distinguishes it from a GrFN computation graph is that the portions of the original computation graph that are not shared between the two models under comparison are pruned. In order to ensure that the resulting models are still executable, variable nodes representing new inputs to the FIB computation graph must be retained. We have identified this set of variables as the cover variable set.
-
-Identifying a variable as being a member of the cover set stems from the initial shared graph structure extracted from the original GrFN computation graphs. From the
-
-\subsection{Forward Influence Blanket Execution\label{sec:fib_exec}}
-In order to execute a FIB the user must provide values for the input variable nodes and values for the cover variable nodes. At execution time, both sets of variable nodes will be populated before beginning to compute the function nodes in the partial order of functions provided by the GrFN computation graph. This is the only difference between computing on a FIB computation graph and computing on a GrFN computation graph.
-
-Execution of a FIB computation graph can be done either with singular preset values for all of the cover variables, or with ranges for each cover variable. FIB computation graph supports Torch-aided vectorized computation similar to the GrFN computation graph structure, and no additional memory constraints are imposed on execution by the FIB class.
 
 
-\section{Model report generation\label{sec:report_gen}}
-Some text
 
-\subsection{Comparative Sensitivity Index Assessment\label{sec:comp_sens_ind}}
-Some text.
 
-\subsection{Cross-model Sensitivity Surface Examination \label{sec:multi_mod_surface}}
-Some text.
 
 
 \section{Input space partitioning\label{sec:input_partition}}
