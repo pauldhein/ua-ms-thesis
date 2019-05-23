@@ -94,6 +94,37 @@ So far I have discussed the wiring needed to create the computation graph that w
 
 The infrastructure to represent complex data types such as Arrays, user-defined types, and unions in the AST form is still being developed by the program analysis team, and thus they will not be included in this thesis. The main challenge with representing these data types is that they are not singular variables, but are instead collections of variables. To properly perform inference over a GrFN CG all variable nodes must be singular variables, thus we cannot allow any of the above collections of variables to be represented by a variable node. This presents a problem of representation that will be studied  and resolved in future work that extends this thesis.
 
+\section{GrFNs are Dynamic Bayes Nets\label{sec:grfn_as_dbn}}
+A GrFN CG has a set of input variables that are wired as a network to the outputs of the model represented by the GrFN CG.
+The inputs of the GrFN CG can be assigned values and will then return an output value for each of the GrFN CG outputs.
+Recall that all variables in a GrFN CG are treated as random variables.
+In fact we can view a GrFN CG as a Causal Analysis Graph (CAG) that allows us to visualize only the variable relationships present in the GrFN.
+Below are the CAG views for the two GrFN CGs under study in this thesis. Notice that inspecting this view gives us a graph structure that looks similar to a bayes network that has loops (i.e. one that can be unrolled over time).
+
+\FloatBarrier
+\begin{figure}[!htbp]
+    \label{cag_viz}
+    \centering
+    \subfloat[PETASCE GrFN CAG View]{%
+      \includegraphics[clip,width=\columnwidth]{PETASCE_GrFN_CAG}%
+    }
+    \subfloat[PETPT GrFN CAG View]{%
+      \includegraphics[clip,width=0.6\columnwidth]{PETPT_GrFN_CAG}%
+    }
+\caption[CAG Visualizations]{Causal analysis graph views of the PETASCE and PETPT evapo-transpiration models.}
+\end{figure}
+\FloatBarrier
+
+When treating the input variables as random variables we can induce a distribution over the values that they can take.
+This distribution will then permeate through the function nodes to the other variable nodes in the GrFN CG.
+For the GrFN CG to be a Dynamic Bayes Net (DBN) we need the probability distribution of the output variable to be a product of all of the input probability distributions.
+During the computation of any inner variable in a GrFN CG we have a lambda function that denotes how the the inputs to the computation are to be combined to form the output.
+All possible combinations are mathematical functions, that are able to be applied over the probability distribution of the inputs.
+Therefore the resulting computed inner variable has a distribution that is the combination of the distributions over the inputs.
+However, this distribution is not yet a probability distribution.
+In order to create a probability distribution a normalization step is required so that the total probability mass sums to 1.
+Once this step is complete we can see that we have satisfied the requirements for a DBN for the trivial case of a single computed node with a set of input nodes.
+Since we are free to induce distributions on the input nodes of a GrFN, and all inner nodes and output nodes of a GrFN are defined in the same manner as the case explored above we can conclude that a GrFN CG is indeed a DBN.
 
 \section{GrFN Computation Graph Execution\label{sec:cg_execution}}
 Once the wiring stage for a GrFN has been completed, the GrFN CG must be made executable. The execution of a GrFN CG requires the execution of all functions stored at the function nodes of the computation graph. Therefore the problem of executing a GrFN CG can be simplified to the problem of determining an ordering of execution of the function nodes that allows for all of the function nodes to be executed without any failures. Of course a GrFN CG also needs to save the state of variables during execution in a way that allows the function nodes to access the information stored for each variable they require. In this section I will present the methods developed for the GrFN CG to handle the function evaluation ordering problem and the variable storage access problem.
