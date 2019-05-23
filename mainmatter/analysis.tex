@@ -107,14 +107,23 @@ Utilizing the information provided by the sensitivity indices of a model allows 
 However, this information alone is likely still too opaque to be useful to modelers when selecting a model for an experiment.
 Ultimately the task of model selection comes down to an optimization problem for modelers based upon the desires they have for a models performance.
 These tasks will likely differ between different modelers, but will almost certainly have some common themes.
-For instance, when a modeler uses a model in an experiment they will need some method of collecting data for the inputs.
+In order to make the SMS pipeline as useful as possible to modelers we seek to provide modelers with the direct information from the sensitivity indices and also to provide them with useful abstractions created from the sensitivity indices that further differentiate competing models.
+In this section I define the information contained in a model report that aims to differentiate two models so that modelers can perform their own model selection.
+
+\subsection{Minimizing Measurement Error\label{sec:min_measure_error}}
+When a modeler uses a model in an experiment they will need some method of collecting data for the inputs.
 In almost all cases this immediately requires a modelers to address the question of: "how confident are you in your ability to measure input phenomena $x$?"
 A modeler will likely want to select a model whose output is less sensitive to errors in measurements upon the inputs that they are least able to measure accurately.
 Only the modeler is aware of the measurement error associated with the devices used to measure each of their inputs; however, the information recovered in the sensitivity indices can be combined with the measurement error of each input to give the modeler a clear view of which model will perform best for them based upon minimizing the impact of measurement error.
-Therefore, providing the sensitivity index information in an interperable table as part of the model report is crucial for modelers.
+Therefore, providing the sensitivity index information in an interpretable table as part of the model report is crucial for modelers.
 
-\subsection{Comparative Sensitivity Index Assessment\label{sec:comp_sens_ind}}
-Some text.
+\subsection{Diagnosing Multi-variable Model Variability\label{sec:multi_var_variability}}
+The sensitivity indices give a clear picture of which inputs or sets of inputs contribute the greatest amount of uncertainty to the model output.
+Comparing sensitivity indices across the shared inputs of multiple models allows us to see where different models have the greatest amount of uncertainty.
+However, this is still a summary statistic of the variance in model output caused by variance in the inputs.
+While summary statistics are sufficient for some use cases, many modelers will likely want to base their model selection decision on the differences in shape of the model output for key variables that are shared between competing models.
+
+This information can be provided to the modelers by the SMS pipeline in the form of MOS plots, one per model, for given pairs of shared input variables that are of interest to the modelers.
 
 \subsection{Cross-model Sensitivity Surface Examination \label{sec:multi_mod_surface}}
 Some text.
