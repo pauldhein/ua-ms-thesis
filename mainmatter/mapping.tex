@@ -52,13 +52,17 @@ Below are examples of GrFN CGs for the PETPT and PETASCE evapo-transpiration mod
 \begin{figure}[!htbp]
     \label{petpt_grfn}
     \centering
-    \subfloat[PETPT GrFN]{%
-      \includegraphics[clip,width=\columnwidth]{PETPT_GrFN}%
-    }
-    \subfloat[PETASCE GrFN]{%
-      \includegraphics[clip,width=0.8\columnwidth]{PETASCE_GrFN}%
-    }
-    \caption[GrFN Computation Graphs]{Two examples of GrFN computation graphs. These CGs are for the PETPT and PETASCE evapo-transpiration models. The CG view shows the variable nodes, represented as circles, indexed by their step in the update to the grounded variable that they correspond to. Function nodes are shown as squares with a single letter representing the type of function contained at the node. Possible choices are assignment (A), conditional (C), decision (D), or literal (L). Notice that in both CGs the output nodes are variable nodes the inputs of the network can either be variable nodes or literal assignment nodes}
+    \includegraphics[clip,width=.8\columnwidth]{PETPT_GrFN}%
+    \caption[PETPT GrFN Computation Graph]{An example of a GrFN computation graph. This CG is for the PETPT evapo-transpiration model. The CG view shows the variable nodes, represented as circles, indexed by their step in the update to the grounded variable that they correspond to. Function nodes are shown as squares with a single letter representing the type of function contained at the node. Possible choices are assignment (A), conditional (C), decision (D), or literal (L).}
+\end{figure}
+\FloatBarrier
+
+\FloatBarrier
+\begin{figure}[!htbp]
+    \label{petasce_grfn}
+    \centering
+    \includegraphics[clip,width=0.8\columnwidth]{PETASCE_GrFN}%
+    \caption[PETASCE GrFN Computation Graph]{An example of a GrFN computation graph. This CG is for the PETASCE evapo-transpiration model. Notice that in both CGs the output nodes are variable nodes the inputs of the network can either be variable nodes or literal assignment nodes.}
 \end{figure}
 \FloatBarrier
 
