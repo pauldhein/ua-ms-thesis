@@ -67,13 +67,16 @@ Below are examples of GrFN CGs for the PETPT and PETASCE evapo-transpiration mod
 \FloatBarrier
 
 The first component of the SMS pipeline will be to develop the set of rules for how to traverse the JSON and handle the included statements to provide a clear view of how to construct a GrFN CG.
+During GrFN CG construction, data-flow through the contained variables will be handled by creating function nodes that contain the computations described in the lambda functions file.
 In the following subsections I will present the rules for generating the control-flow structure of a GrFN CG from the associated JSON specification.
-During this generation, data-flow through the contained variables will also be handled by creating a
 
 \subsection{Containers and Function Calls\label{sec:containers}}
 At the top level the JSON has a list of containers. These containers represent different scope levels in the source program. A container can be a function or subroutine found in the source code or a loop. The branches of a conditional will not be considered containers due to the nature of how the GrFN will be wired to deal with conditional evaluation. a container will contain a body that will be in the form of an ordered list of statements. These statements will correspond to statements from the original source code that was present in the container. Computation graph construction will begin at a top-level container and will process through the statements in the container, constructing the computation graph as it goes. When a statement that references a new container, such as a function call, is reached the body for that statement will be processed and connected to the computation graph that is being generated. Once this task is completed, the rest of the body for the original container will be processed. This recursive process works well for traversing all containers and constructing a computation graph based upon the statements contained in each container as long as no container has a call in it's body to another container that also has a call to the original container. Unfortunately this is precisely the case with recursive functions. They act as a special case for this processing pipeline and thus they are handled separately as will be discussed in subsequent sections.
 
-Landing on a function call when parsing the body of a container can be thought of as an indicator to process the body of the child container referenced by the function call. The only intricacy here deals with the correct wiring of variable inputs into the containers plate, and the correct wiring of outputs from the container to the current position in the computation graph.
+Landing on a function call when parsing the body of a container can be thought of as an indicator to process the body of the child container referenced by the function call.
+The only intricacy here deals with the correct wiring of variable inputs into the containers plate, and the correct wiring of outputs from the container to the current position in the computation graph.
+To accomplish this task a set of live variables is kept during the processing of the body of any container.
+As variables are updated they carry with them an index that denotes the updates that have 
 
 \subsection{Assignment Statements\label{sec:assg_stmts}}
 During the processing of a container, when an assignment statement is reached it will include the following items:
@@ -94,24 +97,38 @@ The computation required for an assignment statements can be handled by loading 
 This allows values to propagate from the input variable nodes to the output variable node during GrFN CG execution.
 
 \subsection{Conditional Statements\label{sec:cond_stmts}}
-Conditional statements are handled via a set of two lambda evaluations. The first evaluation is known as a \texttt{conditional} function node, that will actually evaluate the conditional property. The second is a \texttt{decision} function node that takes as input the evaluation from the \texttt{condition} function as well as the two possible assignments for an output variable. The \texttt{decision} function will be responsible for assigning the appropriate value to the output variable node based upon the conditional input.
-
-Both the \texttt{decision} function node and the \texttt{conditional} function nodes output variable node are artifacts that did not exist in the original source program that have been added to the computation graph. Thus these will not be displayed when rendering the function node or variable node views of the computation graph.
+Conditional statements are handled via a set of two lambda evaluations.
+The first evaluation is known as a \texttt{conditional} function node, that will actually evaluate the conditional property.
+The second is a \texttt{decision} function node that takes as input the evaluation from the \texttt{condition} function as well as the two possible assignments for an output variable.
+The \texttt{decision} function will be responsible for assigning the appropriate value to the output variable node based upon the conditional input.
+Both the \texttt{decision} function node and the \texttt{conditional} function node output variable nodes as are artifacts that did not exist in the original source program.
+Thus these will not be displayed when rendering the function node or variable node views of the computation graph.
 
 \subsection{Indexed and Open-ended Loops\label{sec:loops}}
-Indexed loops require a loop plate and have a specific index variable as well as a number of iterations through the loop. They can easily be handled like containers as mentioned above, but require additional storage to handle information about the number of executions needed to satisfy the plate during compuation.
+Loops naturally occur in source code as a means of expressing repetitive computations.
+For the purposes of GrFN wiring, we want loops to be included, but we do not want to have backward links that would break the DAG property of a GrFN.
+Therefore we will represent loops with plates that include an implicit edge back to the beginning of the loop that will be controlled by either an index or an exit condition. Therefore we will have two types of loops, the first being an indexed loop, and the second being an open-ended loop.
+Indexed loops require a loop plate and have a specific index variable as well as a number of iterations through the loop.
+They can easily be handled like containers as mentioned above, but require additional storage to handle information about the number of executions needed to satisfy the plate during computation.
 
-Open ended loops are hard. Here we can have conditional exit cases defined at a start or end point of a loop, which presents a much larger challenge than loops with an index and pre-defined amount of iterations.
-
+Open ended loops will have conditional exit cases defined at a start or end point of a loop, which takes the form of an extra condition before looping or exiting the plate as compared to loops with an index and pre-defined amount of iterations.
 An extra challenge is added when dealing with open-ended loops that can include multiple exit points (introduced either by \texttt{break} statements or \texttt{goto}s) as well conditional skip points where parts of the loop are skipped on an iteration (introduced either by \texttt{continue} statements or \texttt{goto}s).
+This challenge will be solved by adding edges as necessary to the exit node for an open-ended loop to capture to capture the semantics of breaking and continuing.
 
 % NOTE: section about loops from unstructured branching
-The usage of the \texttt{goto} statement has been hotly debated by computer scientists for nearly half a century. In most modern programming languages the usage of  \texttt{goto} or other such statements that allow for unstructured branching is prohibited. However, the AutoMATES system seeks to handle source code inputs from languages that do allow for unstructured branching, and thus this paradigm must be handled during the wiring phase of a GrFN computation graph.
-
-% NOTE: part about recursive functions as loops
-Recursion is a commonly used software practice that must be handled for our computation graphs. Most importantly, recursion must be identified and recursive edges that would create loops in the computation graph must be pruned.
-
-Possibly the most difficult challenge for our graph wiring is the identification and handling of indirect recursion.
+In addition to explicit loops, programs can include two other forms of looping, namely \texttt{goto} statements and recursion.
+In order to maximize the number of scientific models that can be expressed as GrFN the SMS pipeline will need to handle these inputs as well.
+The usage of the \texttt{goto} statement has been hotly debated by computer scientists for nearly half a century.
+In most modern programming languages the usage of \texttt{goto} or other such statements that allow for unstructured branching is prohibited.
+However, the SMS pipeline will be used to extract models from source code inputs written in languages that do allow for unstructured branching, and thus this paradigm must be handled during the wiring phase of a GrFN computation graph.
+The program analysis pipeline will handle detecting \texttt{goto}s and structuring the \texttt{goto} as an open-indexed loop.
+Recursion is a commonly used software practice that must be handled for our computation graphs.
+Most importantly, recursion must be identified and recursive edges that would create loops in the computation graph must be pruned.
+Recursion can occur either as direct or indirect recursion.
+In the case of indirect recursion a series of functions forms a loop that will repeat until a base condition is satisfied.
+Identifying recursion is a task that will be handled by the program analysis pipeline.
+Once a recursion loop is discovered, it will be handled the same as an open-indexed loop.
+Once a \texttt{goto} or recursion loop is transformed into an open-indexed loop the SMS pipeline will handle adding it as a loop-plate to the overall computation graph in the same fashion as any other loop plate.
 
 
 \section{Data Type Assignment\label{sec:data_types}}
