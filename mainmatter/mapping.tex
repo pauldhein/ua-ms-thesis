@@ -261,19 +261,22 @@ To visualize what a FIB looks like for both a small and large CG we have added t
 
 \FloatBarrier
 \begin{figure}[!htbp]
-    \label{fib_viz}
+    \label{petpt_fib}
     \centering
-    \subfloat[PETPT FIB CAG View]{%
-      \includegraphics[clip,width=\columnwidth]{PETPT_FIB_CAG}%
-    }
-    \subfloat[PETASCE FIB CAG View]{%
-      \includegraphics[clip,width=0.8\columnwidth]{PETASCE_FIB_CAG}%
-    }
-    \caption[FIB Visualizations]{Causal analysis graph views of the FIBs created by studying the overlap between the PETASCE and PETPT evapo-transpiration models.}
+    \includegraphics[clip,width=.8\columnwidth]{PETPT_FIB_CAG}%
+    \caption[PETPT FIB CAG]{A Forward Influence Blanket (FIB) for the PETPT model that depicts the overlap with the PETASCE model. Note that shared variables are shaded in blue and shared input variables are both shaded blue and bolded.}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \label{petasce_fib}
+    \centering
+    \includegraphics[clip,width=0.8\columnwidth]{PETASCE_FIB_CAG}%
+    \caption[PETASCE FIB CAG]{A Forward Influence Blanket (FIB) for the PETASCE model that depicts the overlap with the PETPT model. Note that while the PETPT model did not have any variable nodes in the cover set the PETASCE model has several variables in the cover set. These variables are shaded green.}
 \end{figure}
 \FloatBarrier
 
 \subsection{Input Set Execution on a FIB\label{sec:fib_exec}}
 In order to execute a FIB the user must provide values for the input variable nodes and values for the cover variable nodes. At execution time, both sets of variable nodes will be populated before beginning to compute the function nodes in the partial order of functions provided by the GrFN computation graph. This is the only difference between computing on a FIB computation graph and computing on a GrFN computation graph.
 
-Execution of a FIB computation graph can be done either with singular preset values for all of the cover variables, or with ranges for each cover variable. FIB computation graph supports Torch-aided vectorized computation similar to the GrFN computation graph structure, and no additional memory constraints are imposed on execution by the FIB class.
+Execution of a FIB computation graph can be done either with singular preset values for all of the cover variables, or with ranges for each cover variable.
+FIB CGs support Torch-aided vectorized computation similar to the GrFN CG structure, and no additional memory constraints are imposed on execution by the FIB class.
