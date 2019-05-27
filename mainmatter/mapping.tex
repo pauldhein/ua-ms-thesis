@@ -76,7 +76,10 @@ At the top level the JSON has a list of containers. These containers represent d
 Landing on a function call when parsing the body of a container can be thought of as an indicator to process the body of the child container referenced by the function call.
 The only intricacy here deals with the correct wiring of variable inputs into the containers plate, and the correct wiring of outputs from the container to the current position in the computation graph.
 To accomplish this task a set of live variables is kept during the processing of the body of any container.
-As variables are updated they carry with them an index that denotes the updates that have 
+As variables are updated they carry with them an index that denotes how many updates have occurred to the variable.
+Variables that are inputs to a container start with an index of $-1$ and new variables defined in a container start with an index of $0$.
+Once a new container statement is reached, the collection of live variables with their current indices is past into the new container.
+This permits variables to be wired appropriately across containers.
 
 \subsection{Assignment Statements\label{sec:assg_stmts}}
 During the processing of a container, when an assignment statement is reached it will include the following items:
