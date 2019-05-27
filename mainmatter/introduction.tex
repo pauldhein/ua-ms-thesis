@@ -16,7 +16,11 @@ This enables a host of opportunities, including the following:
 %  \item Models are exportable, comparable, and updatable. One researcher can use the model of another, competing models of the same phenomena can be compared, and under-performing components of a model can be updated upon discovering new information about the phenomena under study.
 %\end{itemize}
 
-These advantages have been the driving force that has pushed the scientific community towards \ctm{computational} models as a method of \ctm{communicating} scientific research. To get a better of sense of what these models are like we can examine the model below that is being used to study how the yield of a particular crop is affected by changes in the amount of rain and absorption of the soil over a range of days.
+These advantages have been the driving force that has pushed the scientific community towards \ctm{computational} models as a method of \ctm{communicating} scientific research. 
+\ctm{To provide a working example, consider the computational model below in Figure~\ref{fig:simple_crop_CAG}, expressed as a \emph{causal analysis graph} (CAG), where nodes represent variables and directed arcs represent a functional relationship between variables (this formalism will be described in more detail in Chapter~\ref{chapter:extraction}). This model describes how the yield of a particular crop is affected by changes in the amount of rain and soil water absorption rate over time (expressed in \emph{Day}s).}
+
+% CTM original:
+% To get a better of sense of what these models are like we can examine the model below that is being used to study how the yield of a particular crop is affected by changes in the amount of rain and absorption of the soil over a range of days.
 
 \begin{figure}[ht]
   \begin{center}
@@ -40,9 +44,15 @@ These advantages have been the driving force that has pushed the scientific comm
     \end{tabular}
   \end{center}
   \caption[Crop yield model]{A model depicting the affects of rain on the yield of a crop over a span of days given observed values for absorption and consistency constants.}
+  \label{fig:simple_crop_CAG}
 \end{figure}
 
-In this model we see a set of input values, shaded to show that they are observed, and an output value. Upon observing the inputs through measurement, a value for the output can be recovered. We can also see in the model above that there is an arbitrary amount of wiring that can occur to transform a set of model inputs into the model output. Along with this arbitrary wiring, it is also worth noting that, given an output phenomena to study, the set of chosen observable inputs is also arbitrary. From these two facts we arrive at one of the modern challenges associated with modeling, models have become ubiquitous. In many fields there are so many competing models for the same phenomena that modelers have entered an age marked by \textit{The Paradox of Choice}, where modelers must now spend a non-trivial amount of time deciding which model to use for their experiments. This task is formally known as the task of \textit{Model Selection}.
+In this model we see a set of input values, shaded to \ctm{indicate} % show 
+that they are observed, and an output value. Upon observing the inputs through measurement, a value for the output can be \ctm{computed.} % recovered. 
+\ctm{} 
+
+We can also see that there is an arbitrary amount of wiring that can occur to transform a set of model inputs into the model output. 
+Along with this arbitrary wiring, it is also worth noting that, given an output phenomena to study, the set of chosen observable inputs is also arbitrary. From these two facts we arrive at one of the modern challenges associated with modeling, models have become ubiquitous. In many fields there are so many competing models for the same phenomena that modelers have entered an age marked by \textit{The Paradox of Choice}, where modelers must now spend a non-trivial amount of time deciding which model to use for their experiments. This task is formally known as the task of \textit{Model Selection}.
 
  Not only do modelers have to explore many competing models when deciding which to use to model a particular phenomena, this exploration is also expensive. In the information age, many of these models exist as source code with associated grounding documents. However, with the extreme prevalence of programming languages many competing models for the same phenomena are likely written in different programming languages. Asking modelers to learn a single new programming language is already a large drain on research time, but the prospect of needing to learn multiple new languages represents a barrier to entering the realm of model selection for most researchers. Given the enormous amount of items competing for the limited time of modelers the task of model selection is commonly side-lined. This entails that in many fields a single or small set of models are used and hardly ever challenged. Not only that but this means that many researchers who create competing models will see their research go unused by the members of the field that the new model was intended to benefit.
 
