@@ -36,20 +36,21 @@ Notice that the red, blue, and green draws from the Sobol sequence are much more
 % TODO: Add more material here to introduce the section
 The sample matrices that must be computed for analysis are defined in algorithm \ref{sobol_sample_alg}. We can see that this sampling algorithm draws $N$ samples of $d$ dimension from the Sobol sequence and then creates $N(d+2)$ samples total to be evaluated by the model. The matrices returned from the sampling step can then be evaluated using the model computation graph. These evaluations will be represented as $f(A) \text{, } f(B) \text{, } f(\textbf{A}_{B}) \text{, and } f(\textbf{B}_{A})$. Once the evaluation step is completed, the evaluations will be analyzed according to the Sobol analyzer. The Sobol analyzer computes three different sensitivity indices using approximation equations for \citet{saltelli2010varianceSA} improved method of Sobol analysis.
 
-\begin{algorithm}
-  \caption{Sobol Sampling Algorithm}
+\begin{figure}
   \label{sobol_sample_alg}
-  \begin{algorithmic}[1]
-    \Require $d \gets $ amount of input variables
-    \Require $N \gets $ amount of desired samples
-    \Require $R \gets $ set of sample space ranges for all $d$ input variables
-    \State $A \gets N$ samples from $R$ using the Saltelli corrected Sobol sequence
-    \State $B \gets $ shuffled rows from $A$
-    \State $\textbf{A}_{B} \gets \forall i = 1 \ldots d$ $A_{B}^i = \forall j < i \; A[j] \oplus B[i] \oplus \forall j > i \; A[j]$
-    \State $\textbf{B}_{A} \gets \forall i = 1 \ldots d$ $B_{A}^i = \forall j < i \; B[j] \oplus A[i] \oplus \forall j > i \; B[j]$
-    \State \Return $A, B, \textbf{A}_{B}, \textbf{B}_{A}$
-  \end{algorithmic}
-\end{algorithm}
+    \begin{algorithmic}[1]
+      \State $d \gets $ amount of input variables
+      \State $N \gets $ amount of desired samples
+      \State $R \gets $ set of sample space ranges for all $d$ input variables
+      \State $A \gets N$ samples from $R$ using the Saltelli corrected Sobol sequence
+      \State $B \gets $ shuffled rows from $A$
+      \State $\textbf{A}_{B} \gets \forall i = 1 \ldots d$ $A_{B}^i = \forall j < i \; A[j] \oplus B[i] \oplus \forall j > i \; A[j]$
+      \State $\textbf{B}_{A} \gets \forall i = 1 \ldots d$ $B_{A}^i = \forall j < i \; B[j] \oplus A[i] \oplus \forall j > i \; B[j]$
+      \State \Return $A, B, \textbf{A}_{B}, \textbf{B}_{A}$
+    \end{algorithmic}
+  \caption{Sobol Sensitivity Index Calculation Algorithm}
+\end{figure}
+
 
 The $i^{\text{th}}$ element of the first order sensitivity index, $S_i$, is computed using equation \ref{sobol_s1_eqn}. Notice that this function will approximate the variance $w.r.t$ the $i^{\text{th}}$ input of the expectation $w.r.t$ all other inputs.
 

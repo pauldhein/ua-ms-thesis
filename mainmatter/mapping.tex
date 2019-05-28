@@ -49,18 +49,12 @@ From these two items the SMS pipeline will create a GrFN Computation Graph (CG) 
 Below are examples of GrFN CGs for the PETPT and PETASCE evapo-transpiration modules.
 
 \FloatBarrier
-\begin{figure}[!htbp]
-    \label{petpt_grfn}
-    \centering
-    \includegraphics[clip,width=.8\columnwidth]{PETPT_GrFN_smaller}%
-    \caption[PETPT GrFN Computation Graph]{An example of a GrFN computation graph. This CG is for the PETPT evapo-transpiration model. The CG view shows the variable nodes, represented as circles, indexed by their step in the update to the grounded variable that they correspond to. Function nodes are shown as squares with a single letter representing the type of function contained at the node. Possible choices are assignment (A), conditional (C), decision (D), or literal (L).}
-\end{figure}
-
-\begin{figure}[!htbp]
-    \label{petasce_grfn}
-    \centering
-    \includegraphics[clip,width=0.8\columnwidth]{PETASCE_GrFN_smaller}%
-    \caption[PETASCE GrFN Computation Graph]{An example of a GrFN computation graph. This CG is for the PETASCE evapo-transpiration model. Notice that in both CGs the output nodes are variable nodes the inputs of the network can either be variable nodes or literal assignment nodes.}
+\begin{figure}[!tbp]
+  \centering
+  \subfloat[PETPT GrFN Computation Graph]{\includegraphics[width=0.45\textwidth]{PETPT_GrFN_smaller}\label{fig:petpt_grfn_cg}}
+  \hfill
+  \subfloat[PETASCE GrFN Computation Graph]{\includegraphics[width=0.45\textwidth]{PETASCE_GrFN_smaller}\label{fig:petasce_grfn_cg}}
+  \caption[GrFN Computation Graph Examples]{Two examples of GrFN computation graphs. The CG view shows the variable nodes, represented as circles, named via the names extracted in the source code and including an index representing the update level of the variable found in the source code. Function nodes are shown as squares with a single letter representing the type of function contained at the node. Possible choices are assignment (A), conditional (C), decision (D), or literal (L). Notice that in both CGs the output nodes are variable nodes the inputs of the network can either be variable nodes or literal assignment nodes.}
 \end{figure}
 \FloatBarrier
 
@@ -152,18 +146,12 @@ However, we can view a GrFN CG as a Causal Analysis Graph (CAG) that allows us t
 Below are the CAG views for the two GrFN CGs under study in this thesis. Notice that inspecting this view gives us a graph structure that looks similar to a bayes network that has loops (i.e. one that can be unrolled over time).
 
 \FloatBarrier
-\begin{figure}[!htbp]
-    \label{petpt_cag}
-    \centering
-    \includegraphics[clip,width=.8\columnwidth]{PETPT_GrFN_CAG}%
-    \caption[PETPT GrFN CAG]{Causal analysis graph view of the PETPT evapo-transpiration model.}
-\end{figure}
+\begin{figure}[!tbp]
+  \centering
+  \subfloat[PETPT GrFN CAG]{\includegraphics[width=0.75\textwidth]{PETPT_GrFN_CAG}\label{fig:petpt_cag}}
 
-\begin{figure}[!htbp]
-    \label{petasce_cag}
-    \centering
-    \includegraphics[clip,width=0.8\columnwidth]{PETASCE_GrFN_CAG_smaller}%
-    \caption[PETASCE GrFN CAG]{Causal analysis graph view of the PETASCE evapo-transpiration model.}
+  \subfloat[PETASCE GrFN CAG]{\includegraphics[width=0.75\textwidth]{PETASCE_GrFN_CAG_smaller}\label{fig:petasce_cag}}
+  \caption[GrFN Causal Analysis Graph Examples]{Causal analysis graph views of the PETPT and PETASCE evapo-transpiration models.}
 \end{figure}
 \FloatBarrier
 
@@ -267,20 +255,30 @@ Once the set of cover nodes are added to the shared graph structure the FIBs for
 To visualize what a FIB looks like for both a small and large CG we have added the FIBs that denote the overlap between the two evapo-transpiration models.
 
 \FloatBarrier
-\begin{figure}[!htbp]
-    \label{petpt_fib}
-    \centering
-    \includegraphics[clip,width=.8\columnwidth]{PETPT_FIB_CAG}%
-    \caption[PETPT FIB CAG]{A Forward Influence Blanket (FIB) for the PETPT model that depicts the overlap with the PETASCE model. Note that shared variables are shaded in blue and shared input variables are both shaded blue and bolded.}
-\end{figure}
+\begin{figure}[!tbp]
+  \centering
+  \subfloat[PETPT FIB CAG]{\includegraphics[width=0.75\textwidth]{PETPT_FIB_CAG}\label{fig:petpt_fib}}
 
-\begin{figure}[!htbp]
-    \label{petasce_fib}
-    \centering
-    \includegraphics[clip,width=0.8\columnwidth]{PETASCE_FIB_CAG_smaller}%
-    \caption[PETASCE FIB CAG]{A Forward Influence Blanket (FIB) for the PETASCE model that depicts the overlap with the PETPT model. Note that while the PETPT model did not have any variable nodes in the cover set the PETASCE model has several variables in the cover set. These variables are shaded green.}
+  \subfloat[PETASCE FIB CAG]{\includegraphics[width=0.75\textwidth]{PETASCE_FIB_CAG_smaller}\label{fig:petasce_fib}}
+  \caption[Forward Influence Blanket CAG Examples]{Forward Influence Blanket (FIB) CAGs for the PETPT and PETASCE evapo-transpiration models that depicts the overlap with each other. Note that shared variables are shaded in blue and shared input variables are both shaded blue and bolded. Note that while the PETPT model did not have any variable nodes in the cover set the PETASCE model has several variables in the cover set. These variables are shaded green.}
 \end{figure}
 \FloatBarrier
+
+% \FloatBarrier
+% \begin{figure}[!htbp]
+%     \label{petpt_fib}
+%     \centering
+%     \includegraphics[clip,width=.8\columnwidth]{PETPT_FIB_CAG}%
+%     \caption[PETPT FIB CAG]{A Forward Influence Blanket (FIB) for the PETPT model that depicts the overlap with the PETASCE model. Note that shared variables are shaded in blue and shared input variables are both shaded blue and bolded.}
+% \end{figure}
+%
+% \begin{figure}[!htbp]
+%     \label{petasce_fib}
+%     \centering
+%     \includegraphics[clip,width=0.8\columnwidth]{PETASCE_FIB_CAG_smaller}%
+%     \caption[PETASCE FIB CAG]{A Forward Influence Blanket (FIB) for the PETASCE model that depicts the overlap with the PETPT model. Note that while the PETPT model did not have any variable nodes in the cover set the PETASCE model has several variables in the cover set. These variables are shaded green.}
+% \end{figure}
+% \FloatBarrier
 
 \subsection{Input Set Execution on a FIB\label{sec:fib_exec}}
 In order to execute a FIB the user must provide values for the input variable nodes and values for the cover variable nodes. At execution time, both sets of variable nodes will be populated before beginning to compute the function nodes in the partial order of functions provided by the GrFN computation graph. This is the only difference between computing on a FIB computation graph and computing on a GrFN computation graph.

@@ -22,29 +22,44 @@ These advantages have been the driving force that has pushed the scientific comm
 % CTM original:
 % To get a better of sense of what these models are like we can examine the model below that is being used to study how the yield of a particular crop is affected by changes in the amount of rain and absorption of the soil over a range of days.
 
-\begin{figure}[ht]
-  \begin{center}
-    \begin{tabular}{cc}
-      \tikz{ % Simple Crop Yield model example
-        \tikzstyle{readable}=[rectangle, thick, rounded corners]
-        \node[latent, readable] (crop_yield) {$Yield$} ; %
-        \node[latent, readable, above=of crop_yield] (total_rain) {$Rain_{total}$} ; %
-        \node[latent, readable, above=of total_rain] (rain) {$Rain$} ; %
-        \node[obs, readable, above=of rain] (max_rain) {$Rain_{max}$} ; %
-        \node[obs, readable, left=of max_rain] (absorption) {$Absorption$} ; %
-        \node[obs, readable, right=of max_rain] (consistency) {$Consistency$} ; %
-        \node[obs, readable, right=of rain] (day) {$Day$} ; %
-        \edge {day, consistency, absorption, max_rain} {rain} ; %
-        \edge {rain} {total_rain} ; %
-        \path [->] (total_rain) edge  [loop right] (total_rain);
-        \edge {total_rain} {crop_yield} ; %
-
-        \plate {loop} {(rain)(day)(total_rain)} {$Day$} ;
-      }
-    \end{tabular}
-  \end{center}
-  \caption[Crop yield model]{A model depicting the affects of rain on the yield of a crop over a span of days given observed values for absorption and consistency constants.}
+\begin{figure}[!htbp]
   \label{fig:simple_crop_CAG}
+  \centering
+  \tikz{ % Simple Crop Yield model example
+    \tikzstyle{readable}=[rectangle, thick, rounded corners]
+    \node[latent, readable] (crop_yield) {$Yield$} ; %
+    \node[latent, readable, above=of crop_yield] (total_rain) {$Rain_{total}$} ; %
+    \node[latent, readable, above=of total_rain] (rain) {$Rain$} ; %
+    \node[obs, readable, above=of rain] (max_rain) {$Rain_{max}$} ; %
+    \node[obs, readable, left=of max_rain] (absorption) {$Absorption$} ; %
+    \node[obs, readable, right=of max_rain] (consistency) {$Consistency$} ; %
+    \node[obs, readable, right=of rain] (day) {$Day$} ; %
+    \edge {day, consistency, absorption, max_rain} {rain} ; %
+    \edge {rain} {total_rain} ; %
+    \path [->] (total_rain) edge  [loop right] (total_rain);
+    \edge {total_rain} {crop_yield} ; %
+
+    \plate {loop} {(rain)(day)(total_rain)} {$Day$} ;
+  }
+  \tikz{ % Different Crop Yield model example
+    \tikzstyle{readable}=[rectangle, thick, rounded corners]
+    \node[latent, readable] (crop_yield) {$Yield$} ; %
+    \node[latent, readable, above=of crop_yield] (total_rain) {$Rain_{total}$} ; %
+    \node[latent, readable, above=of total_rain] (rain) {$Rain$} ; %
+    \node[obs, readable, above=of rain] (max_rain) {$Rain_{max}$} ; %
+    \node[obs, readable, right=of max_rain] (absorption) {$Absorption$} ; %
+    \node[obs, readable, left=of rain] (consistency) {$Consistency$} ; %
+    \node[obs, readable, left=of total_rain] (sunlight) {$Sunlight$} ; %
+    \node[obs, readable, right=of rain] (day) {$Day$} ; %
+    \edge {day, absorption, max_rain} {rain} ; %
+    \edge {rain, consistency} {total_rain} ; %
+    \path [->] (total_rain) edge  [loop right] (total_rain);
+    \edge {total_rain, sunlight} {crop_yield} ; %
+
+    \plate {loop} {(rain)(day)(total_rain)} {$Day$} ;
+  }
+  \caption[Competing models of crop yield]{Two competing scientific models depicting the affects of rain on the yield of a crop over a span of days given some other inputs. We see that the two models share many of their inputs but that some inputs may not be shared and the wiring of the inputs to the output variable can differ between the models.}
+
 \end{figure}
 
 In this model we see a set of input values, shaded to \ctm{indicate} % show
