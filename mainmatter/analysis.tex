@@ -1,7 +1,8 @@
 \chapter{MODEL ANALYSIS AND SELECTION\label{chapter:analysis}}
-
-The greatest benefit researchers receive from modeling is being able to reason about the uncertainty involved in observing a phenomena of choice. From the modeling perspective, explicit statements about the uncertainty of a phenomena can be made by adding inputs to the model of the phenomena that represent a source of variance upon the phenomena.
-
+The greatest benefit researchers receive from modeling is being able to reason about the uncertainty involved in observing a phenomena of choice.
+From the modeling perspective, explicit statements about the uncertainty of a phenomena can be made by adding inputs to the model of the phenomena that represent a source of variance upon the phenomena.
+In this section I will introduce the usage of sensitivity analysis methods for analyzing competing scientific models.
+Once introduced I will show how the outputs from sensitivity analysis can be used to inform other methods of model analysis, both automatic methods and ones that engage the user directly.
 
 \section{Global Sensitivity Analysis\label{sec:sens_analysis}}
 A powerful tool used by modelers to quantify the uncertainty present in models is global sensitivity analysis. Broadly speaking, global sensitivity analysis is the study of how variance in the inputs of a model affect the variance, or uncertainty in the output of the model. Since the goal of the SMS pipeline is to provide modelers with a tool select a model that lowers the amount of uncertainty in estimation of a given phenomena we have chosen to use sensitivity analysis in order to evaluate the extracted models.
@@ -9,14 +10,14 @@ A powerful tool used by modelers to quantify the uncertainty present in models i
 For this thesis we employ variance-based methods of sensitivity analysis.
 % TODO: give a good definition of variational methods of sensitivity analysis
 Variance-based methods of sensitivity analysis focus on the computation of sensitivity indices. Sensitivity indices are numerical values assigned to each model input, or set of inputs, that denote how sensitive the output of the model is to that input, or set of inputs. The first order sensitivity index, commonly denoted by $S1$, notates the sensitivity of the model output from each individual input. Similarly the second order sensitivity index, commonly denoted $S2$, notates the sensitivity of the model output from each pair of model inputs. This pattern continues for any given model for all higher order sensitivity indices.
-
 The final sensitivity index is the total sensitivity index, commonly denoted as $ST$. This index has an entry that corresponds to each model input. Each entry tracks the total amount of sensitivity on the model output contributed by the input as a portion of the first, second, and all higher order sensitivity indices.
 
-While other methods of sensitivity analysis exist, such as Variogram Analysis of Response Surfaces (VARS), the variance-based methods fit well within the scope of our problem domain as we are conducting sensitivity analysis over probabilisitic models. While the VARS method does claim a significant faster computation time, it does not reveal as information about the affects of model inputs upon the model output. This is due to the lack of pairwise-information that the variance-based methods are able to capture.
+While other methods of sensitivity analysis exist, such as Variogram Analysis of Response Surfaces (VARS), the variance-based methods fit well within the scope of our problem domain as we are conducting sensitivity analysis over probabilisitic models.
+While the VARS method does claim a significant faster computation time, it does not reveal as much information about the affects of model inputs upon the model output.
+This is due to the lack of pairwise-information that the variance-based methods are able to capture.
+In the following subsections I will discuss a variant of Sobol analysis \cite{sobol2001globalSA} that will be used to perform variance-based sensitivity analysis upon the extract scientific models and I will address how it has been adapted for use by the SMS pipeline.
 
-In the following subsections I will discuss three different variance-based methods of sensitivity analysis employed by the SMS pipeline.
-
-\subsection{Sobol's Method for Index Calculation\label{sec:sobol_analysis}}
+\subsection{Sampling Inputs with the Sobol Sequence\label{sec:sobol_seq}}
 Sobol analysis is the most widely used version of variance-based sensitivity analysis. The Sobol analysis method gets its name from the sampling method used during analysis. Samples for Sobol analysis are drawn from the Sobol sequence. Defining the precise nature of the Sobol sequence is beyond the scope of this masters thesis; however, we can observe how the Sobol sequence aids sensitivity analysis by observing the differences between draws from the Sobol sequence and draws from a random sample. A visualization of the difference is shown below in figure \ref{sobol_seq_vis}.
 
 \FloatBarrier
@@ -29,9 +30,10 @@ Sobol analysis is the most widely used version of variance-based sensitivity ana
 \end{figure}
 \FloatBarrier
 
-Notice that the red, blue, and green draws from the Sobol sequence are much more evenly dispersed across the sample space than the same draws from a uniform random sample. This allows the Sobol sampling method to achieve much better coverage of the search space, while still maintaining some variability in sample locations. The SMS pipeline employs a variant of the Sobol sequence introduced by Saltelli et al. that is designed to minimize the error when utilizing the samples to calculate the sensitivity indices of a function.
+Notice that the red, blue, and green draws from the Sobol sequence are much more evenly dispersed across the sample space than the same draws from a uniform random sample. This allows the Sobol sampling method to achieve much better coverage of the search space, while still maintaining some variability in sample locations. The SMS pipeline employs a variant of the Sobol sequence introduced by Saltelli et al. \cite{saltelli2002ImprovedSobolSeq} that is designed to minimize the error when utilizing the samples to calculate the sensitivity indices of a function.
 
-% TODO: maybe a little revising here
+\subsection{Sensitivity Index Computation\label{si_comp}}
+% TODO: Add more material here to introduce the section
 The sample matrices that must be computed for analysis are defined in algorithm \ref{sobol_sample_alg}. We can see that this sampling algorithm draws $N$ samples of $d$ dimension from the Sobol sequence and then creates $N(d+2)$ samples total to be evaluated by the model. The matrices returned from the sampling step can then be evaluated using the model computation graph. These evaluations will be represented as $f(A) \text{, } f(B) \text{, } f(\textbf{A}_{B}) \text{, and } f(\textbf{B}_{A})$. Once the evaluation step is completed, the evaluations will be analyzed according to the Sobol analyzer. The Sobol analyzer computes three different sensitivity indices using approximation equations.
 
 \begin{algorithm}
@@ -76,11 +78,13 @@ The total sensitivity indices, $S^T$, can also be calculated from the sampled ma
   \end{split}
 \end{equation}
 
-\subsection{FAST S1 Index Calculation\label{sec:fast_analysis}}
-Some text.
+\subsection{Obtaining Sensitivity Indices with SALib\label{si_analysis}}
+The SMS pipeline employs the \texttt{SALib} \cite{salib2017} Sobol Analysis method to perform sensitivity analysis and calculate all of the sensitivity indices discussed above.
+In order for this method to be used by the SMS pipeline, inference must be carried out to determine the bounds for each of the input variables, and the number of samples required to get accurate sensitivity indices.
+Bound information is discovered by the text reading team on the AutoMATES project and provided to the SMS pipeline in the form of variable grounding.
+Determining the number of samples necessary to receive information sensitivity indices can be done using simple heuristics based upon model complexity and the number of inputs to the model.
+While the number of inputs is a useful heuristic for determining model complexity, the best heuristic is a combination of the average model depth from each input along with information about the average branching factor for the model.
 
-\subsection{RBD-FAST S1 Index Calculation\label{sec:rbd_fast_analysis}}
-The purpose of utilizing the RBD-FAST method of sensitivity analysis is to further lower the runtime of analysis as compared to the standard FAST method. It has been claimed that RBD-FAST can lower the runtime of sensitivity analysis for models with a large number of input parameters.
 
 \section{Model Output Surface\label{sec:out_surf}}
 A Model Output Surface (MOS) plot is a 3D plot where the z-axis is the output variable of a model and the remaining axes are input variables. A MOS plot consists of the plotted outputs over a predefined range for each of the two inputs which creates a smooth surface object in three dimensions. Evaluation to create this surface is done using a mesh grid of finite points. extrapolation between point evaluations can then be conducted to create the smooth surface visualization. As expected, a higher number of input samples over the same input space range will lead to a smoother surface that is a more accurate representation of the true output surface for the input pair. In this section I will cover the process of selecting which input variables to study with MOS plots, how to set values for the additional inputs not under study, and how to efficiently perform the evaluations necessary to generate a MOS plot.
