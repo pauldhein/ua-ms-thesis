@@ -141,7 +141,21 @@ There are many options present for assigning values to each of the input paramet
 The task of input parameter estimation is now the task of finding the best-fit set of input parameters for a MOS plot. For each parameter we know that we have a range of values that were used for the parameter during analysis. From this information we can define that the best-fit for an input parameter is the Maximum Likelihood Estimate (MLE) over the range. The MLE is a useful estimate for each input parameter since the ranges are included for each parameter. However, if observational data were present, then it would be possible to use the Maximum A Priori (MAP) estimate as the setting for our input parameters.
 
 \subsection{Surface Generation and Evaluation\label{sec:surf_usage}}
-% Some text.
+Once the decisions for the input variables to study and the preset parameter values to use have been made a MOS plot is easy to generate.
+Generation requires model evaluation over large numbers of sets of inputs.
+Since the plot itself takes the form of a meshgrid the amount of required evaluations will scale as expected for a meshgrid structure.
+This means that if we want to study $1,000$ examples of each of the two variables under study we will need $1,000,000$ total evaluations.
+Luckily this computation can be done efficiently using PyTorch tensor computation.
+Once the evaluations are completed a MOS plot can be easily rendered and will appear interactively for the modelers. Below is an example of a MOS plot that would be presented for a modeler interested in working with the PETPT evapo-transpiration model.
+
+\FloatBarrier
+\begin{figure}[!htbp]
+    \label{mos_plot_ex}
+    \centering
+    \includegraphics[width=.8\columnwidth]{sensitivity_surface}%
+    \caption[PETPT Example MOS Plot]{An example of a MOS plot for the PETPT evapo-transpiration model. In this plot the two variables under study are solar radiation and the maximum temperature. Notice that these two variables covary and their variance greatly affects the shape of the model output surface.}
+\end{figure}
+\FloatBarrier
 
 \section{Model Report Generation\label{sec:report_gen}}
 Utilizing the information provided by the sensitivity indices of a model allows the SMS pipeline to gain insight about how the uncertainty in the output of the model is caused by the various inputs of the model.
@@ -158,13 +172,13 @@ A modeler will likely want to select a model whose output is less sensitive to e
 Only the modeler is aware of the measurement error associated with the devices used to measure each of their inputs; however, the information recovered in the sensitivity indices can be combined with the measurement error of each input to give the modeler a clear view of which model will perform best for them based upon minimizing the impact of measurement error.
 Therefore, providing the sensitivity index information in an interpretable table as part of the model report is crucial for modelers.
 
-\subsection{Diagnosing Multi-variable Model Variability\label{sec:multi_var_variability}}
+\subsection{Cross-model Output Surface Examination \label{sec:multi_mod_surface}}
 The sensitivity indices give a clear picture of which inputs or sets of inputs contribute the greatest amount of uncertainty to the model output.
 Comparing sensitivity indices across the shared inputs of multiple models allows us to see where different models have the greatest amount of uncertainty.
 However, this is still a summary statistic of the variance in model output caused by variance in the inputs.
 While summary statistics are sufficient for some use cases, many modelers will likely want to base their model selection decision on the differences in shape of the model output for key variables that are shared between competing models.
 
-This information can be provided to the modelers by the SMS pipeline in the form of MOS plots, one per model, for given pairs of shared input variables that are of interest to the modelers.
-
-\subsection{Cross-model Output Surface Examination \label{sec:multi_mod_surface}}
-Some text.
+This information can be provided to the modelers by the SMS pipeline in the form of comparative MOS plots, one per model, for given pairs of shared input variables that are of interest to the modelers.
+These comparative MOS plots allow modelers to diagnose the functional differences in how two models differ based upon each individual models input variables of highest sensitivity, or based upon a shared set of input variables that have the highest combined sensitivity between the two models.
+Modelers would be able to observe these surfaces without the aid of the SMS pipeline; however, without the information extracted from sensitivity analysis during the SMS pipeline modelers would need to generate MOS plots for every possibly set of input pairs.
+The SMS pipeline removes this burden upon modelers by discovering which pairs of inputs are the most crucial to focus upon and automatically presenting those to modelers so that they can make expedient decisions amongst competing scientific models.
