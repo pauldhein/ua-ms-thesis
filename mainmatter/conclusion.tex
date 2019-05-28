@@ -2,8 +2,7 @@
 
 \section{Conclusions\label{sec:conclusions}}
 
-\ctm{The Third Industrial Revolution (the information, computer or digital revolution) in the latter half of the 20th century has had a profound impact on how science is conducted. Large-scale scientific progress today relies marshaling computational 
- large-scale science has become increasingly dependent on computational models}
+\ctm{The Third Industrial Revolution (the information, computer or digital revolution) in the latter half of the 20th century has had a profound impact on how science is conducted. Large-scale scientific progress today relies marshaling computational large-scale science has become increasingly dependent on computational models}
 
 % CTM Original:
 %The problem of scientific model selection has become increasingly more important to scientists in recent years, and at the same time has increased in difficulty.
@@ -11,7 +10,7 @@
 %Restricting the search space of possible models to only those defined in source code still leaves researchers with many time consuming, tedious tasks in order to select which model best fits their needs.
 %These tasks include translating the models to a single source code language and common variable schema, validating the models with associated texts, analyzing the models with the correct statistical tools, and finally developing a criterion that determines which model is best for a given experiment.
 
-The SMS pipeline, as a component of the AutoMATES project, introduces a framework that automates a portion of the 
+The SMS pipeline, as a component of the AutoMATES project, introduces a framework that automates a portion of the
 % tasks described above.
 The work described in this thesis has est
 
@@ -20,16 +19,17 @@ The framework has been constructed in a manner that allows researchers to easily
 Additionally this framework is open to extension that will allow more of the tasks outlined above to be automated in future iterations.
 
 \section{Future Work\label{sec:future_work}}
-As discussed above, \ctm{the} AutoMATES project has created an excellent framework for the extraction and comparison of scientific models found in source code. While many methods for analysis already exist in the AutoMATES system, as well as information necessary to facilitate automated model selection, there are \ctm{a number} % still plenty 
+As discussed above, \ctm{the} AutoMATES project has created an excellent framework for the extraction and comparison of scientific models found in source code. While many methods for analysis already exist in the AutoMATES system, as well as information necessary to facilitate automated model selection, there are \ctm{a number} % still plenty
 of directions for future work. Many of the opportunities for extending the AutoMATES system build upon one another, and all are focused on expanding the scope of modeler questions that AutoMATES is able to handle without additional input from the modeler. Below I catalog some of the immediately visible extensions to the AutoMATES program improve the power of the AutoMATES model selection capabilities.
 
-\subsection{Alternative Sampling Methods for Analysis\label{sec:alt_sampling}}
-% TODO: Fill in here if I have time.
-Some text.
-
-\subsection{Variable Domain and Range Detection\label{sec:var_domain_range}}
-% TODO: Consider moving this section to future work if we run out of time to implement a solution to this problem
-Some text.
+% TODO: Add these back in if I have time and Clay approves
+% \subsection{Alternative Sampling Methods for Analysis\label{sec:alt_sampling}}
+% % TODO: Fill in here if I have time.
+% Some text.
+%
+% \subsection{Variable Domain and Range Detection\label{sec:var_domain_range}}
+% % TODO: Consider moving this section to future work if we run out of time to implement a solution to this problem
+% Some text.
 
 \subsection{Model Selection via Uncertainty Analysis \label{auto_uncert_analysis}}
 The current analysis methods employed by AutoMATES allow for automated model selection based upon behavior of model inputs or sets of model inputs. While these methods are likely desired by modelers, they only allow for indirect model comparisons. A method for direct comparison such as error propagation that includes an estimate of metrics such as variance in model output allows for stronger comparison statements that will likely be more acceptable metrics for automated model selection.
