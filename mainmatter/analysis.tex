@@ -15,7 +15,7 @@ The final sensitivity index is the total sensitivity index, commonly denoted as 
 While other methods of sensitivity analysis exist, such as Variogram Analysis of Response Surfaces (VARS), the variance-based methods fit well within the scope of our problem domain as we are conducting sensitivity analysis over probabilisitic models.
 While the VARS method does claim a significant faster computation time, it does not reveal as much information about the affects of model inputs upon the model output.
 This is due to the lack of pairwise-information that the variance-based methods are able to capture.
-In the following subsections I will discuss a variant of Sobol analysis \cite{sobol2001globalSA} that will be used to perform variance-based sensitivity analysis upon the extract scientific models and I will address how it has been adapted for use by the SMS pipeline.
+In the following subsections I will discuss Sobol analysis, developed by \citet{sobol2001globalSA}, that will be used to perform variance-based sensitivity analysis upon the extract scientific models and I will address how it has been adapted for use by the SMS pipeline.
 
 \subsection{Sampling Inputs with the Sobol Sequence\label{sec:sobol_seq}}
 Sobol analysis is the most widely used version of variance-based sensitivity analysis. The Sobol analysis method gets its name from the sampling method used during analysis. Samples for Sobol analysis are drawn from the Sobol sequence. Defining the precise nature of the Sobol sequence is beyond the scope of this masters thesis; however, we can observe how the Sobol sequence aids sensitivity analysis by observing the differences between draws from the Sobol sequence and draws from a random sample. A visualization of the difference is shown below in figure \ref{sobol_seq_vis}.
@@ -30,11 +30,11 @@ Sobol analysis is the most widely used version of variance-based sensitivity ana
 \end{figure}
 \FloatBarrier
 
-Notice that the red, blue, and green draws from the Sobol sequence are much more evenly dispersed across the sample space than the same draws from a uniform random sample. This allows the Sobol sampling method to achieve much better coverage of the search space, while still maintaining some variability in sample locations. The SMS pipeline employs a variant of the Sobol sequence introduced by Saltelli et al. \cite{saltelli2002ImprovedSobolSeq} that is designed to minimize the error when utilizing the samples to calculate the sensitivity indices of a function.
+Notice that the red, blue, and green draws from the Sobol sequence are much more evenly dispersed across the sample space than the same draws from a uniform random sample. This allows the Sobol sampling method to achieve much better coverage of the search space, while still maintaining some variability in sample locations. The SMS pipeline employs a variant of the Sobol sequence, introduced by \citet{saltelli2002ImprovedSobolSeq}, which is designed to minimize the error when utilizing the samples to calculate the sensitivity indices of a function.
 
 \subsection{Sensitivity Index Computation\label{sec:si_comp}}
 % TODO: Add more material here to introduce the section
-The sample matrices that must be computed for analysis are defined in algorithm \ref{sobol_sample_alg}. We can see that this sampling algorithm draws $N$ samples of $d$ dimension from the Sobol sequence and then creates $N(d+2)$ samples total to be evaluated by the model. The matrices returned from the sampling step can then be evaluated using the model computation graph. These evaluations will be represented as $f(A) \text{, } f(B) \text{, } f(\textbf{A}_{B}) \text{, and } f(\textbf{B}_{A})$. Once the evaluation step is completed, the evaluations will be analyzed according to the Sobol analyzer. The Sobol analyzer computes three different sensitivity indices using approximation equations \cite{saltelli2010varianceSA}.
+The sample matrices that must be computed for analysis are defined in algorithm \ref{sobol_sample_alg}. We can see that this sampling algorithm draws $N$ samples of $d$ dimension from the Sobol sequence and then creates $N(d+2)$ samples total to be evaluated by the model. The matrices returned from the sampling step can then be evaluated using the model computation graph. These evaluations will be represented as $f(A) \text{, } f(B) \text{, } f(\textbf{A}_{B}) \text{, and } f(\textbf{B}_{A})$. Once the evaluation step is completed, the evaluations will be analyzed according to the Sobol analyzer. The Sobol analyzer computes three different sensitivity indices using approximation equations for \citet{saltelli2010varianceSA} improved method of Sobol analysis.
 
 \begin{algorithm}
   \caption{Sobol Sampling Algorithm}
@@ -79,7 +79,7 @@ The total sensitivity indices, $S^T$, can also be calculated from the sampled ma
 \end{equation}
 
 \subsection{Obtaining Sensitivity Indices with SALib\label{sec:si_analysis}}
-The SMS pipeline employs the \texttt{SALib} \cite{salib2017} Sobol analysis method to perform sensitivity analysis and calculate all of the sensitivity indices discussed above.
+The SMS pipeline employs the \texttt{SALib} Python Library introduced by \citet{salib2017} to perform Sobol analysis method to perform sensitivity analysis and calculate all of the sensitivity indices discussed above.
 In order for this method to be used by the SMS pipeline, inference must be carried out to determine the bounds for each of the input variables, and the number of samples required to get accurate sensitivity indices.
 Bound information is discovered by the text reading team on the AutoMATES project and provided to the SMS pipeline in the form of variable grounding.
 Determining the number of samples necessary to receive information sensitivity indices can be done empirically.
@@ -95,7 +95,7 @@ The figure below shows what the calculated sensitivity indices from a call to th
 \FloatBarrier
 
 In the figure we see that the $S_1$, $S_2$, and $S_T$ sensitivity indices are all computed and returned by this method of Sobol analysis as well as the $95\%$ confidence interval bounds for each value of each index.
-We know that the ordered sensitivity indices computed using this method will sum to $1$ if all of the higher order indices are present. \cite{sobol2001globalSA}
+We know that the ordered sensitivity indices computed using this method will sum to $1$ if all of the higher order indices are present \citep{sobol2001globalSA}.
 We also know that the larger the value for any sensitivity index, the more of an affect the uncertainty in the corresponding input or set of inputs has on the uncertainty in model output.
 Therefore we can use this information to inform our decisions about the model based on the uncertainty caused from model inputs.
 For example, we can see that for the PETPT model, over $95\%$ of the uncertainty in the output of the model is caused by single or double variable interactions.
@@ -131,7 +131,7 @@ Most models will have more than two input variables and thus when creating a MOS
 
 In order to accomplish this task we need a way to rank the pairs of inputs in order of how greatly they affect model output. Fortunately we can attain this ranking directly from the second order sensitivity index, $S_2$. Utilizing the $S_2$ index as our ranking schema we can either create MOS plots for the top $k$ variable pairs, or we can use a threshold cutoff and create MOS plots for all pairs on input variables that exceed this cutoff. An appropriate cutoff could be a pre-defined value, or it could be based upon a difference between neighboring values of the sorted $S_2$ indices. An example of such a cutoff would be to generate MOS plots for all input pairs, until seeing a drop in $S_2$ index score of at least an order of magnitude.
 
-It is important to note that utilizing the $S_2$ index is not the only way to select which input pairs to generate a MOS plot for, and is likely not the only metric of interest to modelers. If we have additional information, such as which inputs can be most or least accurately measured by the modelers then we may want to generate MOS plots for the modelers based upon this criterion so they can observe how output varies for input variables that they can measure well, vs those that they can measure poorly. This will become even more important for the task of model selection when competing models have differing sets of inputs, some of which may be easier or harder to measure than others.
+It is important to note that utilizing the $S_2$ index is not the only way to select which input pairs to generate a MOS plot for, and is likely not the only metric of interest to modelers. If we have additional information, such as which inputs can be most or least accurately measured by the modelers then we may want to generate MOS plots for the modelers based upon this criterion so they can observe how output varies for input variables that they can measure well, vs those that they can measure poorly. This will becomes more important for model selection when competing models have differing sets of inputs, some of which may be easier or harder to measure than others.
 
 \subsection{Input parameter estimation\label{sec:inp_param_est}}
 Once the input variables for a given MOS plot are selected, the remaining inputs must have values assigned to them to allow for the model to be evaluated for MOS plot generation. To avoid confusion, I will refer to this set of input variables that will no longer be varied as the input parameters for the model.
@@ -168,7 +168,7 @@ In this section I define the information contained in a model report that aims t
 \subsection{Minimizing Measurement Error\label{sec:min_measure_error}}
 When a modeler uses a model in an experiment they will need some method of collecting data for the inputs.
 In almost all cases this immediately requires a modelers to address the question of: "how confident are you in your ability to measure input phenomena $x$?"
-A modeler will likely want to select a model whose output is less sensitive to errors in measurements upon the inputs that they are least able to measure accurately.
+A modeler will likely want to select a model whose output is least sensitive to errors in measurements from the inputs that they are least able to measure accurately.
 Only the modeler is aware of the measurement error associated with the devices used to measure each of their inputs; however, the information recovered in the sensitivity indices can be combined with the measurement error of each input to give the modeler a clear view of which model will perform best for them based upon minimizing the impact of measurement error.
 Therefore, providing the sensitivity index information in an interpretable table as part of the model report is crucial for modelers.
 

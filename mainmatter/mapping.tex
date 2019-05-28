@@ -1,7 +1,7 @@
 \chapter{MODEL EXTRACTION FROM SOURCE CODE\label{chapter:extraction}}
 In order to perform analysis on scientific models found in software we must first build a system that is able to detect source code that corresponds to scientific models, extract that necessary associated source code, and then represent the model in a form that allows analysis to take place.
 The technique developed must be generalizable to allow model extraction from source code of the various programming languages that are used to define scientific models.
-While large variations in syntax exist among the various programming languages used to encode scientific models, they can all be abstracted to a unifying abstract syntax tree (AST) representation. \cite{aho1986dragonBook}
+While large variations in syntax exist among the various programming languages used to encode scientific models, they can all be abstracted to a unifying abstract syntax tree (AST) representation \citep{aho1986dragonBook}.
 Constructing an AST representation of a program requires a large number of design decisions that are largely dependent on the intended use-case of the information contained in the AST.
 For the purposes of model selection we are keenly interested in identifying all potential models contained in the AST, as well as being able to easily inspect data-flow through the AST.
 
@@ -21,7 +21,7 @@ From these two files the SMS pipeline will construct a scientific model that wil
 
 This executable model is called a Grounded Function Network (GrFN).
 As the name suggests, this model will be a network.
-A network is a directed acyclic graph that contains a set of source nodes and a set of sink nodes. \cite{bondy1976graph}
+A network is a directed acyclic graph that contains a set of source nodes and a set of sink nodes \citep{bondy1976graph}.
 A node is considered a source node if the in-degree of the node, the number of directed edges arriving at the node, is zero.
 Similarly a node is considered a sink node if the out-degree of the node, the number of directed edges leaving the node, is zero.
 The name GrFN also implies that this network will be a network with functions.
@@ -140,7 +140,7 @@ The infrastructure to represent complex data types such as Arrays, user-defined 
 \section{GrFNs are Dynamic Bayes Nets\label{sec:grfn_as_dbn}}
 Once we have extracted a GrFN CG that represents a scientific model we will want to analyze the model and compare it to other existing models.
 Both of these tasks require us to be able to perform inference on the GrFN CG by observing the behavior of the model over a distribution of inputs.
-A well defined methodology for performing inference over DAGs is to establish the DAG as a bayesian network \cite{bishop2006pattern}, a type of probabilistic graphical model, and then to use the robust set of methods associated with bayes nets to solve inference problems.
+A well defined methodology for performing inference over DAGs is to establish the DAG as a bayesian network \citep{bishop2006pattern}, a type of probabilistic graphical model, and then to use the robust set of methods associated with bayes nets to solve inference problems.
 In this section I will now demonstrate how a GrFN CG is a bayesian network in order to unlock the use of inference on GrFN CGs.
 
 A GrFN CG has a set of input variables that are wired as a network to the outputs of the model represented by the GrFN CG.
@@ -169,7 +169,7 @@ Below are the CAG views for the two GrFN CGs under study in this thesis. Notice 
 
 When treating the input variables as random variables we can induce a distribution over the values that they can take.
 This distribution will then permeate through the function nodes to the other variable nodes in the GrFN CG.
-For the GrFN CG to be a Dynamic Bayes Net (DBN) we need the probability distribution of the output variable to be a product of all of the input probability distributions.\cite{pearl2009causality}
+For the GrFN CG to be a Dynamic Bayes Net (DBN) we need the probability distribution of the output variable to be a product of all of the input probability distributions \citep{pearl2009causality}.
 During the computation of any inner variable in a GrFN CG we have a lambda function that denotes how the the inputs to the computation are to be combined to form the output.
 All possible combinations are mathematical functions, that are able to be applied over the probability distribution of the inputs.
 Therefore the resulting computed inner variable has a distribution that is the combination of the distributions over the inputs.
@@ -197,13 +197,13 @@ To start the recursive call structure adds additional function setup and calls t
 The second obvious inefficiency with this execution is that the recursive operations must be done for each execution, and they require all function nodes to be executed sequentially.
 
 These two concerns can be addressed by creating a call stack comprised of all the function nodes contained in the GrFN CG.
-The order of computation between function nodes implies that the call stack is equivalent to a partially ordered set (poset) \cite{simovici2008miningTools} upon the function nodes.
+The order of computation between function nodes implies that the call stack is equivalent to a partially ordered set (poset) upon the function nodes \citep{simovici2008miningTools}.
 Once this poset is recovered, execution of the GrFN CG can occur by executing all functions at the first level in the poset, then moving to the next level in the poset, and then repeating the sequence until reaching the end of the call stack.
 This allows all function nodes at the same level in the poset to be executed concurrently, and the computation required to create this call stack only needs to occur once.
 
 Computing the call stack requires a series of separate computations.
-First a control flow graph (CFG) \cite{allen1970CFG} must be extracted from the GrFN CG.
-As defined above, the GrFN CG is bipartite with respect to the variable and function nodes, such that no variable node is adjacent to another variable node and vice-versa for a function node. \cite{bondy1976graph}
+First a control flow graph (CFG) \citep{allen1970CFG} must be extracted from the GrFN CG.
+As defined above, the GrFN CG is bipartite with respect to the variable and function nodes, such that no variable node is adjacent to another variable node and vice-versa for a function node \citep{bondy1976graph}.
 Therefore a GrFN CFG can be extracted from the GrFN CG by simply squashing any variable node between a pair of function nodes into a singular edge connecting the two function nodes.
 Since the GrFN CFG is derived from the GrFN CG it will have a set of input nodes.
 Starting from this set of input nodes an index is assigned to each node, beginning at zero.
@@ -240,7 +240,7 @@ For any two competing models of the same phenomena the comparison phase consists
   \item Perform analysis on the overlapping computation graphs and compare the results with the analysis results from the models whole computation graphs.
 \end{enumerate}
 
-In order to accomplish the tasks outlined above, I will introduce a new construct, known as a Forward Influence Blanket (FIB). A FIB is a specific instance of a Markov blanket \cite{pearl2009causality}, derived from a GrFN computation graph, that can be used for forward analysis.  % TODO: possibly define forward analysis and markov blanket
+In order to accomplish the tasks outlined above, I will introduce a new construct, known as a Forward Influence Blanket (FIB). A FIB is a specific instance of a Markov blanket \citep{pearl2009causality}, derived from a GrFN computation graph, that can be used for forward analysis.  % TODO: possibly define forward analysis and markov blanket
 After the completion of these tasks the information gained from the comparative study of these models can be added to the final model report, or used for automatic model selection. In this chapter I discuss model comparison in terms of two models compared directly with one another. At the end of the chapter I will elucidate on the necessary steps to generalize this form of binary model comparison to a set of $N$ models.
 
 \subsection{Identifying a Forward Influence Blanket\label{sec:fib_creation}}
@@ -252,13 +252,13 @@ By definition the models share the same output variable node.
 Therefore any shared structure will be within the range of a shared variable node, either an input variable or an inner variable node, and all the full computation path to the output node.
 A set of shared nodes between the two graphs can be discovered using node name matching on the grounded node names.
 This is done upon the CAG view of the GrFN CG so that variable nodes are only matched once and not once per update recorded in the overall CG.
-Using the set of shared nodes and the output node we can discover all computation paths that lead to the output node by doing an exhaustive path search from each shared node to the output node \cite{sedgewick2002algorithmsInC}.
+Using the set of shared nodes and the output node we can discover all computation paths that lead to the output node by doing an exhaustive path search from each shared node to the output node \citep{sedgewick2002algorithmsInC}.
 Combining the outputs from all of these paths together gives us the shared portions of each GrFN CG that serve as the basis for each models FIB.
 
 % TODO: The section discusses Cover Set Variables
 The key aspect of a FIB that distinguishes it from a GrFN computation graph is that the portions of the original computation graph that are not shared between the two models under comparison are pruned.
 In order to ensure that the resulting models are still executable, variable nodes representing new inputs to the FIB computation graph must be retained.
-We have identified this set of variables as the cover set.
+This set of variables has been identified as the cover set.
 Forming this cover set and adding it to the shared overlap portion of each GrFN CG as mentioned above is the last step necessary to fully create the FIB for each model.
 Identifying a variable as being a member of the cover set stems from the initial shared graph structure extracted from the original GrFN CGs.
 All nodes along the shared structure must be compared to the node structure in the original CG.
