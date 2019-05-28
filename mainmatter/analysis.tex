@@ -9,8 +9,8 @@ A powerful tool used by modelers to quantify the uncertainty present in models i
 
 For this thesis we employ variance-based methods of sensitivity analysis.
 % TODO: give a good definition of variational methods of sensitivity analysis
-Variance-based methods of sensitivity analysis focus on the computation of sensitivity indices. Sensitivity indices are numerical values assigned to each model input, or set of inputs, that denote how sensitive the output of the model is to that input, or set of inputs. The first order sensitivity index, commonly denoted by $S1$, notates the sensitivity of the model output from each individual input. Similarly the second order sensitivity index, commonly denoted $S2$, notates the sensitivity of the model output from each pair of model inputs. This pattern continues for any given model for all higher order sensitivity indices.
-The final sensitivity index is the total sensitivity index, commonly denoted as $ST$. This index has an entry that corresponds to each model input. Each entry tracks the total amount of sensitivity on the model output contributed by the input as a portion of the first, second, and all higher order sensitivity indices.
+Variance-based methods of sensitivity analysis focus on the computation of sensitivity indices. Sensitivity indices are numerical values assigned to each model input, or set of inputs, that denote how sensitive the output of the model is to that input, or set of inputs. The first order sensitivity index, commonly denoted by $S_1$, notates the sensitivity of the model output from each individual input. Similarly the second order sensitivity index, commonly denoted $S_2$, notates the sensitivity of the model output from each pair of model inputs. This pattern continues for any given model for all higher order sensitivity indices.
+The final sensitivity index is the total sensitivity index, commonly denoted as $S_T$. This index has an entry that corresponds to each model input. Each entry tracks the total amount of sensitivity on the model output contributed by the input as a portion of the first, second, and all higher order sensitivity indices.
 
 While other methods of sensitivity analysis exist, such as Variogram Analysis of Response Surfaces (VARS), the variance-based methods fit well within the scope of our problem domain as we are conducting sensitivity analysis over probabilisitic models.
 While the VARS method does claim a significant faster computation time, it does not reveal as much information about the affects of model inputs upon the model output.
@@ -32,9 +32,9 @@ Sobol analysis is the most widely used version of variance-based sensitivity ana
 
 Notice that the red, blue, and green draws from the Sobol sequence are much more evenly dispersed across the sample space than the same draws from a uniform random sample. This allows the Sobol sampling method to achieve much better coverage of the search space, while still maintaining some variability in sample locations. The SMS pipeline employs a variant of the Sobol sequence introduced by Saltelli et al. \cite{saltelli2002ImprovedSobolSeq} that is designed to minimize the error when utilizing the samples to calculate the sensitivity indices of a function.
 
-\subsection{Sensitivity Index Computation\label{si_comp}}
+\subsection{Sensitivity Index Computation\label{sec:si_comp}}
 % TODO: Add more material here to introduce the section
-The sample matrices that must be computed for analysis are defined in algorithm \ref{sobol_sample_alg}. We can see that this sampling algorithm draws $N$ samples of $d$ dimension from the Sobol sequence and then creates $N(d+2)$ samples total to be evaluated by the model. The matrices returned from the sampling step can then be evaluated using the model computation graph. These evaluations will be represented as $f(A) \text{, } f(B) \text{, } f(\textbf{A}_{B}) \text{, and } f(\textbf{B}_{A})$. Once the evaluation step is completed, the evaluations will be analyzed according to the Sobol analyzer. The Sobol analyzer computes three different sensitivity indices using approximation equations.
+The sample matrices that must be computed for analysis are defined in algorithm \ref{sobol_sample_alg}. We can see that this sampling algorithm draws $N$ samples of $d$ dimension from the Sobol sequence and then creates $N(d+2)$ samples total to be evaluated by the model. The matrices returned from the sampling step can then be evaluated using the model computation graph. These evaluations will be represented as $f(A) \text{, } f(B) \text{, } f(\textbf{A}_{B}) \text{, and } f(\textbf{B}_{A})$. Once the evaluation step is completed, the evaluations will be analyzed according to the Sobol analyzer. The Sobol analyzer computes three different sensitivity indices using approximation equations \cite{saltelli2010varianceSA}.
 
 \begin{algorithm}
   \caption{Sobol Sampling Algorithm}
@@ -78,23 +78,60 @@ The total sensitivity indices, $S^T$, can also be calculated from the sampled ma
   \end{split}
 \end{equation}
 
-\subsection{Obtaining Sensitivity Indices with SALib\label{si_analysis}}
-The SMS pipeline employs the \texttt{SALib} \cite{salib2017} Sobol Analysis method to perform sensitivity analysis and calculate all of the sensitivity indices discussed above.
+\subsection{Obtaining Sensitivity Indices with SALib\label{sec:si_analysis}}
+The SMS pipeline employs the \texttt{SALib} \cite{salib2017} Sobol analysis method to perform sensitivity analysis and calculate all of the sensitivity indices discussed above.
 In order for this method to be used by the SMS pipeline, inference must be carried out to determine the bounds for each of the input variables, and the number of samples required to get accurate sensitivity indices.
 Bound information is discovered by the text reading team on the AutoMATES project and provided to the SMS pipeline in the form of variable grounding.
-Determining the number of samples necessary to receive information sensitivity indices can be done using simple heuristics based upon model complexity and the number of inputs to the model.
-While the number of inputs is a useful heuristic for determining model complexity, the best heuristic is a combination of the average model depth from each input along with information about the average branching factor for the model.
+Determining the number of samples necessary to receive information sensitivity indices can be done empirically.
+The figure below shows what the calculated sensitivity indices from a call to the Sobol analysis method in SALib.
 
+\FloatBarrier
+\begin{figure}[!htbp]
+    \label{sens_idxs}
+    \centering
+    \includegraphics[width=.8\columnwidth]{sensitivity_indices}%
+    \caption[PETPT Sensitivity Indices]{An example of all of the sensitivity indices returned by SALib for the PETPT evapo-transpiration model. This set of indices was created from a sample set of $50,000$ input samples for the PETPT model.}
+\end{figure}
+\FloatBarrier
+
+In the figure we see that the $S_1$, $S_2$, and $S_T$ sensitivity indices are all computed and returned by this method of Sobol analysis as well as the $95\%$ confidence interval bounds for each value of each index.
+We know that the ordered sensitivity indices computed using this method will sum to $1$ if all of the higher order indices are present. \cite{sobol2001globalSA}
+We also know that the larger the value for any sensitivity index, the more of an affect the uncertainty in the corresponding input or set of inputs has on the uncertainty in model output.
+Therefore we can use this information to inform our decisions about the model based on the uncertainty caused from model inputs.
+For example, we can see that for the PETPT model, over $95\%$ of the uncertainty in the output of the model is caused by single or double variable interactions.
+Not only is it very useful to have a scaled representation of causal uncertainty represent with each set of inputs, but the uniform scaling also allows for comparisons of scale across the inputs of multiple competing scientific models.
+
+The total order index $S_T$ is also useful for decision making amongst our scientific models.
+While this index does not sum to $1$ for the set of inputs, it is guaranteed to be greater than or equal to one, and allows us to see which input has the greatest compounded affect on output uncertainty.
+We can use this information across models as well.
+While we cannot compare scales across models without a normalizing factor, we can easily produce categorical comparisons across models of which inputs have the highest total order affects.
+
+In the following sections of this chapter several use cases of the sensitivity indices will be presented.
+However, the Sobol analysis method also returns useful information about the confidence in the estimate for each sensitivity index.
+This information can be used to empirically determine if enough samples were included for the analysis to be successful.
+A simple metric to use for this purpose is to have a cutoff for the largest confidence interval size.
+If a confidence interval is returned that is larger than that maximum size, then add more samples from the Sobol sequence and rerun the analysis phase.
+The SMS pipeline includes the usage of this technique to ensure that the sensitivity indices being used for analysis are sufficiently descriptive of the competing models.
 
 \section{Model Output Surface\label{sec:out_surf}}
-A Model Output Surface (MOS) plot is a 3D plot where the z-axis is the output variable of a model and the remaining axes are input variables. A MOS plot consists of the plotted outputs over a predefined range for each of the two inputs which creates a smooth surface object in three dimensions. Evaluation to create this surface is done using a mesh grid of finite points. extrapolation between point evaluations can then be conducted to create the smooth surface visualization. As expected, a higher number of input samples over the same input space range will lead to a smoother surface that is a more accurate representation of the true output surface for the input pair. In this section I will cover the process of selecting which input variables to study with MOS plots, how to set values for the additional inputs not under study, and how to efficiently perform the evaluations necessary to generate a MOS plot.
+Although the sensitivity indices for a given scientific model are able to provide information on what input variables cause the most uncertainty upon the model output they do not provide any information about how the model output varies as a set of input variables varies.
+However, this information is likely valuable to modelers as it will aid in their ability to distinguish between models based on the functional form of their outputs as a function of the most variable inputs.
+To accomplish this goal, I created a new method that creates a plot of the output variable as a function of the two most sensitive inputs based upon the results from sensitivity analysis.
+I refer to these new plots as a Model Output Surface (MOS) plot.
+
+A MOS plot is a 3D plot where the z-axis is the output variable of a model and the remaining axes are input variables.
+A MOS plot consists of the plotted outputs over a predefined range for each of the two inputs which creates a smooth surface object in three dimensions.
+Evaluation to create this surface is done using a mesh grid of finite points.
+Extrapolation between point evaluations can then be conducted to create the smooth surface visualization.
+As expected, a higher number of input samples over the same input space range will lead to a smoother surface that is a more accurate representation of the true output surface for the input pair.
+In this section I will cover the process of selecting which input variables to study with MOS plots, how to set values for the additional inputs not under study, and how to efficiently perform the evaluations necessary to generate a MOS plot.
 
 \subsection{Input Variable Selection\label{sec:inp_var_sel}}
 Most models will have more than two input variables and thus when creating a MOS plot a decision must be made about which two input variables should be varied during output surface creation. Generally speaking, for a model with $N$ input variables, a user could generate $\frac{N(N+1)}{2}$ plots to expose all possible pairs of variable interactions and examine how those interactions affect the output surface. For most sizes of $N$ this study is likely to not be computationally feasible, and modelers are unlikely to desire to view such a large number of output plots when performing model selection. A better use-case for MOS plots would be to showcase the pairs of variables that have the greatest combined affect on the model output.
 
-In order to accomplish this task we need a way to rank the pairs of inputs in order of how greatly they affect model output. Fortunately we can attain this ranking directly from the second order sensitivity index, $S2$. Utilizing the $S2$ index as our ranking schema we can either create MOS plots for the top $k$ variable pairs, or we can use a threshold cutoff and create MOS plots for all pairs on input variables that exceed this cutoff. An appropriate cutoff could be a pre-defined value, or it could be based upon a difference between neighboring values of the sorted $S2$ indices. An example of such a cutoff would be to generate MOS plots for all input pairs, until seeing a drop in $S2$ index score of at least an order of magnitude.
+In order to accomplish this task we need a way to rank the pairs of inputs in order of how greatly they affect model output. Fortunately we can attain this ranking directly from the second order sensitivity index, $S_2$. Utilizing the $S_2$ index as our ranking schema we can either create MOS plots for the top $k$ variable pairs, or we can use a threshold cutoff and create MOS plots for all pairs on input variables that exceed this cutoff. An appropriate cutoff could be a pre-defined value, or it could be based upon a difference between neighboring values of the sorted $S_2$ indices. An example of such a cutoff would be to generate MOS plots for all input pairs, until seeing a drop in $S_2$ index score of at least an order of magnitude.
 
-It is important to note that utilizing the $S2$ index is not the only way to select which input pairs to generate a MOS plot for, and is likely not the only metric of interest to modelers. If we have additional information, such as which inputs can be most or least accurately measured by the modelers then we may want to generate MOS plots for the modelers based upon this criterion so they can observe how output varies for input variables that they can measure well, vs those that they can measure poorly. This will become even more important for the task of model selection when competing models have differing sets of inputs, some of which may be easier or harder to measure than others.
+It is important to note that utilizing the $S_2$ index is not the only way to select which input pairs to generate a MOS plot for, and is likely not the only metric of interest to modelers. If we have additional information, such as which inputs can be most or least accurately measured by the modelers then we may want to generate MOS plots for the modelers based upon this criterion so they can observe how output varies for input variables that they can measure well, vs those that they can measure poorly. This will become even more important for the task of model selection when competing models have differing sets of inputs, some of which may be easier or harder to measure than others.
 
 \subsection{Input parameter estimation\label{sec:inp_param_est}}
 Once the input variables for a given MOS plot are selected, the remaining inputs must have values assigned to them to allow for the model to be evaluated for MOS plot generation. To avoid confusion, I will refer to this set of input variables that will no longer be varied as the input parameters for the model.
@@ -103,7 +140,7 @@ There are many options present for assigning values to each of the input paramet
 
 The task of input parameter estimation is now the task of finding the best-fit set of input parameters for a MOS plot. For each parameter we know that we have a range of values that were used for the parameter during analysis. From this information we can define that the best-fit for an input parameter is the Maximum Likelihood Estimate (MLE) over the range. The MLE is a useful estimate for each input parameter since the ranges are included for each parameter. However, if observational data were present, then it would be possible to use the Maximum A Priori (MAP) estimate as the setting for our input parameters.
 
-% \subsection{Surface Generation and Evaluation\label{sec:surf_usage}}
+\subsection{Surface Generation and Evaluation\label{sec:surf_usage}}
 % Some text.
 
 \section{Model Report Generation\label{sec:report_gen}}
@@ -129,5 +166,5 @@ While summary statistics are sufficient for some use cases, many modelers will l
 
 This information can be provided to the modelers by the SMS pipeline in the form of MOS plots, one per model, for given pairs of shared input variables that are of interest to the modelers.
 
-\subsection{Cross-model Sensitivity Surface Examination \label{sec:multi_mod_surface}}
+\subsection{Cross-model Output Surface Examination \label{sec:multi_mod_surface}}
 Some text.
