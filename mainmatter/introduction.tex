@@ -1,20 +1,12 @@
 \chapter{INTRODUCTION\label{chapter:introduction}}
-\ctm{Scientific models are increasingly expressed as executable software.
+Scientific models are increasingly expressed as executable software.
 This enables a host of opportunities, including the following:
 \begin{itemize}
 \item increased precision in predictions,
 \item the possibility of better control over reproducibility of results,
 \item better communication of model details through unambiguous code implementation, and
 \item the potential to aggregate individual models from different domains into larger multi-domain models.
-\end{itemize}}
-
-% CTM original:
-%When studying a given natural phenomena, many researchers turn to modeling as a method to formalize their reasoning about the phenomena. Scientific models are a way of studying how phenomena in the natural world affect one another. Using models to study phenomena also comes with many advantages for researchers, including:
-%\begin{itemize}
-%  \item Models allow researchers to clearly communicate the relations between variables observed to be associated with a phenomena.
-%  \item Models explicitly represent the uncertainty present when studying a phenomena, and allow the uncertainty to be combined with what is known about the phenomena
-%  \item Models are exportable, comparable, and updatable. One researcher can use the model of another, competing models of the same phenomena can be compared, and under-performing components of a model can be updated upon discovering new information about the phenomena under study.
-%\end{itemize}
+\end{itemize}
 
 These advantages have been the driving force that has pushed the scientific community towards computational models as a method of communicating scientific research.
 To provide a working example, consider the computational models presented in Figure~\ref{fig:simple_crop_CAG}, expressed as \emph{causal analysis graphs} (CAGs), where nodes represent variables and directed arcs represent a functional relationship between variables (this formalism will be described in more detail in Chapter~\ref{chapter:extraction}).
@@ -69,24 +61,9 @@ Modelers will be particularly interested in comparing models that at least share
 Performing comparisons between competing models requires the ability to identify how different models utilize information from their inputs.
 For models that are defined in source code, an easy way to identify these differences is by comparing and analyzing the models computation graphs.
 Since most competing models that exist in source code are likely written in different programming languages, any modeler who wants to compare and analyze the computation graphs of competing models will need to perform a translation task that will translate all of the competing models into a single representation language.
-This representation language needs to enhance the representation of models found in the source code by grounding the variables found in the source code models to the measured real-world phenomena that they represent.
+This representation language needs to enhance the representation of models found in the source code by associating the variables found in the source code models to the measured real-world phenomena that they represent.
 Accomplishing this would allow the shared variables between competing models defined in source code to be identified.
 After completing these tasks a modeler would then be able to undertake the task of performing comparison and analysis between the competing models.
-
-
-% \ctm{[PAUL: I recommend that you rework the next two paragraphs (which I've now commented-out) -- I think the message gets a little lost -- e.g., it's not clear from this single figure that there could be ``arbitrary wiring''. Here's what I suggest: Add a second figure to Fig 1.1 with the same output, perhaps with two inputs shared, but a third that is different than the third in the original model, and with different internal ``wiring''.
-% Here are the points I think you want to make:
-% (1) Say this up front: The end goal is to provide tools by which human modelers can more effectively do comparison/contrast between models, to help with selecting (and possibly adapting, although that's for future work) existing models appropriate for a modeling application. This is helping with model selection, but be careful to clarify that although this is related, it is not the same thing as \emph{model selection} in machine learning (which involves automating a search over models within a model family by systematically varying model parameters to better fit data).
-% (2) The two example variants (once you add the second example) demonstrate that although they compute the same output, there is a relationship between the models but they're not identical even though they compute the same output: (a) the inputs can be different (they could even not overlap at all); (b) the internal wiring between inputs and outputs can be different.
-% (3) These models might be implemented in different programming languages; hence, we need a method to extract the ``computational graph'' that relates how variables are related by functions in a programming-language-agnostic representation (i.e., GrFN).
-% (4) Be up front that, of course, we can only then compare two models in this pl-agnostic representation under the assumption that we know (or have strong evidence that) the variables that do match are referring to the same aspects of the modeled world (the same world domain); grounding itself is not part of your thesis work, but you are making use of the other parts of the AutoMATES system that perform variable grounding; you then use grounded variables in the central representation (GrFN) to do model analysis (comparison and sensitivity analysis).
-% ]}
-
-% CTM Original:
-%We can also see that there is an arbitrary amount of wiring that can occur to transform a set of model inputs into the model output. Along with this arbitrary wiring, it is also worth noting that, given an output phenomena to study, the set of chosen observable inputs is also arbitrary. From these two facts we arrive at one of the modern challenges associated with modeling, models have become ubiquitous. In many fields there are so many competing models for the same phenomena that modelers have entered an age marked by \textit{The Paradox of Choice}, where modelers must now spend a non-trivial amount of time deciding which model to use for their experiments. This task is formally known as the task of \textit{Model Selection}.
-
-% CTM Original:
-%Not only do modelers have to explore many competing models when deciding which to use to model a particular phenomena, this exploration is also expensive. In the information age, many of these models exist as source code with associated grounding documents. However, with the extreme prevalence of programming languages many competing models for the same phenomena are likely written in different programming languages. Asking modelers to learn a single new programming language is already a large drain on research time, but the prospect of needing to learn multiple new languages represents a barrier to entering the realm of model selection for most researchers. Given the enormous amount of items competing for the limited time of modelers the task of model selection is commonly side-lined. This entails that in many fields a single or small set of models are used and hardly ever challenged. Not only that but this means that many researchers who create competing models will see their research go unused by the members of the field that the new model was intended to benefit.
 
 \section{Problem Scope\label{sec:prob_scope}}
 This thesis describes a set of related data structures and algorithms that are part of a framework aimed at automating parts of the task of analyzing scientific models implemented in software. In particular, this thesis addresses the following four tasks underlying automated computational model analysis and selection:
@@ -119,19 +96,15 @@ DAKOTA has been an excellent resource for modelers because of the many evaluatio
 However DAKOTA has some disadvantages.
 The most notable disadvantage of the DAKOTA system is that modelers are still required to undergo the labor-intensive task of translating their models by hand into the pre-defined DAKOTA format.
 Not only does the labor and time present a barrier to entry for modelers wishing to use the DAKOTA system, but this system comes with an additional barrier for modelers who wish to use models from other researchers.
-While the modelers will likely be familiar with the structure of their own models, allowing for a simple translation task, they will likely require additional time and mental labor to become well-acquainted with model specifications \ctm{developed for the models in other software systems}
-in order to create a faithful translation of the groups model to the required DAKOTA format.
-% CTM Original: Not only is this an additional cost and barrier to entry for modelers, but it also
-\ctm{Adaptation or reimplementation of other code bases}
-introduces an unnecessary potential source of error. Another shortcoming of the DAKOTA system is that it does not provide any service to \ctm{\emph{compare}} models. Modelers may be interested in what variables overlap between competing models, and may wish to augment the existing models to allow for analysis upon the overlapped portions of two competing models.
-DAKOTA does not offer any \ctm{approach to help with this task.} % CTM Original: framework to handle this task.
-This means that while DAKOTA is a very useful tool for modelers to analyze existing models that they are well-acquainted enough to translate, it does not
-\ctm{provide help in performing larger scale model selection,}
-% solve the problem of automating the task the model selection,
-as modelers are still required to do large amounts of setup, reconstruction, and investigation of analysis methods in order to gather useful information from DAKOTA that they can then use to select a model.
+While the modelers will likely be familiar with the structure of their own models, allowing for a simple translation task, they will likely require additional time and mental labor to become well-acquainted with model specifications developed for the models in other software systems in order to create a faithful translation of the groups model to the required DAKOTA format.
+Adaptation or reimplementation of other code bases introduces an unnecessary potential source of error.
+Another shortcoming of the DAKOTA system is that it does not provide any service to \emph{compare} models.
+Modelers may be interested in what variables overlap between competing models, and may wish to augment the existing models to allow for analysis upon the overlapped portions of two competing models.
+DAKOTA does not offer any approach to help with this task.
+This means that while DAKOTA is a very useful tool for modelers to analyze existing models that they are well-acquainted enough to translate, it does not provide help in performing larger scale model selection, as modelers are still required to do large amounts of setup, reconstruction, and investigation of analysis methods in order to gather useful information from DAKOTA that they can then use to select a model.
 
-New methods have been created in recent years that are beginning to automate the process of \ctm{extracting} % CTM Original: extracted
-scientific models from free text. One such method is presented in the Eidos, INDRA, and Delphi \citep{EidosIndraDelphi} pipeline that seeks to extract models from textual documents, such as scientific publications and technical reports.
+New methods have been created in recent years that are beginning to automate the process of extracting scientific models from free text.
+One such method is presented in the Eidos, INDRA, and Delphi \citep{EidosIndraDelphi} pipeline that seeks to extract models from textual documents, such as scientific publications and technical reports.
 This software has seen great success at the task of model extraction and assembly.
 Indeed many models are presented in the scientific literature and sometimes only in the scientific literature without being present in the form of source code in a software repository.
 However modelers will undoubtedly benefit from the reliability guarantees of models that are extracted from source code.
@@ -141,14 +114,8 @@ Source code also requires full specification in order to be executable, so model
 A simple example of this phenomena would be the lack of data type information for numerical values. This information is commonly absent from the text descriptions of a model, but is vital in many cases when creating an executable version of the model.
 
 However, extracting models from source code does share at least one of the challenges associated with extracting models from free text:
-% CTM Original:. This challenge is the challenge of
-\ctm{associating or \emph{grounding}} the variables present in the source code to the \ctm{aspects of the domain being modeled}.
-natural phenomena they represent.
-% CTM Original: Thus t
-\ctm{The} approach presented in this thesis
-% CTM Original: can be viewed as an extension of
-\ctm{makes use of} the approach of the Eidos, INDRA, and Delphi system \ctm{to grounding textual mentions of concepts to domain taxonomies}.
-% CTM Original: . In fact the system presented here utilizes the work of the Eidos, INDRA, and Delphi system in order to tackle the aforementioned task of variable grounding.
+associating or \emph{grounding} the variables present in the source code to the aspects of the domain being modeled.
+The approach presented in this thesis makes use of the approach of the Eidos, INDRA, and Delphi system to ground textual mentions of concepts with domain taxonomies.
 
 \section{This Work\label{sec:this_work}}
 In this thesis I will present the Scientific Model Selection (SMS) pipeline: a system that provides a set of tools to help with the comparison and selection of models extracted from source code.
