@@ -7,10 +7,12 @@ This enables a host of opportunities, including the following:
 \item better communication of model details through unambiguous code implementation, and
 \item the potential to aggregate individual models from different domains into larger multi-domain models.
 \end{itemize}
-
 These advantages have been the driving force that has pushed the scientific community towards computational models as a method of communicating scientific research.
-To provide a working example, consider the computational models presented in Figure~\ref{fig:simple_crop_CAG}, expressed as \emph{causal analysis graphs} (CAGs), where nodes represent variables and directed arcs represent a functional relationship between variables (this formalism will be described in more detail in Chapter~\ref{chapter:extraction}).
-These models describe how the yield of a particular crop is affected by changes in the amount of rain and soil water absorption rate over time (expressed in \emph{Day}s).
+Now that these models-as-software are becoming the common currency of scientific discourse and methodology, we have new opportunities as well as challenges in order to realize the potential of large-scale computationally-supported science. 
+In particular, we need tools to help domain scientists better understand how their scientific model software implementations behave and how models relate to one another..
+
+Consider the following simple example of computational model comparison. Figure~\ref{fig:simple_crop_CAG} depicts two models that both describe how some value of interest, crop \emph{Yield} is computed. The two models are expressed as \emph{causal analysis graphs} (CAGs), where nodes represent variables and directed arcs represent a functional relationship between variables (this formalism will be described in more detail in Chapter~\ref{chapter:extraction}).
+Both models describe how the yield of a particular crop is affected by changes in the amount of rain and soil water absorption rate over time (expressed in \emph{Day}s).
 
 \begin{figure}[!htbp]
   \label{fig:simple_crop_CAG}
@@ -51,35 +53,53 @@ These models describe how the yield of a particular crop is affected by changes 
   \caption[Competing Models of Crop Yield]{Two competing scientific models depicting the affects of rain on the yield of a crop over a span of days given some other inputs. We see that the two models share many of their inputs but that some inputs may not be shared and the wiring of the inputs to the output variable can differ between the models.}
 \end{figure}
 
-Both of these models have sets of input values, shaded to indicate
-that they are observed, and output values. Upon observing the inputs through measurement, a value for the output can be computed.
-The models have some shared inputs between them and some similar structure that leads to the same output variable in each model.
-However there are differences between these two models, namely that one has an additional input and that the internal wirings of the variables in the two models differ.
+Both of these models have sets of input \ctm{variables (shaded)} % values
+% , shaded to indicate that they are observed, 
+\ctm{and both happen to compute the same output value.} % output values. 
+Upon observing the inputs through measurement, a value for the output can be computed.
+%The models have some shared inputs between them and some similar structure that leads to the same output variable in each model.
+\ctm{Although these models share some of the same variables, there are important differences,}
+% However there are differences between these two models, 
+namely that one has an additional input and that the internal wirings of the variables in the two models differ.
 The models could differ even more than this, in fact it is possible for competing models to only share the same output node.
-Modelers will be particularly interested in comparing models that at least share the same output node, since they will want to select one model amongst those of the same phenomena that performs the best for their studies.
+\ctm{Given these two models, a crop modeling domain expert is interested in understanding how these models behave and what their similarities and differences are. In general, the domain expert is engaged in a model selection task, where they are trying to determine whether one, or possibly neither, of these models is appropriate for their modeling task, where they are using these models to try to predict or explain some aspect of the world.}
+% Modelers will be particularly interested in comparing models that at least share the same output node, since they will want to select one model amongst those of the same phenomena that performs the best for their studies.
 
 Performing comparisons between competing models requires the ability to identify how different models utilize information from their inputs.
 For models that are defined in source code, an easy way to identify these differences is by comparing and analyzing the models computation graphs.
 Since most competing models that exist in source code are likely written in different programming languages, any modeler who wants to compare and analyze the computation graphs of competing models will need to perform a translation task that will translate all of the competing models into a single representation language.
-This representation language needs to enhance the representation of models found in the source code by associating the variables found in the source code models to the measured real-world phenomena that they represent.
+This representation language needs to enhance the representation of models found in the source code by associating the variables found in the source code models \ctm{with the aspects of the modeled domain that they correspond to.} 
+% the measured real-world phenomena that they represent.
 Accomplishing this would allow the shared variables between competing models defined in source code to be identified.
-After completing these tasks a modeler would then be able to undertake the task of performing comparison and analysis between the competing models.
+After completing these tasks a modeler would then be able to undertake the task of performing a direct comparison and analysis of how the competing models \ctm{are similar and different, and either one, or possibly none, is a good choice for the modeling application.}
 
-\section{Problem Scope\label{sec:prob_scope}}
-This thesis describes a set of related data structures and algorithms that are part of a framework aimed at automating parts of the task of analyzing scientific models implemented in software. In particular, this thesis addresses the following four tasks underlying automated computational model analysis and selection:
+\section{Problem Scope and Contributions\label{sec:prob_scope}}
+This thesis describes a set of related data structures and algorithms that are part of a framework aimed at automating key tasks \ctm{enabling the analysis of scientific models implemented in software, with a particular focus on enabling software model comparison for model analysis and selection. This thesis makes the following four contributions}:
 
 \begin{enumerate}
-  \item A processing pipeline to extract models from scientific source code and represent them in a source programming language-agnostic representation that supports general model analysis.
+  \item \ctm{Uses the results of a program analysis processing pipeline that extracts models from scientific model source code to represent the model in a programming language-agnostic representation that supports general model analysis.}
   \item An algorithm to identify model structural overlap, as a basis for identifying how models are structurally similar and different.
   \item An algorithm for searching for input value ranges that make overlapping models behave as close to each other as possible, and thereby also identify value ranges that distinguish models (a basis for experiment design).
   \item Adaptation of sensitivity analysis measures to identify model output sensitivity as a function of model input value ranges within a uniform analysis framework.
 \end{enumerate}
 
 Combining these capabilities into a single framework provides a facility for domain-expert model developers and analysts to now analyze and compare models within a uniform framework, greatly simplifying model analysis tasks that to-date have required enormous manual effort.
-This system does not take the human out of the loop: domain expertise and human guidance are still needed to identify variable value ranges of interest to a modeling application, as well as supplement mistakes of omission and commission that may be made during variable grounding.
+This system described here does not take the human out of the loop: domain expertise and human guidance are still needed to identify variable value ranges of interest to a modeling application, as well as supplement mistakes of omission and commission that may be made during variable grounding.
 Ongoing and future development is also required to scale the methods to effectively handle larger model code bases.
 However, this framework described here is, to our knowledge, the first general approach to automating aspects of model analysis in the support of general model comparison and selection.
 We also believe these tools provide a basis for a new kind of model curation and debugging, allowing one to compare changes within evolving code bases but from a modeling domain-semantics perspective. Exploring use of this framework for this purpose will be the subject of future work.
+
+\ctm{[PAUL: The next two paragraphs were originally in the last subsection of this chapter but I think fit better here -- please smooth the narrative so they fit]}
+
+The set of algorithms I describe in this thesis comprise what I call the \emph{Scientific Model Selection} (SMS) pipeline: a system that provides a set of tools to help with the comparison and selection of models extracted from source code.
+To accomplish this task the system must be able to extract scientific models from source code, ground the real-world variables contained in the models using information gained from associated texts, and finally perform the model selection task using information gained from sensitivity analysis.
+The SMS pipeline is a component of the larger software system designed as part of the DARPA funded Automated Model Assembly from Text Equations and Software \citep{pyarelal2019} (AutoMATES\footnote{\url{https://ml4ai.github.io/automates/}}) project.
+
+As a component of the AutoMATES project, this pipeline focuses on part of the overall goal of model extraction, grounding, and analysis.
+The AutoMATES project includes three additional modules that all provide input to the SMS pipeline.
+These modules are the Program Analysis (PA) pipeline, the Text Reading (TR) module, and the Equation Reading (ER) module.
+The inputs provided by these modules will assist the SMS pipeline in extracting abstract representations of source code from the original source code languages, as well as grounding the variables found in that source code to real-world concepts.
+Any inputs to the SMS pipeline from these modules will be documented in the sections of the thesis where they are used.
 
 \section{Related Work\label{sec:prior_work}}
 For modelers in many disciplines the current state-of-the art for addressing the problem of model selection is not to use an intelligent tool or service that performs the selection, but to dig into the literature and find examples of model comparisons that have already been done amongst competing models in a given application domain.
@@ -117,18 +137,9 @@ However, extracting models from source code does share at least one of the chall
 associating or \emph{grounding} the variables present in the source code to the aspects of the domain being modeled.
 The approach presented in this thesis makes use of the approach of the Eidos, INDRA, and Delphi system to ground textual mentions of concepts with domain taxonomies.
 
-\section{This Work\label{sec:this_work}}
-In this thesis I will present the Scientific Model Selection (SMS) pipeline: a system that provides a set of tools to help with the comparison and selection of models extracted from source code.
-To accomplish this task the system must be able to extract scientific models from source code, ground the real-world variables contained in the models using information gained from associated texts, and finally perform the model selection task using information gained from sensitivity analysis.
-The SMS pipeline is a component of the larger software system designed as part of the DARPA funded Automated Model Assembly from Text Equations and Software \citep{pyarelal2019} (AutoMATES\footnote{\url{https://ml4ai.github.io/automates/}}) project.
+\section{Roadmap\label{sec:this_work}}
 
-As a component of the AutoMATES project, this pipeline focuses on part of the overall goal of model extraction, grounding, and analysis.
-The AutoMATES project includes three additional modules that all provide input to the SMS pipeline.
-These modules are the Program Analysis (PA) pipeline, the Text Reading (TR) module, and the Equation Reading (ER) module.
-The inputs provided by these modules will assist the SMS pipeline in extracting abstract representations of source code from the original source code languages, as well as grounding the variables found in that source code to real-world concepts.
-Any inputs to the SMS pipeline from these modules will be documented in the sections of the thesis where they are used.
-
-The remainder of this thesis is organized to present the components of the pipeline that will solve the problem presented in the problem scope section.
+This thesis is organized to present the components of the pipeline that will solve the problem presented in the problem scope section.
 During the course of this thesis I will use two models from the Decision Support System for Agrotechnology Transfer (DSSAT)\footnote{\url{https://dssat.net/}} software system \citep{DSSAT}.
 % model collection to demonstrate the capabilities of the SMS pipeline.
 The models used in this study will be targeting the natural phenomena of Potential Evapo-Transpiration (PET).
@@ -136,4 +147,4 @@ The specific models I will be comparing are the Priestly-Taylor model of Potenti
 Chapter~\ref{chapter:extraction} will introduce the algorithms used to extract models from source code and transform them into a form that is both executable and comparable across competing models.
 Chapter~\ref{chapter:extraction} will also introduce the analysis methods used by the SMS pipeline to derive information about the models under comparison.
 Chapter~\ref{chapter:analysis} will document how the derived information from the analysis phase can be used to perform automated model selection, as well as how the information will be presented to users of the SMS pipeline to allow them to make their own final model selection decisions.
-This thesis will then conclude with Chapter~\ref{sec:conclusions} that will be a discussion of the results and implications of the pipeline and will introduce possible extensions for continuing this research.
+\ctm{Finally, Chapter~\ref{chapter:conc_and_future} concludes with a} discussion of the results and implications of the pipeline and will introduce possible extensions for continuing this research.
