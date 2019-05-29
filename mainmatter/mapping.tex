@@ -1,5 +1,5 @@
 \chapter{MODEL EXTRACTION FROM SOURCE CODE\label{chapter:extraction}}
-In order to perform analysis on scientific models found in software we must first build a system that is able to detect source code that corresponds to scientific models, extract that necessary associated source code, and then represent the model in a form that allows analysis to take place.
+In order to perform analysis on scientific models found in software we must first build a system that is able to \ctm{PAUL: we aren't really addressing *detection* yet -- we currently assume the software contains a scientific model} detect source code that corresponds to scientific models, extract that necessary associated source code, and then represent the model in a form that \ctm{supports model analysis and comparison within a programming language-agnostic framework.} %allows analysis to take place.
 The technique developed must be generalizable to allow model extraction from source code of the various programming languages that are used to define scientific models.
 While large variations in syntax exist among the various programming languages used to encode scientific models, they can all be abstracted to a unifying abstract syntax tree (AST) representation \citep{aho1986dragonBook}.
 Constructing an AST representation of a program requires a large number of design decisions that are largely dependent on the intended use-case of the information contained in the AST.
@@ -9,8 +9,13 @@ This chapter will begin with a discussion of the AST representation design decis
 Following this discussion will be an explanation on the conversion process from the AST representation of a model to an executable computation graph.
 This chapter will conclude with an analysis of the computational cost of running the computation graph for a model and means of reducing this cost by leveraging vectorized computation and GPU computing resources.
 
-At the time of writing this thesis the PA pipeline of the AutoMATES system is capable of handling source code from the Fortran programming language.
-The AutoMATES team plans to support additional widely used languages in the near future and for the purposes of model analysis, and the extent of this thesis, the subtle language differences that will be introduced from different programming languages will be handled by the PA pipeline, before being generated into AST form.
+At the time of writing this thesis, the \ctm{\emph{program analysis} (PA)} pipeline of the AutoMATES system \ctm{supports analysis of} % is capable of handling 
+source code from the Fortran programming language.
+\ctm{The AutoMATES project is intended to eventually expand the scope of PA to support analysis of other widely used language}
+% team plans to support additional widely used languages in the near future 
+and for the purposes of \ctm{\emph{model analysis} (the focus of this thesis)}, % and the extent of this thesis, 
+the subtle language differences that will be introduced from different programming languages will be handled by the PA pipeline, before being \ctm{represented in the intermediate} % generated into 
+AST form.
 
 
 \section{Grounded Function Network Extraction\label{sec:grfn_extract}}
@@ -27,26 +32,44 @@ Similarly a node is considered a sink node if the out-degree of the node, the nu
 The name GrFN also implies that this network will be a network with functions.
 Indeed this network will include two types of nodes, variable nodes and function nodes.
 This network will be bipartite such that no function node has an edge incident to another function node, and no variable node has an edge incident to another variable node.
-Since our GrFN is supposed to represent a scientific model, the source variable nodes of the GrFN will be the inputs of the model represented by the GrFN, and the sink node, which will be a variable node, will be the model output.
-It is possible for the model to have some function nodes as sources to the network. These will be literal assignment functions and thus are not included in the set of scientific model inputs.
+Since % our 
+GrFN is \ctm{intended} % supposed 
+to represent a scientific model, the source variable nodes of the GrFN will be the inputs of the model represented by the GrFN, and the sink node, which will be a variable node, will be the model output.
+It is possible for the model to have some function nodes as sources to the network. 
+These represent % will be 
+literal assignment functions. \ctm{PAUL: you then wrote: ``and thus are not included in the set of scientific model inputs.'' Why is that? They are still inputs -- they're constants, but could be set to different values; suggest just dropping this, unless it's significant elsewhere.}
 
-The last element left in the name has to deal with the naming of the variable nodes.
+\ctm{The last element of the GrFN name, \emph{grounding}, refers to how we interpret, and therefore potentially match during model analysis, the variable nodes of a model.}
+% The last element left in the name has to deal with the naming of the variable nodes.
 GrFNs must be comparable upon their variable nodes, since the variables track the actual observed and calculated values.
-This is what connects the networks to the real-world and to one another.
-As defined in code, two variables that represent the same phenomena can have different names, and two variables that represent different phenomena can have the same name.
-To circumvent this problem, the names of variable nodes in a GrFN will not come directly from the source code, but they will instead be shared names that are derived from grounding the variables found in source code with associated publications and other free text that can provide descriptive names for the variables contained in them.
-The grounding process ensures that variable node names are identical across various GrFNs, even if extracted from separate code repositories.
-This will allow for graph matching upon named nodes during downstream analysis.
+% This is what connects the networks to the real-world and to one another.
+\ctm{The assumption made here is that the software, as an instantiation of a scientific model, represents some aspects of the world, and the states of these modeled phenomena will be represented in the software by variables.}
+As defined in code, % two 
+\ctm{variables from two different models that represent} the same phenomena \ctm{could} % can 
+have different names, and two variables that represent different phenomena \ctm{could} % can 
+have the same name.
+\ctm{In the AutoMATES project, the inference of what source code variables represent is a result of combining information from reading source code comments associated with source variables and other code documentation, along with text from associated scientific literature. Reading extracts and links mentions of domain concepts found in these sources. The result of this grounding process normalizes variable names so that, when successful, the GrFN representations of two different models about the same phenomena can be compared -- if two variables share the same name, they are assumed to be about the same aspect of the modeled domain. This inference process is not a focus of this thesis work; instead, we assume here that variable grounding inference has been performed and is represented by appropriated named variables within the GrFN representation, and instead develop the algorithms responsible for model analysis based on the grounded GrFN representation.}
+
+%To circumvent this problem, the names of variable nodes in a GrFN will not come directly from the source code, but they will instead be shared names that are derived from grounding the variables found in source code with associated publications and other free text that can provide descriptive names for the variables contained in them.
+%The grounding process ensures that variable node names are identical across various GrFNs, even if extracted from separate code repositories.
+%This will allow for graph matching upon named nodes during downstream analysis.
 
 \section{Computation Graph Generation\label{sec:cg_gen}}
 % NOTE: This material likely belongs in the chapter introduction
-Although the program analysis module is tasked with lifting an AST from the source code, the SMS pipeline is responsible for deducing scientific models from the AST and transforming them into GrFNs.
-The program analysis module will output the control-flow found in the AST into a JSON specification, and in addition will output a python file that contains a set of lambda functions.
+Although the program analysis module is tasked with \ctm{extracting} % lifting 
+an AST from the source code, the SMS pipeline is responsible for 
+\ctm{PAUL: what does this mean?:} deducing scientific models from the AST 
+and transforming them into GrFNs.
+\ctm{PAUL: need to clarify that variable ``grounding'' is independent of the AST processing you're describing here.}
+The program analysis module % will 
+outputs the control-flow found in the AST into a JSON specification, and in addition will output a python file that contains a set of lambda functions.
+\ctm{PAUL: The following description gets a bit awkward: you're introducing a lot of technical jargon along with implementation detilas (JSON files). First help your reader to understand what GrFN is attempting to capture: what the variables are and how their states are determined as a function of other variables (i.e., functions); lambda functions are the representations of these functions that assign variable states as a function of other variables...}
 The lambda functions file represent specific computations that are done during the program.
 This is a representation of the data-flow of the program, and will need to be encapsulated in the GrFN.
 The JSON specification has an ordered set of statements that completely describe the control-flow of the original scientific model.
 From these two items the SMS pipeline will create a GrFN Computation Graph (CG) that will be an executable representation of the scientific model contained in the original source code.
-Below are examples of GrFN CGs for the PETPT and PETASCE evapo-transpiration modules.
+Below are examples of \ctm{extracted} GrFN CGs for the PETPT and PETASCE evapo-transpiration modules \ctm{, derived from actual Fortran source code from the DSSAT code base.}
+\ctm{[PAUL: I suggest putting the Fortran source code from either model in an Appendix, and refer to the Appendix here.]}
 
 \FloatBarrier
 \begin{figure}[!tbp]
@@ -54,7 +77,8 @@ Below are examples of GrFN CGs for the PETPT and PETASCE evapo-transpiration mod
   \subfloat[PETPT GrFN Computation Graph]{\includegraphics[width=0.45\textwidth]{PETPT_GrFN_smaller}\label{fig:petpt_grfn_cg}}
   \hfill
   \subfloat[PETASCE GrFN Computation Graph]{\includegraphics[width=0.45\textwidth]{PETASCE_GrFN_smaller}\label{fig:petasce_grfn_cg}}
-  \caption[GrFN Computation Graph Examples]{Two examples of GrFN computation graphs. The CG view shows the variable nodes, represented as circles, named via the names extracted in the source code and including an index representing the update level of the variable found in the source code. Function nodes are shown as squares with a single letter representing the type of function contained at the node. Possible choices are assignment (A), conditional (C), decision (D), or literal (L). Notice that in both CGs the output nodes are variable nodes the inputs of the network can either be variable nodes or literal assignment nodes.}
+  \caption[GrFN Computation Graph Examples]{Two examples of GrFN computation graphs computation graphs (CGs). These %The 
+CG representations include the variable nodes, represented as circles, named via the names extracted in the source code and including an index representing the update level of the variable found in the source code. Function nodes are shown as squares with a single letter representing the type of function contained at the node. Possible choices are assignment (A), conditional (C), decision (D), or literal (L). Notice that in both CGs the output nodes are variable nodes the inputs of the network can either be variable nodes or literal assignment nodes.}
 \end{figure}
 \FloatBarrier
 
