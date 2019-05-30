@@ -3,7 +3,7 @@ In order to perform analysis on scientific models found in software we must  ext
 The technique developed must be generalizable to allow model extraction from source code of the various programming languages that are used to define scientific models.
 While large variations in syntax exist among the various programming languages used to encode scientific models, they can all be abstracted to a unifying abstract syntax tree (AST) representation \citep{aho1986dragonBook}.
 Constructing an AST representation of a program requires a large number of design decisions that are largely dependent on the intended use-case of the information contained in the AST.
-For the purposes of model selection we are keenly interested in identifying all potential models contained in the AST, as well as being able to easily inspect data-flow through the AST.
+For the purposes of model selection we are keenly interested in being able to easily inspect data-flow through the AST.
 
 This chapter will begin with a discussion of the AST representation design decisions made to facilitate model extraction from source code.
 Following this discussion will be an explanation on the conversion process from the AST representation of a model to an executable computation graph.
@@ -13,17 +13,15 @@ At the time of writing this thesis, the \emph{program analysis} (PA) pipeline of
 The AutoMATES project intends to eventually expand the scope of PA to support analysis of other widely used language and for the purposes of \emph{model analysis} (the focus of this thesis), the subtle language differences that will be introduced from different programming languages will be handled by the PA pipeline, before being represented in the intermediate AST form.
 
 \section{Grounded Function Network Extraction\label{sec:grfn_extract}}
-When translating a source code program, the SMS pipeline will receive a JSON specification and a set of associated lambda functions as input.
-The JSON specification will fully represent the control-flow of variables through the original source code.
-The lambda functions file will contain all of the individual computations necessary to execute a model that is faithful to the models found in the original source code.
-From these two files the SMS pipeline will construct a scientific model that will be executable and can be used for comparison and analysis.
+When translating a source code program, the SMS pipeline will receive an abstract representation of an extracted scientific model as input.
+Using this representation the SMS pipeline will construct a scientific model that will be executable and can be used for comparison and analysis.
+The representation for the executable model is called a Grounded Function Network (GrFN).
 
-This executable model is called a Grounded Function Network (GrFN).
-As the name suggests, this model will be a network.
-A network is a directed acyclic graph that contains a set of source nodes and a set of sink nodes \citep{bondy1976graph}.
+As the name suggests, this model representation will be a network.
+A \emph{network} is a directed acyclic graph that contains a set of source nodes and a set of sink nodes \citep{bondy1976graph}.
 A node is considered a source node if the in-degree of the node, the number of directed edges arriving at the node, is zero.
 Similarly a node is considered a sink node if the out-degree of the node, the number of directed edges leaving the node, is zero.
-The name GrFN also implies that this network will be a network with functions.
+The name GrFN also implies that this network will be a network with \emph{functions}.
 Indeed this network will include two types of nodes, variable nodes and function nodes.
 This network will be bipartite such that no function node has an edge incident to another function node, and no variable node has an edge incident to another variable node.
 Since GrFN is intended to represent a scientific model, the source variable nodes of the GrFN will be the inputs of the model represented by the GrFN, and the sink node, which will be a variable node, will be the model output.
@@ -37,14 +35,14 @@ As defined in code, variables from two different models that represent the same 
 In the AutoMATES project, the inference of what source code variables represent is a result of combining information from reading source code comments associated with source variables and other code documentation, along with text from associated scientific literature. Reading extracts and links mentions of domain concepts found in these sources. The result of this grounding process normalizes variable names so that, when successful, the GrFN representations of two different models about the same phenomena can be compared -- if two variables share the same name, they are assumed to be about the same aspect of the modeled domain. This inference process is not a focus of this thesis work; instead, we assume here that variable grounding inference has been performed and is represented by appropriated named variables within the GrFN representation, and instead develop the algorithms responsible for model analysis based on the grounded GrFN representation.
 
 \section{Source Code to Computation Graph Example\label{sec:code_to_cg}}
-To illustrate the process of constructing an executable computation graph from source code, consider the simple model for crop yield example from Figure~\ref{fig:simple_crop_CAG}.
+To illustrate the process of constructing an executable computation graph from source code, consider the toy model for crop yield example from Figure~\ref{fig:simple_crop_CAG}.
 The Fortran code for this model is shown in Figure~\ref{crop_code} below.
 \FloatBarrier
 \begin{figure}[!htbp]
     \label{crop_code}
     \centering
     \includegraphics[width=\columnwidth]{CROP_YIELD_CODE}%
-    \caption[Crop Yield Model Source Code]{Fortran source code for the simple model of Crop Yield.}
+    \caption[Crop Yield Model Source Code]{Fortran source code for the toy model of Crop Yield.}
 \end{figure}
 \FloatBarrier
 
@@ -57,7 +55,7 @@ The SMS pipeline handles all of these idioms and is able to produce the followin
     \label{crop_grfn_cg}
     \centering
     \includegraphics[width=\columnwidth]{CROP_YIELD_GrFN}%
-    \caption[Crop Yield Model GrFN CG]{Executable computation graph for the simple Crop Yield model.}
+    \caption[Crop Yield Model GrFN CG]{Executable computation graph for the toy Crop Yield model.}
 \end{figure}
 \FloatBarrier
 
@@ -70,10 +68,11 @@ The lambda functions file represent specific computations that are done during t
 This is a representation of the data-flow of the program, and will need to be encapsulated in the GrFN.
 The JSON specification has an ordered set of statements that completely describe the control-flow of the original scientific model.
 From these two items the SMS pipeline will create a GrFN Computation Graph (CG) that will be an executable representation of the scientific model contained in the original source code.
-Below are examples of extracted GrFN CGs for the PETPT and PETASCE evapo-transpiration modules, derived from actual Fortran source code from the DSSAT code base, both of which are available in Appendix~\ref{appendix:a}.
+Figure~\ref{grfn_cgs} shows examples of extracted GrFN CGs for the PETPT and PETASCE evapo-transpiration modules, derived from actual Fortran source code from the DSSAT code base, both of which are available in Appendix~\ref{appendix:a}.
 
 \FloatBarrier
 \begin{figure}[!tbp]
+  \label{grfn_cgs}
   \centering
   \subfloat[PETPT GrFN Computation Graph]{\includegraphics[width=0.45\textwidth]{PETPT_GrFN_smaller}\label{fig:petpt_grfn_cg}}
   \hfill
@@ -181,7 +180,7 @@ Below are the CAG views for the two GrFN CGs under study in this thesis. Notice 
 \FloatBarrier
 
 When treating the input variables as random variables we can induce a distribution over the values that they can take.
-This distribution will then permeate through the function nodes to the other variable nodes in the GrFN CG.
+The distribution defined over the inputs will then induce a distribution onto the inner variable nodes and the output variable node of the GrFN CG.
 For the GrFN CG to be a Dynamic Bayes Net (DBN) we need the probability distribution of the output variable to be a product of all of the input probability distributions \citep{pearl2009causality}.
 During the computation of any inner variable in a GrFN CG we have a lambda function that denotes how the the inputs to the computation are to be combined to form the output.
 All possible combinations are mathematical functions, that are able to be applied over the probability distribution of the inputs.

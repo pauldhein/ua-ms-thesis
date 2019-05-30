@@ -1,8 +1,8 @@
 \chapter{MODEL ANALYSIS AND SELECTION\label{chapter:analysis}}
 The greatest benefit researchers receive from modeling is being able to reason about the uncertainty involved in observing a phenomena of choice.
 From the modeling perspective, explicit statements about the uncertainty of a phenomena can be made by adding inputs to the model of the phenomena that represent a source of variance upon the phenomena.
-In this section I will introduce the usage of sensitivity analysis methods for analyzing competing scientific models.
-Once introduced I will show how the outputs from sensitivity analysis can be used to inform other methods of model analysis, both automatic methods and ones that engage the user directly.
+In this section, I will introduce sensitivity analysis methods that I adapt to use in the SMS pipeline as a method for identifying how uncertainty in input variables impacts our uncertainty in output variables within the uniform SMS representation.
+Once introduced I will show how the outputs from sensitivity analysis can be used to inform other methods of model analysis, both automatic methods and ones that can be used interactively by the domain modeler.
 
 \section{Global Sensitivity Analysis\label{sec:sens_analysis}}
 A powerful tool used by modelers to quantify the uncertainty present in models is global sensitivity analysis. Broadly speaking, global sensitivity analysis is the study of how variance in the inputs of a model affect the variance, or uncertainty in the output of the model. Since the goal of the SMS pipeline is to provide modelers with a tool select a model that lowers the amount of uncertainty in estimation of a given phenomena we have chosen to use sensitivity analysis in order to evaluate the extracted models.
