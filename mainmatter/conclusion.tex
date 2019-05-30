@@ -45,8 +45,7 @@ Therefore the task of automatic variable domain detection is an immediately nece
 The current analysis methods employed by AutoMATES allow for automated model selection based upon behavior of model inputs or sets of model inputs. While these methods are likely desired by modelers, they only allow for indirect model comparisons. A method for direct comparison such as error propagation that includes an estimate of metrics such as variance in model output allows for stronger comparison statements that will likely be more acceptable metrics for automated model selection.
 
 \subsection{Iterative Model Improvement\label{sec:auto_improve}}
-After gathering enough information about various competing models as well as error information of model improvements,AutoMATES should be able to begin learning how to update models to lower uncertainty in model outputs.
-
+After gathering enough information about various competing models as well as error information of model improvements, AutoMATES should be able to begin learning how to update models to lower uncertainty in model outputs.
 A key component to this enhancement would be to identify similar function nodes or series of function nodes in a computation graph that correspond to the same overall computation. This, along with the grounding of variable nodes, which has been assumed, will enable modular computation components for variables to be added, removed, or mutated in order to improve model accuracy, efficiency, or other metrics of choice to modelers.
 
 \subsection{Input Space Division\label{sec:auto_isd}}
