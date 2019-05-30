@@ -29,14 +29,22 @@ Many of the opportunities for extending the AutoMATES system build upon one anot
 \ctm{In this section, I describe several extensions that can be made to the AutoMATES model analysis }
 Below I catalog some of the immediately visible extensions to the AutoMATES program improve the power of the AutoMATES model selection capabilities.
 
-% TODO: Add these back in if I have time and Clay approves
-% \subsection{Alternative Sampling Methods for Analysis\label{sec:alt_sampling}}
-% % TODO: Fill in here if I have time.
-% Some text.
-%
-% \subsection{Variable Domain and Range Detection\label{sec:var_domain_range}}
-% % TODO: Consider moving this section to future work if we run out of time to implement a solution to this problem
-% Some text.
+\subsection{Variable Domain Detection\label{sec:var_domain_detection}}
+One key issue that has not been addressed in this thesis so far is the issue of discovering the domain limitations of input variables in computation graphs.
+Scientific models that are expressed in code are generally unlimited in terms of their functional form.
+However certain mathematical functions place limits on the domains of variables used in their computation.
+A classic example of this can be found in the source code for the PETASCE evapo-transpiration model:
+
+\begin{equation}
+  RHMIN = max\{20.0, min\{80.0, \frac{EA}{EMAX}*100.0\}\}
+\end{equation}
+
+From the above line we see that EMAX cannot equal zero.
+That is a constraint upon the domain for EMAX; however, EMAX is not an input for the PETASCE model but is the result from a computation from inputs to the PETASCE model.
+This shows that one task required for domain detection is for constraints from inner variables computed in a computational model, such as EMAX, to be propagated backwards to the input variables responsible for their computation.
+This task is necessary for the analysis phase of the SMS pipeline, since a key portion of analysis is to sample over the domains of the inputs.
+Choosing a sample that is out of the domain is detrimental to the SMS pipeline and currently the SMS pipeline requires defining the domains of variables by hand via hand-inspection of the source code.
+Therefore the task of automatic variable domain detection is an immediately necessary next step to further complete the SMS pipeline.
 
 \subsection{Model Selection via Uncertainty Analysis \label{auto_uncert_analysis}}
 The current analysis methods employed by AutoMATES allow for automated model selection based upon behavior of model inputs or sets of model inputs. While these methods are likely desired by modelers, they only allow for indirect model comparisons. A method for direct comparison such as error propagation that includes an estimate of metrics such as variance in model output allows for stronger comparison statements that will likely be more acceptable metrics for automated model selection.
