@@ -149,6 +149,58 @@ Identifying recursion is a task that will be handled by the program analysis pip
 Once a recursion loop is discovered, it will be handled the same as an open-indexed loop.
 Once a \texttt{goto} or recursion loop is transformed into an open-indexed loop the SMS pipeline will handle adding it as a loop-plate to the overall computation graph in the same fashion as any other loop plate.
 
+\section{GrFN Representation Evaluation\label{sec:grfn_eval}}
+
+
+\begin{table}
+  \centering
+  \label{tab:prog_idioms}
+  \begin{tabular}{ |c|c| }
+   \hline
+   \textbf{Program Idiom} & \textbf{GrFN Representation Status} \\
+   \hline
+   Variable Declarations & Included \\
+   Assignment Statement & Included \\
+   Conditional Statement & Included \\
+   Procedure Calls & Included \\
+   Indexed Loops & Included \\
+   Open-ended Loops & In Progress \\
+   Case Statements & In Progress \\
+   File I/O & In Progress \\
+   Array Indexing & In Progress \\
+   Derived Types & In Progress \\
+   Multiple/Variable Outputs & Future \\
+   Early Exit & Future \\
+   Error Cases & Future \\
+   \hline
+  \end{tabular}
+  \caption[GrFN Program Idiom Coverage]{Programming idiom coverage of the GrFN representation language. Note that many programming idioms may be absent from this table and others that are not normally included are present. This is due to the nature of GrFN as representing a subset of programs that are used to communicate scientific models and needing to represent programs in the form of a graphical model for inference.}
+\end{table}
+
+\begin{center}
+  \begin{table}
+    \centering
+    \label{tab:pa_eval_table}
+    \begin{tabular}{ |c|c|c|l| }
+     \hline
+     \textbf{Model Identifier} & \textbf{Parse Status} & \textbf{P,R,F1 Scores} & \textbf{Cause of Failure} \\
+     \hline
+     FLOOD\_EVAP & \texttt{Success} & 1.0, 1.0, 1.0 & -- \\
+     SOLAR & \texttt{Success} & 1.0, 1.0, 1.0 & -- \\
+     DECL & \texttt{Failure} & -- & User-defined functions \\
+     INSOIL & \texttt{Failure} & -- & Unknown builtin functions (INDEX) \\
+     PETPEN & \texttt{Failure} & -- & Variable declaration after assignment \\
+     ROOTWU & \texttt{Failure} & -- & Iteration over non-constant range \\
+     MULCH\_EVAP & \texttt{Failure} & -- & Use of derived types \\
+     SNOWFALL & \texttt{Failure} & -- & Nested if-statements \\
+     EFLOW\_C & \texttt{Failure} & -- & Early conditional exit \\
+     ESUP & \texttt{Failure} & -- & Multiple/variable outputs \\
+     \hline
+    \end{tabular}
+    \caption[Program Analysis Module Evaluation]{Evaluation results for the program analysis module. This evaluation tested the program analysis modules capability to parse and transfer correct GrFN representation wiring for 10 scientific models found in the DSSAT Fortran codebase.}
+  \end{table}
+\end{center}
+
 
 \section{Data Type Assignment\label{sec:data_types}}
 So far I have discussed the wiring needed to create the computation graph that will allow a GrFN to be executed, and I have shown the methods necessary to make the GrFN executable. However, one more crucial component for creating a GrFN that we can perform inference upon is a discussion of how we will handle the actual data being processed from the GrFN. At the time of writing this thesis only basic data types are allowable in a GrFN. This includes numerical, string, and boolean values. These primitive data types are all singular values that represent a single phenomena, thus they match perfectly with the definition of variable nodes in the GrFN CG. The specification for each variable in a GrFN CG contains a type annotation that declares the data type of the variable. These values are derived from the JSON specification during the wiring stage of the GrFN. At execution time, these type annotations are used to validate a set of inputs and ensure proper storage format of computed variable values.
