@@ -1,4 +1,4 @@
-\chapter{MODEL EXTRACTION FROM SOURCE CODE\label{chapter:extraction}}
+\chapter{UNIFIED MODEL ANALYSIS FRAMEWORK\label{chapter:umaf}}
 In order to perform analysis on scientific models found in software we must  extract that necessary associated source code and then represent the model in a form that supports model analysis and comparison within a programming language-agnostic framework.
 The technique developed must be generalizable to allow model extraction from source code of the various programming languages that are used to define scientific models.
 While large variations in syntax exist among the various programming languages used to encode scientific models, they can all be abstracted to a unifying abstract syntax tree (AST) representation \citep{aho1986dragonBook}.
@@ -12,7 +12,20 @@ This chapter will conclude with an analysis of the computational cost of running
 At the time of writing this thesis, the \emph{program analysis} (PA) pipeline of the AutoMATES system supports analysis of source code from the Fortran programming language.
 The AutoMATES project intends to eventually expand the scope of PA to support analysis of other widely used language and for the purposes of \emph{model analysis} (the focus of this thesis), the subtle language differences that will be introduced from different programming languages will be handled by the PA pipeline, before being represented in the intermediate AST form.
 
-\section{Grounded Function Network Extraction\label{sec:grfn_extract}}
+\section{Extracting Models from Source Code\label{sec:model_extraction}}
+% TODO: Add and re-org to make this section an overview of the program analysis pipeline
+
+\section{Grounded Function Network Representation\label{sec:grfn_rep}}
+% TODO: Make this section largely about how to transition a decorated AST into a scientific graphical model via our GrFN representation
+
+\section{Executable GrFN Computation Graph Generation\label{sec:grfn_cg_gen}}
+% TODO: make this section all about what is necessary to go from a GrFN representation to a wired computation graph that can be executed in Python
+
+
+\section{GrFN Computation Graph Evaluation Studies\label{sec:grfn_eval}}
+% TODO: Use this section for the execution evaluation study as well as the coverage evaluations
+
+
 When translating a source code program, the SMS pipeline will receive an abstract representation of an extracted scientific model as input.
 Using this representation the SMS pipeline will construct a scientific model that will be executable and can be used for comparison and analysis.
 The representation for the executable model is called a Grounded Function Network (GrFN).
@@ -149,7 +162,7 @@ Identifying recursion is a task that will be handled by the program analysis pip
 Once a recursion loop is discovered, it will be handled the same as an open-indexed loop.
 Once a \texttt{goto} or recursion loop is transformed into an open-indexed loop the SMS pipeline will handle adding it as a loop-plate to the overall computation graph in the same fashion as any other loop plate.
 
-\section{GrFN Representation Evaluation\label{sec:grfn_eval}}
+\section{GrFN Representation Evaluation\label{sec:rep_eval}}
 
 
 \begin{table}
@@ -184,6 +197,9 @@ Once a \texttt{goto} or recursion loop is transformed into an open-indexed loop 
     \begin{tabular}{ |c|c|c|l| }
      \hline
      \textbf{Model Identifier} & \textbf{Parse Status} & \textbf{P,R,F1 Scores} & \textbf{Cause of Failure} \\
+     \hline
+     PETPT & \texttt{Success} & 1.0, 1.0, 1.0 & -- \\
+     PETASCE & \texttt{Success} & 1.0, 1.0, 1.0 & -- \\
      \hline
      FLOOD\_EVAP & \texttt{Success} & 1.0, 1.0, 1.0 & -- \\
      SOLAR & \texttt{Success} & 1.0, 1.0, 1.0 & -- \\
@@ -291,73 +307,3 @@ After all function nodes have been executed the output variable node of the GrFN
 While a GrFN CG is perfectly capable of executing one set of inputs at a time, as described in the method above, the CG can also handle executing over multiple sets of inputs at once.
 The SMS pipeline accomplishes this by making use of the PyTorch tensor computation framework.
 It is advantageous to compute multiple inputs at once using vectorized computations because pooling like computations lowers overall compute time.
-
-\section{Model Overlap Identification\label{sec:overlap_identification}}
-
-While analytical methods can provide a large amount of useful information to modelers about a single model, the real benefit of the AutoMATES system comes from the ability to automate comparisons among competing models. Competing models can be identified from the output variables of their computation graphs. After identifying a selection of competing models the comparison phase can begin.
-
-For any two competing models of the same phenomena the comparison phase consists of the following:
-
-\begin{enumerate}
-  \item Identify the overlap between the variables in each models computation graphs. This corresponds to overlap in observable real-world phenomena.
-  \item Extract the sub computation graphs for each model based on the variable node overlap.
-  \item Perform analysis on the overlapping computation graphs and compare the results with the analysis results from the models whole computation graphs.
-\end{enumerate}
-
-In order to accomplish the tasks outlined above, I will introduce a new construct, known as a Forward Influence Blanket (FIB). A FIB is a specific instance of a Markov blanket \citep{pearl2009causality}, derived from a GrFN computation graph, that can be used for forward analysis.  % TODO: possibly define forward analysis and markov blanket
-After the completion of these tasks the information gained from the comparative study of these models can be added to the final model report, or used for automatic model selection. In this chapter I discuss model comparison in terms of two models compared directly with one another. At the end of the chapter I will elucidate on the necessary steps to generalize this form of binary model comparison to a set of $N$ models.
-
-\subsection{Identifying a Forward Influence Blanket\label{sec:fib_creation}}
-Imagine the structure of two computational models of the same phenomena in the most general sense. We can say with certainty that both models will have the same output variable, namely the variable that represents the phenomena of interest. From this there are three options for how the set of input variables between the two computational graphs can overlap. The least interesting option is that the two models could share no inputs variables. This would mean that the computations involved in each model are wholly independent and could be combined if necessary in a trivial manner, at least at the input level. The more interesting option is that a subset of the inputs are shared between the two models. This entails that the models will make use of the same data, though the computations used to transform that data into a model output will almost certainly differ. It is possible that the set of input variables will overlap exactly between the two models; however, it is much more likely that there will be some input variables that are not contained in both. In the following subsections I will discuss how to build a computation graph that represents the computation present in a GrFN that corresponds to utilization of shared variable nodes with another model.
-
-% TODO: Add material about Shared Structure Identification here
-The shared structure components of a FIB for two models of the same phenomena are identified using the following strategy.
-By definition the models share the same output variable node.
-Therefore any shared structure will be within the range of a shared variable node, either an input variable or an inner variable node, and all the full computation path to the output node.
-A set of shared nodes between the two graphs can be discovered using node name matching on the grounded node names.
-This is done upon the CAG view of the GrFN CG so that variable nodes are only matched once and not once per update recorded in the overall CG.
-Using the set of shared nodes and the output node we can discover all computation paths that lead to the output node by doing an exhaustive path search from each shared node to the output node \citep{sedgewick2002algorithmsInC}.
-Combining the outputs from all of these paths together gives us the shared portions of each GrFN CG that serve as the basis for each models FIB.
-
-% TODO: The section discusses Cover Set Variables
-The key aspect of a FIB that distinguishes it from a GrFN computation graph is that the portions of the original computation graph that are not shared between the two models under comparison are pruned.
-In order to ensure that the resulting models are still executable, variable nodes representing new inputs to the FIB computation graph must be retained.
-This set of variables has been identified as the cover set.
-Forming this cover set and adding it to the shared overlap portion of each GrFN CG as mentioned above is the last step necessary to fully create the FIB for each model.
-Identifying a variable as being a member of the cover set stems from the initial shared graph structure extracted from the original GrFN CGs.
-All nodes along the shared structure must be compared to the node structure in the original CG.
-If any nodes are missing a branch that is present in the original CG then the immediate parent of the node must be added to the set of cover nodes and is grafted on to the FIB.
-Once the set of cover nodes are added to the shared graph structure the FIBs for each model are complete.
-To visualize what a FIB looks like for both a small and large CG we have added the FIBs that denote the overlap between the two evapo-transpiration models.
-
-\FloatBarrier
-\begin{figure}[!tbp]
-  \centering
-  \subfloat[PETPT FIB CAG]{\includegraphics[width=0.75\textwidth]{PETPT_FIB_CAG}\label{fig:petpt_fib}}
-
-  \subfloat[PETASCE FIB CAG]{\includegraphics[width=0.75\textwidth]{PETASCE_FIB_CAG_smaller}\label{fig:petasce_fib}}
-  \caption[Forward Influence Blanket CAG Examples]{Forward Influence Blanket (FIB) CAGs for the PETPT and PETASCE evapo-transpiration models that depicts the overlap with each other. Note that shared variables are shaded in blue and shared input variables are both shaded blue and bolded. Note that while the PETPT model did not have any variable nodes in the cover set the PETASCE model has several variables in the cover set. These variables are shaded green.}
-\end{figure}
-\FloatBarrier
-
-% \FloatBarrier
-% \begin{figure}[!htbp]
-%     \label{petpt_fib}
-%     \centering
-%     \includegraphics[clip,width=.8\columnwidth]{PETPT_FIB_CAG}%
-%     \caption[PETPT FIB CAG]{A Forward Influence Blanket (FIB) for the PETPT model that depicts the overlap with the PETASCE model. Note that shared variables are shaded in blue and shared input variables are both shaded blue and bolded.}
-% \end{figure}
-%
-% \begin{figure}[!htbp]
-%     \label{petasce_fib}
-%     \centering
-%     \includegraphics[clip,width=0.8\columnwidth]{PETASCE_FIB_CAG_smaller}%
-%     \caption[PETASCE FIB CAG]{A Forward Influence Blanket (FIB) for the PETASCE model that depicts the overlap with the PETPT model. Note that while the PETPT model did not have any variable nodes in the cover set the PETASCE model has several variables in the cover set. These variables are shaded green.}
-% \end{figure}
-% \FloatBarrier
-
-\subsection{Input Set Execution on a FIB\label{sec:fib_exec}}
-In order to execute a FIB the user must provide values for the input variable nodes and values for the cover variable nodes. At execution time, both sets of variable nodes will be populated before beginning to compute the function nodes in the partial order of functions provided by the GrFN computation graph. This is the only difference between computing on a FIB computation graph and computing on a GrFN computation graph.
-
-Execution of a FIB computation graph can be done either with singular preset values for all of the cover variables, or with ranges for each cover variable.
-FIB CGs support Torch-aided vectorized computation similar to the GrFN CG structure, and no additional memory constraints are imposed on execution by the FIB class.

@@ -1,0 +1,48 @@
+\chapter{RELATED WORK\label{chapter:related_work}}
+\section{Existing Model Composition\label{sec:bgrd_model_composition}}
+New methods have been created in recent years that are beginning to automate the process of extracting scientific models from free text.
+One such method is presented in the Eidos, INDRA, and Delphi \citep{EidosIndraDelphi} pipeline that seeks to extract models from textual documents, such as scientific publications and technical reports.
+This software has seen great success at the task of model extraction and assembly.
+Indeed many models are presented in the scientific literature and sometimes only in the scientific literature without being present in the form of source code in a software repository.
+However modelers will undoubtedly benefit from the reliability guarantees of models that are extracted from source code.
+Due to the nature of free text, identifying and extracting models from free text is very challenging: authors are not forced to write effective procedures, instead describing models at higher levels of descriptions and often eliding information assumed as common-sense (or domain-specific) background knowledge.
+Source code, on the other hand, is explicit.
+Source code also requires full specification in order to be executable, so models extracted from source code may include background assumptions that are left out of textual descriptions.
+A simple example of this phenomena would be the lack of data type information for numerical values. This information is commonly absent from the text descriptions of a model, but is vital in many cases when creating an executable version of the model.
+
+However, extracting models from source code does share at least one of the challenges associated with extracting models from free text:
+associating or \emph{grounding} the variables present in the source code to the aspects of the domain being modeled.
+The approach presented in this thesis makes use of the approach of the Eidos, INDRA, and Delphi system to ground textual mentions of concepts with domain taxonomies.
+
+\section{Manual Model Comparison\label{sec:manual_model_compare}}
+For modelers in many disciplines the current state-of-the art for addressing the problem of model selection is not to use an intelligent tool or service that performs the selection, but to dig into the literature and find examples of model comparisons that have already been done amongst competing models in a given application domain.
+Unsurprisingly, this approach has many disadvantages.
+The obvious initial cost of this approach is that it requires a group of scientists to devote a substantial portion of time to conducting this analysis by hand.
+A second disadvantage of this method is that the analysis performed and documented by research groups in scientific publications is difficult to extend.
+For example the analysis conducted by \citet{camargo2016six} contains information on the sensitivity of the compared models to certain inputs; however, modelers are left without any discussion or investigation into the pairwise affect of inputs on model sensitivity.
+In order for modelers to obtain this information, their best option is to request access to the software used by the authors so that they can manually extend the software to extend the analysis.
+This is a less-than-ideal solution as not only will additional time be required to extend the analysis, but modelers must now rely upon the generosity of the authors to release the software they used to conduct their analysis, otherwise extending the analysis presented would require conducting all of the software design necessary to produce the initial analysis.
+Therefore, it is easy to see how automating the process of model extraction, analysis, and selection would greatly benefit modelers by increasing the extensibility of an analysis.
+
+\section{Domain-specific Modeling Tools\label{sec:domain_model_tools}}
+
+
+\section{General Modeling Frameworks\label{sec:gen_model_frameworks}}
+Current tools such as the DAKOTA system make advances towards a generalized framework that provides modelers analysis tools that can be used to study and compare models \citep{adams2009dakota}.
+DAKOTA has been an excellent resource for modelers because of the many evaluation methods that are provided for model study.
+However DAKOTA has some disadvantages.
+The most notable disadvantage of the DAKOTA system is that modelers are still required to undergo the labor-intensive task of translating their models by hand into the pre-defined DAKOTA format.
+Not only does the labor and time present a barrier to entry for modelers wishing to use the DAKOTA system, but this system comes with an additional barrier for modelers who wish to use models from other researchers.
+While the modelers will likely be familiar with the structure of their own models, allowing for a simple translation task, they will likely require additional time and mental labor to become well-acquainted with model specifications developed for the models in other software systems in order to create a faithful translation of the groups model to the required DAKOTA format.
+Adaptation or reimplementation of other code bases introduces an unnecessary potential source of error.
+Another shortcoming of the DAKOTA system is that it does not provide any service to \emph{compare} models.
+Modelers may be interested in what variables overlap between competing models, and may wish to augment the existing models to allow for analysis upon the overlapped portions of two competing models.
+DAKOTA does not offer any approach to help with this task.
+This means that while DAKOTA is a very useful tool for modelers to analyze existing models that they are well-acquainted enough to translate, it does not provide help in performing larger scale model selection, as modelers are still required to do large amounts of setup, reconstruction, and investigation of analysis methods in order to gather useful information from DAKOTA that they can then use to select a model.
+
+\textbf{Need to mention:}
+\begin{enumerate}
+  \item ISI Mint (believe this is the model store)
+  \item GTRI
+  \item Galois
+\end{enumerate}
