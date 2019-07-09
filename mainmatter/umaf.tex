@@ -1,16 +1,37 @@
-\chapter{UNIFIED MODEL ANALYSIS FRAMEWORK\label{chapter:umaf}}
-In order to perform analysis on scientific models found in software we must  extract that necessary associated source code and then represent the model in a form that supports model analysis and comparison within a programming language-agnostic framework.
-The technique developed must be generalizable to allow model extraction from source code of the various programming languages that are used to define scientific models.
-While large variations in syntax exist among the various programming languages used to encode scientific models, they can all be abstracted to a unifying abstract syntax tree (AST) representation \citep{aho1986dragonBook}.
-Constructing an AST representation of a program requires a large number of design decisions that are largely dependent on the intended use-case of the information contained in the AST.
-For the purposes of model selection we are keenly interested in being able to easily inspect data-flow through the AST.
+\chapter{UNIFIED MODEL ASSEMBLY FRAMEWORK\label{chapter:umaf}}
+The Unified Model Assembly Framework (UMAF) is a collection of algorithms designed to transform source code programs into executable models of the real-world system under study.
+In order to accomplish this task, UMAF will use the abstract syntax tree (AST) \citep{aho1986dragonBook} of the original source code program as well as variable grounding information from supporting texts in order to build executable models that are linked to real-world variables.
+Once the variables in each of the competing models are all linked correctly to the real-world variables they represent the models can be compared to one another upon the inclusion and wiring of the various variables that can be present to attempt to describe the real-world system.
+In this chapter I will discuss how the many pieces involved in this framework that accomplish the final goal of creating the executable and comparable models described above.
+This chapter will begin with a background section that covers the modules of the AutoMATES framework that provide input to UMAF.
+Once the inputs to UMAF have been fully covered I will proceed to discuss how UMAF utilizes these inputs to create executable models, named Grounded Function Networks (GrFN), that are linked to real-world variables.
+The main purpose for creating these comparable and executable models is to facilitate model analysis, and many of the model analysis methods we seek to support require probabilistic models that allow for probabilistic inference and sampling techniques to be performed on the model.
+Therefore the third section of this chapter will focus on connecting the semantics of UMAF's GrFN models to the world of probabilistic graphical modeling.
+Finally, the chapter will conclude with an evaluation study that discusses the current program idiom coverage of the UMAF framework as a means to evaluate what types of scientific models that are currently found in source code can be handled by UMAF.
 
-This chapter will begin with a discussion of the AST representation design decisions made to facilitate model extraction from source code.
-Following this discussion will be an explanation on the conversion process from the AST representation of a model to an executable computation graph.
-This chapter will conclude with an analysis of the computational cost of running the computation graph for a model and means of reducing this cost by leveraging vectorized computation and GPU computing resources.
+% In order to perform analysis on scientific models found in software we must  extract that necessary associated source code and then represent the model in a form that supports model analysis and comparison within a programming language-agnostic framework.
+% The technique developed must be generalizable to allow model extraction from source code of the various programming languages that are used to define scientific models.
+% While large variations in syntax exist among the various programming languages used to encode scientific models, they can all be abstracted to a unifying abstract syntax tree (AST) representation \citep{aho1986dragonBook}.
+% Constructing an AST representation of a program requires a large number of design decisions that are largely dependent on the intended use-case of the information contained in the AST.
+% For the purposes of model selection we are keenly interested in being able to easily inspect data-flow through the AST.
+%
+% This chapter will begin with a discussion of the AST representation design decisions made to facilitate model extraction from source code.
+% Following this discussion will be an explanation on the conversion process from the AST representation of a model to an executable computation graph.
+% This chapter will conclude with an analysis of the computational cost of running the computation graph for a model and means of reducing this cost by leveraging vectorized computation and GPU computing resources.
+%
+% At the time of writing this thesis, the \emph{program analysis} (PA) pipeline of the AutoMATES system supports analysis of source code from the Fortran programming language.
+% The AutoMATES project intends to eventually expand the scope of PA to support analysis of other widely used language and for the purposes of \emph{model analysis} (the focus of this thesis), the subtle language differences that will be introduced from different programming languages will be handled by the PA pipeline, before being represented in the intermediate AST form.
 
-At the time of writing this thesis, the \emph{program analysis} (PA) pipeline of the AutoMATES system supports analysis of source code from the Fortran programming language.
-The AutoMATES project intends to eventually expand the scope of PA to support analysis of other widely used language and for the purposes of \emph{model analysis} (the focus of this thesis), the subtle language differences that will be introduced from different programming languages will be handled by the PA pipeline, before being represented in the intermediate AST form.
+\section{An Overview of the Program Analysis Pipeline\label{sec:pa_overview}}
+One of the crucial inputs to UMAF is the extracted AST representation of a source code program provided by the Program Analysis Pipeline (PAP). The pipeline extracts the AST associated with a scientific model using the following process:
+\begin{enumerate}
+  \item Parse the original Fortran parser into a simple AST using the Open Fortran Parser (OFP) % TODO: ADD CITATION
+  \item Translate the AST into a Python source code program
+  \item Separate out each individual value computation into an unnamed lambda function containing the computation.
+  \item Associate each lambda function with a location in a straight-line-code representation that denotes the location of the computation in the original program.
+  \item Deduce update indices for the original program variables so that variable updates in the model can be tracked
+  \item Output all of the separated lambda computations as well as the straight-line-code representation of the original program.
+\end{enumerate}
 
 \section{Extracting Models from Source Code\label{sec:model_extraction}}
 % TODO: Add and re-org to make this section an overview of the program analysis pipeline
