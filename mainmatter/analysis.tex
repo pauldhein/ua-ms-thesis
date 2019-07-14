@@ -75,11 +75,11 @@ This is due to the lack of pairwise-information that the variance-based methods 
 In the following subsections I will discuss Sobol analysis, developed by \citet{sobol2001globalSA}, that will be used to perform variance-based sensitivity analysis upon the extract scientific models and I will address how it has been adapted for use by the SMS pipeline.
 
 \subsubsection{Sampling Inputs with the Sobol Sequence\label{sec:sobol_seq}}
-Sobol analysis is the most widely used version of variance-based sensitivity analysis. The Sobol analysis method gets its name from the sampling method used during analysis. Samples for Sobol analysis are drawn from the Sobol sequence. Defining the precise nature of the Sobol sequence is beyond the scope of this masters thesis; however, we can observe how the Sobol sequence aids sensitivity analysis by observing the differences between draws from the Sobol sequence and draws from a random sample. A visualization of the difference is shown below in figure \ref{sobol_seq_vis}.
+Sobol analysis is the most widely used version of variance-based sensitivity analysis. The Sobol analysis method gets its name from the sampling method used during analysis. Samples for Sobol analysis are drawn from the Sobol sequence. Defining the precise nature of the Sobol sequence is beyond the scope of this masters thesis; however, we can observe how the Sobol sequence aids sensitivity analysis by observing the differences between draws from the Sobol sequence and draws from a random sample. A visualization of the difference is shown below in figure \ref{fig:sobol_seq_vis}.
 
 \FloatBarrier
 \begin{figure}[!htbp]
-    \label{sobol_seq_vis}
+    \label{fig:sobol_seq_vis}
     \centering
     \includegraphics[width=.45\textwidth]{sobol_samples}\hfill
     \includegraphics[width=.45\textwidth]{random_samples}
@@ -91,10 +91,10 @@ Notice that the red, blue, and green draws from the Sobol sequence are much more
 
 \subsubsection{Sensitivity Index Computation\label{sec:si_comp}}
 % TODO: Add more material here to introduce the section
-The sample matrices that must be computed for analysis are defined in algorithm \ref{sobol_sample_alg}. We can see that this sampling algorithm draws $N$ samples of $d$ dimension from the Sobol sequence and then creates $N(d+2)$ samples total to be evaluated by the model. The matrices returned from the sampling step can then be evaluated using the model computation graph. These evaluations will be represented as $f(A) \text{, } f(B) \text{, } f(\textbf{A}_{B}) \text{, and } f(\textbf{B}_{A})$. Once the evaluation step is completed, the evaluations will be analyzed according to the Sobol analyzer. The Sobol analyzer computes three different sensitivity indices using approximation equations for \citet{saltelli2010varianceSA} improved method of Sobol analysis.
+The sample matrices that must be computed for analysis are defined in algorithm \ref{fig:sobol_sample_alg}. We can see that this sampling algorithm draws $N$ samples of $d$ dimension from the Sobol sequence and then creates $N(d+2)$ samples total to be evaluated by the model. The matrices returned from the sampling step can then be evaluated using the model computation graph. These evaluations will be represented as $f(A) \text{, } f(B) \text{, } f(\textbf{A}_{B}) \text{, and } f(\textbf{B}_{A})$. Once the evaluation step is completed, the evaluations will be analyzed according to the Sobol analyzer. The Sobol analyzer computes three different sensitivity indices using approximation equations for \citet{saltelli2010varianceSA} improved method of Sobol analysis.
 
 \begin{figure}
-  \label{sobol_sample_alg}
+  \label{fig:sobol_sample_alg}
     \begin{algorithmic}[1]
       \State $d \gets $ amount of input variables
       \State $N \gets $ amount of desired samples
