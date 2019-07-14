@@ -12,117 +12,135 @@ The structure of a GrFN also allows for the wiring of variables, and computation
 These properties combine to show that UMAF is able to convert models contained in source code programs and described in published texts into GrFNs that can be executed, analyzed, compared, altered, and composed by domain modelers who wish to have as many capabilities as possible when designing scientific models of the real-world systems they study.
 
 \begin{figure}[!htbp]
-    \label{automates_pipeline}
+    \label{fig:automates_pipeline}
     \centering
     \includegraphics[width=.8\columnwidth]{automates_pipeline}%
     \caption[The AutoMATES Pipeline]{A view of the wiring of all the modules of the AutoMATES pipeline. This figure shows the various inputs of the separate \textit{Program Analysis}, \textit{Text Reading}, and \textit{Equation Reading} modules. UMAF is contained in the portions of the pipeline comprising the intermediate representation and model analysis sections. Different colored arrows on the pipeline inputs where blue represents program source code, green represents program documentation, red represents free text found in published works, and orange represents equation images found in published works. As shown in the pipeline, the outputs from the three first modules are combined into an intermediate representation that is used by UMAF to generate models that can then be used in the model analysis phase.}
 \end{figure}
 
-This chapter will begin with a background section that covers the modules of the AutoMATES pipeline (Fig~\ref{automates_pipeline}) that provide input to UMAF.
-Once the inputs to UMAF have been fully covered I will proceed to discuss how UMAF utilizes these inputs to create the functional networks that form the core of a GrFN, as well as discuss how the grounding process is performed upon variables in a GrFN.
+This chapter will begin with a background section that covers the modules of the AutoMATES pipeline (Fig~\ref{fig:automates_pipeline}) that provide input to UMAF.
+Once the inputs to UMAF have been fully covered I will proceed to discuss how UMAF utilizes these inputs to perform the translation to GrFN as shown in Fig~\ref{fig:umaf_diagram}, as well as discuss how the grounding process is performed upon variables in a GrFN.
 The main purpose for transforming source code programs into GrFNs is to facilitate model analysis, and many of the model analysis methods we seek to support require probabilistic models that allow for probabilistic inference and sampling techniques to be performed on the model.
 Therefore the third section of this chapter will focus on connecting the semantics of UMAF's GrFN models to the world of probabilistic graphical modeling.
 Finally, the chapter will conclude with an evaluation study that discusses the current program idiom coverage of UMAF as a means to evaluate what source code programs can be converted by UMAF into GrFN representations of scientific models.
 
-% In order to perform analysis on scientific models found in software we must  extract that necessary associated source code and then represent the model in a form that supports model analysis and comparison within a programming language-agnostic framework.
-% The technique developed must be generalizable to allow model extraction from source code of the various programming languages that are used to define scientific models.
-% While large variations in syntax exist among the various programming languages used to encode scientific models, they can all be abstracted to a unifying abstract syntax tree (AST) representation \citep{aho1986dragonBook}.
-% Constructing an AST representation of a program requires a large number of design decisions that are largely dependent on the intended use-case of the information contained in the AST.
-% For the purposes of model selection we are keenly interested in being able to easily inspect data-flow through the AST.
-%
-% This chapter will begin with a discussion of the AST representation design decisions made to facilitate model extraction from source code.
-% Following this discussion will be an explanation on the conversion process from the AST representation of a model to an executable computation graph.
-% This chapter will conclude with an analysis of the computational cost of running the computation graph for a model and means of reducing this cost by leveraging vectorized computation and GPU computing resources.
-%
-% At the time of writing this thesis, the \emph{program analysis} (PA) pipeline of the AutoMATES system supports analysis of source code from the Fortran programming language.
-% The AutoMATES project intends to eventually expand the scope of PA to support analysis of other widely used language and for the purposes of \emph{model analysis} (the focus of this thesis), the subtle language differences that will be introduced from different programming languages will be handled by the PA pipeline, before being represented in the intermediate AST form.
+\begin{figure}[!htbp]
+    \label{fig:umaf_diagram}
+    \centering
+    \includegraphics[width=\columnwidth]{UMAF}%
+    \caption[Diagram of UMAF]{This figure shows the entirety of the UMAF framework. We see that the framework takes in a function collection, container collection, and variable grounding information from the original source code program and then converts these inputs into a GrFN. The GrFN can then be used for model comparison and analysis, and the results of these processes are packaged into a model report.}
+\end{figure}
 
 \section{UMAF Inputs from the AutoMATES Pipeline\label{sec:umaf_inputs}}
 In this section I will provide a brief overview of the current state of the modules in the AutoMATES pipeline whose outputs serve as input to UMAF.
-The three modules that provide inputs to UMAF are the \textit{Program Analysis Pipeline} (PAP), the \textit{Text Reading Module} (TRM), and the \textit{Equation Reading Module} (ERM). As seen in Fig~\ref{automates_pipeline}, PAP takes a Fortran program as its input and produces an abstract syntax tree of the scientific model portion of the program as its output.
-TRM reads both associated texts from the scientific literature for a particular source code model and the documentation found in source code for that model.
-From these texts the TRM extracts useful information that can be used to link the variables in source code to the real-world values they represent.
-The ERM module can also be used to facilitate this linking process.
-ERM uses images extracted from publications related to the source code models to reconstruct the mathematical equations present in the images.
+The three modules that provide inputs to UMAF are \textit{Program Analysis} (PA), \textit{Text Reading} (TR), and \textit{Equation Reading} (ER). As seen in Fig~\ref{fig:automates_pipeline}, the PA module takes a Fortran program as its input and produces an abstract syntax tree of the scientific model portion of the program as its output.
+The TR module reads both associated texts from the scientific literature for a particular source code model and the documentation found in source code for that model.
+From these texts the TR module extracts useful information that can be used to link the variables in source code to the real-world values they represent.
+The ER module module can also be used to facilitate this linking process.
+The ER module uses images extracted from publications related to the source code models to reconstruct the mathematical equations present in the images.
 These equations can then be linked to mathematical equations extracted from source code in order to assist in linking source code variables to descriptions of variables found in an equation that was present in a publication.
 This process is especially necessary when documentation for the variables found in source code is either missing or incomplete.
 In the following subsections I will briefly describe the methods used by each of these modules in order to obtain the outputs required by UMAF.
 
 \subsection{Overview of the Program Analysis Pipeline\label{sec:pa_overview}}
 In order for UMAF to create a GrFN from source code it requires the source code to be transformed into a representation that captures the computations required to compute the variables contained in a source code program and the wiring of variables in the source code program.
-In order to fulfill both of these requests the Program Analysis Pipeline (PAP) performs a translation from the original source code into two components, a \textit{function collection} that stores the computations required to compute each variable and a \textit{container collection} that records what variables are used in each statement of each code container of the original source program.
+In order to fulfill both of these requests the PA module performs a translation from the original source code into two components, a \textit{function collection} that stores the computations required to compute each variable and a \textit{container collection} that records what variables are used in each statement of each code container of the original source program.
 UMAF will be able to use these two components in order to produce the function network component of a GrFN that explicitly represents the wiring among variables in the GrFN while providing access to inspect the computations used to compute each variable.
-An added component of the functionality of PAP is to translate the source code programs from their initial programming language into a single intermediate representation language that can be read by UMAF.
-This allows for UMAF to focus on translating a single input source (namely the statement list produced by PAP) as opposed to needing to be able to translate all of the many programming languages and idioms into GrFN.
-Currently PAP only translates Fortran programs into the intermediate representation; however, as a component of AutoMATES PAP is intended to translate models written in other languages and programming styles during the lifespan of the project.
+An added component of the functionality of the PA module is to translate the source code programs from their initial programming language into a single intermediate representation language that can be read by UMAF.
+This allows for UMAF to focus on translating a single input source (namely the statement list produced by the PA module) as opposed to needing to be able to translate all of the many programming languages and idioms into GrFN.
+Currently the PA module only translates Fortran programs into the intermediate representation; however, as a component of AutoMATES the PA module is intended to translate models written in other languages and programming styles during the lifespan of the project.
 
-The process conducted by PAP to translate the Fortran source code for a scientific model starts by using the Open Fortran Parser (OFP) \footnote{\url{https://github.com/OpenFortranProject/open-fortran-parser}} in order to extract an abstract syntax tree (AST) \citep{aho1986dragonBook} from the original source code.
-The AST form of the program provides a language-agnostic view of the components of the program that can be a common target for many different source code languages as their first step in the PAP translation.
-PAP will then take advantage of the AST structure to identify containers of portions of code, such as loops and function calls.
+The process conducted by the PA module to translate the Fortran source code for a scientific model starts by using the Open Fortran Parser (OFP) \footnote{\url{https://github.com/OpenFortranProject/open-fortran-parser}} in order to extract an abstract syntax tree (AST) \citep{aho1986dragonBook} from the original source code.
+The AST form of the program provides a language-agnostic view of the components of the program that can be a common target for many different source code languages as their first step in the the PA module translation.
+the PA module will then take advantage of the AST structure to identify containers of portions of code, such as loops and function calls.
 Other containers can exist in the original source code, such as unconditional branching and looping containers created by \texttt{goto} statements.
-A preprocessing step in the PAP system is to translate all unstructured containers into a structured variant that tracks input variables into the container and the output variables expected from the container.
+A preprocessing step in the the PA module system is to translate all unstructured containers into a structured variant that tracks input variables into the container and the output variables expected from the container.
 This is necessary in order to complete the variable wiring for a GrFN across the containers found in the original source code.
 Under each container exists an ordered list of statements.
 Statement are either assignment statements or conditional statements, both of which will produce variables that need to be wired into a GrFN and include a computation that details how the variable is produced as a product of other variables.
 
 Assignment statements represented in an AST will have an explicit variable being assigned and a computation used to perform the assignment.
-This form easily allows PAP to extract the computation that will be separated as a \textit{black-box} function, associated with the variable being assigned, and added to the function collection.
-With a minor amount of inspection, PAP will then determine what variables are used in the computation that need to be wired to the assignment variable as inputs and will then add an entry to the containers statement list in the container collection.
+This form easily allows the PA module to extract the computation that will be separated as a \textit{black-box} function, associated with the variable being assigned, and added to the function collection.
+With a minor amount of inspection, the PA module will then determine what variables are used in the computation that need to be wired to the assignment variable as inputs and will then add an entry to the containers statement list in the container collection.
 While multiple assignment statements to the same variable can occur in a program, GrFN is concerned with the flow of data through the scientific model represented by a program.
-Thus PAP performs the additional task when translating an assignment statement of indexing updates to variables with the same name to preserve the flow of data for the wiring step of GrFN creation.
+Thus the PA module performs the additional task when translating an assignment statement of indexing updates to variables with the same name to preserve the flow of data for the wiring step of GrFN creation.
 In an imperative programming language, conditional statements involve both control-flow actions and data-flow actions.
-PAP handles conditional statements by splitting the statement into a condition evaluation that regulates control flow through the conditional, and a set of decision statements, one per assignment statement found under the conditional that determines the flow of data to the variable assigned under the conditional.
+the PA module handles conditional statements by splitting the statement into a condition evaluation that regulates control flow through the conditional, and a set of decision statements, one per assignment statement found under the conditional that determines the flow of data to the variable assigned under the conditional.
 The computations and wiring required for the condition and decision statements are handled similarly to the assignment statement described above and added to the function collection and statement list of the container collection respectively.
 Once all containers of the original program have been processed, the function collection and container collection are ready to be sent to UMAF, where they will be translated into GrFN.
 
 \subsection{Overview of the Text and Equation Reading Modules \label{sec:ter_overview}}
-While PAP is able to provide all of the wiring needed to create a function network and the computations needed to make the network executable, UMAF requires additional inputs in order to perform the variable grounding necessary to create a GrFN.
-These inputs come from the Text Reading Module (TRM) and the Equations Reading Module (ERM).
+While the PA module is able to provide all of the wiring needed to create a function network and the computations needed to make the network executable, UMAF requires additional inputs in order to perform the variable grounding necessary to create a GrFN.
+These inputs come from the TR Module and the ER Module.
 The information we are interested in gathering from these two modules is a mapping of variables mentioned in the program source code to real-world concepts present in the system being modeled.
-In order to perform the mapping, the TRM module makes use of text information from publications associated with the scientific models, as well as variable documentation present in the source code.
-TRM will first create a list of possible variables that were found in the associated publications.
-Each of these variables will have a text portion associated with it that has been determined to be a description of the variable from the publication.
-TRM can perform the mapping by computing a word-overlap score between the text description of each of the possible variables from the associated publication with the variable documentation snippets found in the source code.
+In order to perform the mapping, the TR module makes use of text information from publications associated with the scientific models, as well as variable documentation present in the source code.
+The TR module will first extract possible variables from the associated publications using the ODIN \footnote{\url{https://github.com/clulab/processors/wiki/ODIN-(Open-Domain-INformer)}} event extraction framework \citep{valenzuela2015Odin}.
+During the extraction process each of variable will have a text portion associated with it that has been determined to be a description of the variable from the publication.
+An example of extracting variables with associated descriptions is shown in Fig~\ref{fig:odin_extraction_example}.
+The TR module can perform the mapping by computing a word-overlap score between the text description of each of the possible variables from the associated publication with the variable documentation snippets found in the source code.
 Descriptions that have high enough overlap are then linked and the variables present in the source code that correspond to the documentation snippet are considered grounded to the variable extracted from the associated publication.
 
+\begin{figure}[!htbp]
+    \label{fig:odin_extraction_example}
+    \centering
+    \includegraphics[width=.8\columnwidth]{TR_Odin_extraction_rules}%
+    \caption[Example Variable Extraction via ODIN]{An example of variables and associated text descriptions being extracted by the ODIN rule-based extraction framework.}
+\end{figure}
+
 However, sometimes documentation snippets do not exist for the variables found in source code, or the documentation could be incomplete.
-In these cases the ERM module can be used to help determine how to correctly ground variables to those found in the associated publication.
-ERM works by transforming images of equations found in the associated publication into a programmatic structure of the computation defined by the equation.
+In these cases the ER module can be used to help determine how to correctly ground variables to those found in the associated publication.
+The ER module works by transforming images of equations found in the associated publication into a programmatic structure of the computation defined by the equation.
 This structure can then be linked to the similar computation contained in the source code, thus linking the computation to the equation in the associated publication.
 Once this is accomplished the variables in the computation will be linked to symbols in the initial equation.
-At that point the TRM module can link descriptions of variables found in the publication text to the symbols found in the equation.
+At that point the TR module can link descriptions of variables found in the publication text to the symbols found in the equation.
 With this final linking, the variables in the source code can now be transitively grounded to the descriptions of variables found in text, without ever requiring documentation about the variables to be present in the source code.
 Using these two modules allows for the majority of variables present in the source code representation of a scientific model to be linked to real-world phenomena, and will give UMAF the information necessary to ground the wiring of the function networks to produce GrFNs that satisfy the condition of being comparable.
 
 \section{Constructing a Grounded Function Network \label{sec:grfn_assembly}}
-These requirements are naturally accomplished by programs that are written according to the dataflow programming idiom \citep{johnston2004dataflowadvances}.
-While traditional programming idioms, such as imperative programming, represent a program as a
-\subsection{Translation to a Data-flow Model \label{sec:trans_to_dfm}}
-\subsection{Extracting a GrFN Execution Graph \label{sec:exec_graph_extraction}}
+The goal of UMAF is to transform the inputs from the PA, TR, and ER modules into a GrFN.
+The first step of this process is to create the function network from the inputs provided by the PA module.
+This process involves a translation step from the imperative representation of a program that is extracted by the PA module to a dataflow representation that can be naturally represented as a function network.
+During the creation of the function network, variables contained in it can be grounded using the outputs from the TR and ER modules.
+The second step required to construct a GrFN is to extract the GrFN execution stack from the function network so that the GrFN can be executed efficiently.
+In this section I will begin with an explanation of both of the steps required to create an executable GrFN.
+Afterwards I will demonstrate an example of the translation process from the original program source code to an executable GrFN.
+
+\subsection{Translation to a Function Network \label{sec:trans_to_dfm}}
+Most programs are written in languages that follow the von Neumann vision of sequential instruction execution.
+This means that programs are defined as a list of instructions that are executed in the sequential order that they are written.
+This representation and execution style is unnatural for a scientific model because models need not be expressed sequentially.
+It is certainly the case that some computations in a scientific model must occur after others; however, there need not be a total ordering upon the computations included in the scientific model.
+The only necessary restriction for executing a scientific model is that all of the inputs for a given function must populate with values before the function can be evaluated.
+This execution style pairs well with programs that are written using the dataflow programming idiom \citep{johnston2004dataflowadvances}.
+While traditional programming idioms, such as imperative programming, represent a program as a sequential list of instructions that are executed in a pre-defined order, dataflow programs are represented as a series of connections between inputs and outputs with connecting operations between them that function as black-box computations \citep{wadge1985lucid}.
+This is the exact same specification as we have required for the function network component of a GrFN, and thus a GrFN is a representation of a dataflow program.
+Therefore the process of creating a GrFN from the inputs provided to UMAF can be reduced to the process of translating an imperative representation of a program to a dataflow representation of a program, and then grounding the variables present in the new dataflow program.
+
+
+
+
+\subsection{Extracting a GrFN Execution Stack \label{sec:exec_graph_extraction}}
 \subsection{Source Code to Computation Graph Example\label{sec:code_to_grfn}}
 To illustrate the process of constructing an executable computation graph from source code, consider the toy model for crop yield example from Figure~\ref{fig:simple_crop_CAG}.
-The Fortran code for this model is shown in Figure~\ref{crop_code} below.
-\FloatBarrier
+The Fortran code for this model is shown in Figure~\ref{fig:crop_code} below.
+
 \begin{figure}[!htbp]
-    \label{crop_code}
+    \label{fig:crop_code}
     \centering
     \includegraphics[width=\columnwidth]{CROP_YIELD_CODE}%
     \caption[Crop Yield Model Source Code]{Fortran source code for the toy model of Crop Yield.}
 \end{figure}
-\FloatBarrier
 
 From inspecting the source code we see that this model has many programming idioms that need to be handled in order to create an executable computation graph for the source code.
 As noted in the figure this includes subroutines, conditional statements, variable declarations, assignment statements, as well as loops.
-The SMS pipeline handles all of these idioms and is able to produce the following executable computation graph, shown in Figure~\ref{crop_grfn_cg} below, that is faithful to the structure of the model found in the source code. In the following section I will delve into the specifics of how the SMS pipeline is able to create an executable computation graph from a source code representation.
+The SMS pipeline handles all of these idioms and is able to produce the following executable computation graph, shown in Figure~\ref{fig:crop_grfn_cg} below, that is faithful to the structure of the model found in the source code. In the following section I will delve into the specifics of how the SMS pipeline is able to create an executable computation graph from a source code representation.
 
-\FloatBarrier
 \begin{figure}[!htbp]
-    \label{crop_grfn_cg}
+    \label{fig:crop_grfn_cg}
     \centering
     \includegraphics[width=\columnwidth]{CROP_YIELD_GrFN}%
     \caption[Crop Yield Model GrFN CG]{Executable computation graph for the toy Crop Yield model.}
 \end{figure}
-\FloatBarrier
 
 
 
