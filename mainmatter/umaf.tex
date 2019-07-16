@@ -117,25 +117,60 @@ This is the exact same specification as we have required for the function networ
 Therefore the process of creating a GrFN from the inputs provided to UMAF can be reduced to the process of translating an imperative representation of a program to a dataflow representation of a program, and then grounding the variables present in the new dataflow program.
 
 While imperative programs are easily expressed as lines of code in flat files, this expression format is unnatural for a dataflow program.
-A dataflow program, such as the GrFN modules created by UMAF are much more naturally expressed as networks.
-
-% NOTE: Pickup the revising here
-As the name suggests, this model representation will be a network.
+A dataflow program, such as the GrFN created by UMAF are much more naturally expressed as networks.
 A \emph{network} is a directed acyclic graph that contains a set of source nodes and a set of sink nodes \citep{bondy1976graph}.
-A node is considered a source node if the in-degree of the node, the number of directed edges arriving at the node, is zero.
+A node is considered a source node if the in-degree of the node, the number of directed edges arriving at the node is zero.
 Similarly a node is considered a sink node if the out-degree of the node, the number of directed edges leaving the node, is zero.
-The name GrFN also implies that this network will be a network with \emph{functions}.
-Indeed this network will include two types of nodes, variable nodes and function nodes.
-This network will be bipartite such that no function node has an edge incident to another function node, and no variable node has an edge incident to another variable node.
-Since GrFN is intended to represent a scientific model, the source variable nodes of the GrFN will be the inputs of the model represented by the GrFN, and the sink node, which will be a variable node, will be the model output.
-It is possible for the model to have some function nodes as sources to the network.
-These represent literal assignment functions.
+The networks used to construct a GrFN are function networks, meaning the network will include two types of nodes, variable nodes and function nodes.
+This network will be bipartite upon the set of variable nodes and the set of function nodes.
+This entails that no function node has an edge incident to another function node, and no variable node has an edge incident to another variable node.
+Since GrFN is intended to represent a scientific model, the source variable nodes of the GrFN will be the model inputs, and the sink node represent the model output.
 
-% TODO: bake this in I guess
-Therefore the translation process will begin with creating a new digraph
-The translation process begins with a sequential walk through the statements contained in each container of the container collection passed in to UMAF by the PA module.
-As a stat
+The function network for a GrFN is created by performing a recursive traversal through each container of the container collection passed in to UMAF by the PA module.
+Translating a container into the function network involves:
+\begin{enumerate}
+  \item Unify inputs to the container from its parent container, with the names used for the inputs in the containers statement list.
+  \item Process the containers statement list one line at a time.
+  \begin{enumerate}
+    \item If the line is a call to a new container:
+    \begin{enumerate}
+      \item Create a new plate in the function network that will contain all of the nodes created by this container.
+      \item Setup the container inputs
+      \item Recurse to and process the child container
+      \item Unify outputs from the child container with the current variables.
+    \end{enumerate}
+    \item Otherwise if the statement is an \texttt{assignment}, \texttt{condition}, or \texttt{decision} statement perform the following operations:
+    \begin{enumerate}
+      \item Generate a new function node containing the computation associated with the statement.
+      \item Create new variable nodes for each input recorded for the statement as well as the statements output.
+      \item Wire the inputs with directed arcs to the new function nodes
+      \item Wire a directed arc from the new function node to the output node
+    \end{enumerate}
+  \end{enumerate}
+  \item Prepare a collection of all of the outputs from the container. This is likely a mixture of container return values and updated variables whose scope survives the scope of the container.
+  \item Back out to the parent contained with the output variable set, or return the completed network if at the root container.
+\end{enumerate}
 
+\begin{figure}[!htbp]
+  \label{fig:grfn_cgs}
+  \centering
+  \subfloat[PETPT GrFN]{
+    \includegraphics[width=0.45\textwidth]{PETPT_GrFN_smaller}
+    \label{fig:petpt_grfn_cg}
+  }
+  \hfill
+  \subfloat[PETASCE GrFN]{
+    \includegraphics[width=0.45\textwidth]{PETASCE_GrFN_smaller}
+    \label{fig:petasce_grfn_cg}
+  }
+  \caption[Evapo-transpiration GrFN Examples]{GrFNs for the PETPT and PETASCE evapo-transpiration modules. The visual representations include the variables, represented as circle nodes, with names derived from the names extracted in the source code and variable name grounding inference; the variable names also include a numeric index representing variable state changes during processing (see text for further details). Function nodes are depicted as squares with a single letter representing the type of function contained at the node. Function types include: assignment (A), conditional (C), decision (D), or literal (L).}
+\end{figure}
+
+The process described above will generate a function network to serve as the basis for a GrFN.
+The only additional processing left to create a GrFN is to complete a traversal of the function network in order to visit every variable node, and to ground the variable nodes that have been linked using the inputs from the TR and ER modules.
+Once the traversal is complete the translation to GrFN has been completed.
+Figure~\ref{fig:grfn_cgs} shows two completed GrFNs one for the ASCE model and one for the Priestley Taylor model of potential evapo-transpiration.
+These GrFNs were translated from the actual Fortran source code for these two models from the DSSAT code base, both of which are available in Appendix~\ref{appendix:a}.
 
 \subsection{Extracting a GrFN Execution Stack \label{sec:exec_graph_extraction}}
 Creating a GrFN allows us to formally represent a scientific model from source code as a dataflow program.
@@ -187,14 +222,18 @@ This ensures that the call stack order will be maintained for the next execution
   \label{fig:petpt_execution_stack}
   \centering
   \begin{tikzpicture}[stack/.style={rectangle split, rectangle split parts=#1,draw, anchor=center}]
-    \node[stack=7]  {
-      \nodepart{one} $petpt\_\_condition\_\_IF\_1\_0, petpt\_\_assign\_\_albedo\_0, petpt\_\_assign\_\_albedo\_1,$ \newline $petpt\_\_assign\_\_td\_0, petpt\_\_assign\_\_slang\_0, petpt\_\_condition\_\_IF\_2\_0,$ $petpt\_\_condition\_\_IF\_2\_1$
-      \nodepart{two}$petpt\_\_decision\_\_albedo\_2$
-      \nodepart{three}$petpt\_\_assign\_\_eeq\_0$
-      \nodepart{four}$petpt\_\_assign\_\_eo\_0, petpt\_\_assign\_\_eo\_1, petpt\_\_assign\_\_eo\_2$
-      \nodepart{five}$petpt\_\_decision\_\_eo\_3$
-      \nodepart{six}$petpt\_\_decision\_\_eo\_4$
-      \nodepart{seven}$petpt\_\_assign\_\_eo\_5$
+    \node[stack=7, text width=15cm, align=center]  {
+      \nodepart{one} \texttt{petpt\_\_condition\_\_IF\_1\_0, petpt\_\_assign\_\_albedo\_0}, \\
+      \texttt{petpt\_\_assign\_\_albedo\_1, petpt\_\_assign\_\_td\_0}, \\
+      \textt{petpt\_\_assign\_\_slang\_0},
+      \texttt{petpt\_\_condition\_\_IF\_2\_0}, \\
+      \texttt{petpt\_\_condition\_\_IF\_2\_1}
+      \nodepart{two}\texttt{petpt\_\_decision\_\_albedo\_2}
+      \nodepart{three}\texttt{petpt\_\_assign\_\_eeq\_0}
+      \nodepart{four}\texttt{petpt\_\_assign\_\_eo\_0}, \texttt{petpt\_\_assign\_\_eo\_1}, \\ \texttt{petpt\_\_assign\_\_eo\_2}
+      \nodepart{five}\texttt{petpt\_\_decision\_\_eo\_3}
+      \nodepart{six}\texttt{petpt\_\_decision\_\_eo\_4}
+      \nodepart{seven}\texttt{petpt\_\_assign\_\_eo\_5}
     };
   \end{tikzpicture}
   \caption[PETPT GrFN Execution Stack]{This figure shows the execution stack partial ordering for the PETPT GrFN model. The names present in the stack correspond to function nodes that are showed in PETPT's NFG diagram in Fig~\ref{fig:petpt_nfg}. Executing all of the function nodes at each stack level in order will complete the execution process for the PETPT GrFN.}
@@ -295,7 +334,7 @@ Since we are free to induce distributions on the input nodes of a GrFN, and all 
 
 \section{GrFN Computation Graph Evaluation Studies\label{sec:grfn_eval}}
 % TODO: Finish writing this section
-UMAF is a component of the AutoMATES pipeline, and as the AutoMATES team has been progress more Fortran programs have been able to be parsed and translated into GrFNs.
+UMAF is a component of the AutoMATES pipeline, and as the AutoMATES team has been progressing more Fortran programs have been able to be parsed and translated into GrFNs.
 This section details two evaluation studies that have been done upon the PA module and UMAF to determine the extent of Fortran constructs we are able to handle affectively, as well as how many scientific models found in DSSAT can be handled by UMAF.
 
 \begin{table}
@@ -349,18 +388,3 @@ This section details two evaluation studies that have been done upon the PA modu
     \caption[Program Analysis Module Evaluation]{Evaluation results for the program analysis module. This evaluation tested the program analysis modules capability to parse and transfer correct GrFN representation wiring for 10 scientific models found in the DSSAT Fortran codebase.}
   \end{table}
 \end{center}
-
-
-\section{Old stuff with no home\label{sec:old_shit}}
-% ==============================================================================
-% TODO: Find a way to incorporate this figure
-Figure~\ref{grfn_cgs} shows examples of extracted GrFN CGs for the PETPT and PETASCE evapo-transpiration modules, derived from actual Fortran source code from the DSSAT code base, both of which are available in Appendix~\ref{appendix:a}.
-\begin{figure}[!tbp]
-  \label{grfn_cgs}
-  \centering
-  \subfloat[PETPT GrFN Computation Graph]{\includegraphics[width=0.45\textwidth]{PETPT_GrFN_smaller}\label{fig:petpt_grfn_cg}}
-  \hfill
-  \subfloat[PETASCE GrFN Computation Graph]{\includegraphics[width=0.45\textwidth]{PETASCE_GrFN_smaller}\label{fig:petasce_grfn_cg}}
-  \caption[GrFN Computation Graph Examples]{Two examples of GrFN computation graphs (CGs). These CG representations include the variables, represented as circle nodes, with names derived from the names extracted in the source code and variable name grounding inference; the variable names also include a numeric index representing variable state changes during processing (see text for further details). Function nodes are depicted as squares with a single letter representing the type of function contained at the node. Function types include: assignment (A), conditional (C), decision (D), or literal (L). Note that in both CGs, the output nodes are variable nodes the inputs of the network can either be variable nodes or literal assignment function nodes.}
-\end{figure}
-% ==============================================================================
