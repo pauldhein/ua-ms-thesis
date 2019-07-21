@@ -48,6 +48,7 @@
 \graphicspath{ {mainmatter/figs/} }
 
 \usepackage{amssymb}
+\usepackage{pifont}% http://ctan.org/pkg/pifont
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{algorithm}
@@ -56,6 +57,9 @@
 % \usepackage{xcolor}
 % \usepackage{minted}
 \MakeRobust{\Call}
+
+\newcommand{\cmark}{\ding{52}}  % NOTE: Use to make a checkmark
+\newcommand{\xmark}{\ding{56}}  % NOTE: Use to make a x-mark
 
 % If you are using hyper-ref (recommended), this command must go after all
 % other package inclusions (from the hyperref package documentation).
