@@ -334,6 +334,7 @@ Not all of the constructs found in the imperative languages will need to present
 However, all of the dataflow present in any imperative programming construct will need to be present in GrFN.
 In Table~\ref{tab:prog_idioms} a list of imperative programming idioms is shown as well as the current GrFN coverage of the idiom.
 
+\FloatBarrier
 \begin{table}
   \centering
   \label{tab:prog_idioms}
@@ -358,6 +359,7 @@ In Table~\ref{tab:prog_idioms} a list of imperative programming idioms is shown 
   \end{tabular}
   \caption[GrFN Program Idiom Coverage]{Programming idiom coverage of the GrFN representation language. Note that many programming idioms may be absent from this table and others that are not normally included are present. This is due to the nature of GrFN as representing a subset of programs that are used to communicate scientific models and needing to represent programs in the form of a graphical model for inference.}
 \end{table}
+\FloatBarrier
 
 \subsection{Fortran to GrFN Translation Evaluation\label{sec:translation_eval}}
 Since the AutoMATES project is still in its early stages, GrFN does not yet cover all the programming idioms it will need in order to guarantee coverage of any source code program, but the programming idioms that are currently covered allow for some source code models in the DSSAT codebase to be translated to GrFN.
@@ -372,6 +374,7 @@ F1 is the harmonic mean of the precision and recall scores, meaning that any low
 Table~\ref{tab:pa_eval_table} shown below records the results for the sample study experiment in terms of which Fortran files were able to be parsed and how accurate the GrFN translation was for the Fortran files that were able to be translated to GrFN.
 As the results of the study indicate, the GrFN translation process was able to achieve perfect accuracy in translation for the source code programs that were able to be translated to GrFN.
 
+\FloatBarrier
 \begin{table}
   \centering
   \label{tab:pa_eval_table}
@@ -398,3 +401,4 @@ As the results of the study indicate, the GrFN translation process was able to a
   }
   \caption[Program Analysis Module Evaluation]{Evaluation results for the program analysis module. This evaluation tested the program analysis modules capability to parse and transfer correct GrFN representation wiring for 10 scientific models found in the DSSAT Fortran codebase.}
 \end{table}
+\FloatBarrier
