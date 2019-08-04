@@ -4,7 +4,8 @@ Modern science is increasingly driven by the use of computational models of comp
 This provides enormous opportunities, including increased precision in predictions, the possibility of better control over reproducibility of results, and the ability to aggregate models from different domains for larger-scale modeling.
 However, realizing the full potential of computational scientific modeling requires addressing a number of new challenges.
 A central challenge is that scientific model software is generally implemented in code bases that do not follow uniform conventions, making it so that model interpretation, selection and integration still requires very labor-intensive manual curation.
-In this thesis I present a computational tool to assist in the process of extracting a representation of models from source code that permits grounding variables to domain concepts and performing model analysis.
-To accomplish this task I will first define how a scientific model can be extracted from source code as a computation graph.
-Using this computation graph I will show how scientific models can be compared via their shared structures and analyzed with existing methods of sensitivity analysis.
-Finally the thesis will conclude with a discussion of how the information gained during model comparison and analysis can be used to inform model selection.
+In this thesis I present the Unified Model Assembly Framework (UMAF), which aims to assist domain scientists with the process of extracting a representation of models from source code that permits grounding variables to domain concepts and performing model analysis.
+To accomplish this task I will first define how information about a scientific model can be extracted from source code.
+Using this information I will then show how an executable scientific model can be developed in the form of a dataflow program.
+I will then show how this executable model can be used for the tasks of model analysis and comparison.
+Finally the thesis will conclude with an evaluation of the current capabilities of the UMAF framework in terms of the amount of source code it can translate into dataflow-based scientific models and the accuracy of translation.
