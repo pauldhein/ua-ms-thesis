@@ -3,10 +3,10 @@ Scientific models are explicit explanations of how observable phenomena influenc
 For the purposes of this thesis, a scientific model will be thought of as a collection of variables that form a system as well as a set of functional relations upon the variables.
 Scientific models are particularly useful when they facilitate the ability to predict the output of a system, given observations of the systems inputs.
 For many systems of observable phenomena that domain modelers are interested in studying multiple competing scientific models of the system exist.
-An example of such a situation is shown in Figure~\ref{fig:simple_crop_CAG} which depicts two competing scientific models of a system of variables that seeks to describe how the yield of a particular crop is affected by changes in the amount of rain and soil water absorption rate over time (expressed in \emph{Day}s).
+An example of such a situation is shown in Figure~\ref{simple_crop_CAG} which depicts two competing scientific models of a system of variables that seeks to describe how the yield of a particular crop is affected by changes in the amount of rain and soil water absorption rate over time (expressed in \emph{Day}s).
 
 \begin{figure}[!htbp]
-  \label{fig:simple_crop_CAG}
+  \label{simple_crop_CAG}
   \centering
   \tikz{ % Simple Crop Yield model example
     \tikzstyle{readable}=[rectangle, thick, rounded corners]
@@ -44,10 +44,10 @@ An example of such a situation is shown in Figure~\ref{fig:simple_crop_CAG} whic
   \caption[Competing Models of Crop Yield]{Two competing scientific models depicting the affects of rain on the yield of a crop over a span of days given a set of input variables (shaded). We see that the two models share many of their inputs but that some inputs may not be shared and the wiring of the inputs to the output variable differs between the two models.}
 \end{figure}
 
-We can see that, while the two scientific models shown in Figure~\ref{fig:simple_crop_CAG} share many variables, some variables are not shared between the two models, and the wiring between these two models is not identical.
-This presents a problem to domain scientists, which of these models is more suitable to use when studying the crop yield system?
+We can see that, while the two scientific models shown in Figure~\ref{simple_crop_CAG} share many variables, some variables are not shared between the two models, and the wiring between these two models is not identical.
+This presents a problem to domain modelers, which of these models is more suitable to use when studying the crop yield system?
 This question is formalized as the model choice problem.
-The model choice problem requires domain scientists to analyze the available competing models of their system of interest and then to select which model will best describes the system for their experimental data.
+The model choice problem requires domain modelers to analyze the available competing models of their system of interest and then to select which model will best describes the system for their experimental data.
 The process of analyzing the available scientific models of a system is formalized as the task of scientific model analysis.
 Scientific model analysis involves the analytical study of scientific models to gain information about one or more scientific models that can be used as metrics of model fitness for a given experiment.
 These metrics of model fitness are especially useful when they are comparative across models such that they can be used to differentiate competing models of the same phenomena.
@@ -62,7 +62,7 @@ Performing the task of model analysis upon scientific models can be described as
   \item Utilize mathematical methods of structural and functional analysis to gather comparative metrics that differentiate the scientific models performance
 \end{enumerate}
 
-Domain scientists normally accomplish the first step of the process of model analysis by reading through the scientific literature to discover scientific models of the systems of phenomena they are interested in studying.
+domain modelers normally accomplish the first step of the process of model analysis by reading through the scientific literature to discover scientific models of the systems of phenomena they are interested in studying.
 Fortunately, in recent years, the scientific models presented in the scientific literature are increasingly expressed as executable software.
 This enables a host of opportunities, including the following:
 \begin{itemize}
@@ -79,25 +79,25 @@ However, having access to the source code implementation of scientific models is
 This is due to the following factors:
 \begin{itemize}
   \item While all the models may be defined in source code, it is likely that not all of the models are defined in the same programming language.
-  \item Similarly, it is likely that not all mathematical methods of analysis that a domain scientist would like to use for step 3 of the model analysis process can be conducted over the source code implementations of models in such various programming languages.
+  \item Similarly, it is likely that not all mathematical methods of analysis that a domain modelers would like to use for step 3 of the model analysis process can be conducted over the source code implementations of models in such various programming languages.
   \item Variables of the natural system under study are not well linked to variables in each of the source code models across the various scientific source code models.
 \end{itemize}
 
 In order to solve these three problems, all of the source code models discovered in step 1 must undergo a translation to a singular programming language.
-The language of choice must also provide access to the mathematical analysis methods that the domain scientist plans on using to conduct model analysis.
+The language of choice must also provide access to the mathematical analysis methods that the domain modelers plans on using to conduct model analysis.
 Once the translation is completed, the variables present in the source code representations of each scientific model must be grounded to phenomena in the real-world system.
 This will allow for a greater degree of comparison between the between the models, especially for metrics that are closely associated with the variables contained in the scientific models.
-Completing these tasks represents a non-trivial amount of work for domain scientists.
+Completing these tasks represents a non-trivial amount of work for domain modelers.
 The task of program translation for the models represented in source code requires scientists to be able to read and translate source code from whatever original programming language is used for each scientific model.
-It is also likely that multiple models are defined in separate languages, requiring domain scientists to learn and be able to translate multiple programming languages in order to have access to all the models they wish to use.
+It is also likely that multiple models are defined in separate languages, requiring domain modelers to learn and be able to translate multiple programming languages in order to have access to all the models they wish to use.
 However, the task is more complex than just language translation.
-Domain scientists must also link variables across the models that represent similar real-world components of the system they are seeking to model.
+domain modelers must also link variables across the models that represent similar real-world components of the system they are seeking to model.
 Since there are no specific rules for variable naming practices, this process could easily involve a large amount of documentation reading, linking of associated texts to code, and close inspection of the functional form of the source code to link it to equations when documentation is sparse.
 
-The combination of these preparatory tasks places an undo burden upon domain scientists if they wish to have access to as many competing scientific models as possible for their own research.
-For many domain scientists, this simple fact leads them to limit the number of scientific models they consider using for their research.
+The combination of these preparatory tasks places an undo burden upon domain modelers if they wish to have access to as many competing scientific models as possible for their own research.
+For many domain modelers, this simple fact leads them to limit the number of scientific models they consider using for their research.
 Fortunately, advances in the fields of program analysis, machine reading, and computer vision have made it possible to largely automate the tasks outlined above.
-Engaging in the automation of the source code model translation step of the model analysis task will increase model usage by domain scientists and ensure that the models being used to study real-world systems have had plenty of competition during the model choice phase.
+Engaging in the automation of the source code model translation step of the model analysis task will increase model usage by domain modelers and ensure that the models being used to study real-world systems have had plenty of competition during the model choice phase.
 
 
 \section{Contributions\label{sec:contributions}}
@@ -130,6 +130,4 @@ The models used in this study will be targeting the natural phenomena of Potenti
 The specific models I will be comparing are the Priestly-Taylor model of Potential Evapo-Transpiration (PETPT) and the ASCE model of Potential Evapo-Transpiration (PETASCE).
 Chapter~\ref{chapter:related_work} will cover previous work that has been done in the areas of scientific model extraction, assembly, analysis, comparison, and composition.
 Chapter~\ref{chapter:umaf} will introduce the algorithms used to assemble models from source code into a form that is both executable and comparable across competing models by utilizing information from source texts to ground variables present in the models.
-Chapter~\ref{chapter:analysis_studies} will introduce the structural and functional methods of analysis that are enabled by UMAF in order to gather information about the models that can inform modelers who wish to solve the problem of model choice between competing models.
-Chapter~\ref{chapter:analysis_studies} will also introduce how the information gathered from analyzing models assembled by UMAF will be presented to domain modelers to aid them with the tasks of model choice and model composition.
 Finally, Chapter~\ref{chapter:conc_and_future} concludes with a discussion of the results and implications of UMAF and will introduce possible extensions for continuing this research.

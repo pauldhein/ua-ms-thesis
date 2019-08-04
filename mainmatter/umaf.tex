@@ -1,14 +1,14 @@
 \chapter{UNIFIED MODEL ASSEMBLY FRAMEWORK\label{chapter:umaf}}
 The Unified Model Assembly Framework (UMAF) is a collection of algorithms designed to transform source code programs into executable models of the real-world system under study.
 In order to accomplish this task, UMAF will use the original source code program as well as variable grounding information from supporting texts in order to build executable models that are linked to real-world variables.
-Domain scientists commonly desire for scientific models to facilitate the inspection of the computations contained in the model and for the wiring of variables in the model to be easily observable.
+domain modelers commonly desire for scientific models to facilitate the inspection of the computations contained in the model and for the wiring of variables in the model to be easily observable.
 To meet these desires, the form of the executable models produced by UMAF will be a function network, a graphical model that shows variables as nodes wired together by the computations of the model, while hiding the actual computations performed in function nodes that can be inspected as necessary.
 UMAF will then utilize information from supporting texts to link the source code variables in the function network to real-world variables in the physical system of interest.
 This process is termed \textit{grounding the variable nodes}, and once this process is complete the function network is now a Grounded Function Network (GrFN), which is the final form of models produced by UMAF.
 
 Due to the function network structure GrFNs are executable and, since they are executable, GrFNs can also be analyzed by functional analysis methods.
 As a side-effect of the variable grounding process, competing GrFNs can be structurally compared upon the wiring of their variables, allowing for comparisons to be made amongst competing GrFNs of the same real-world system.
-The structure of a GrFN also allows for the wiring of variables, and computations among variables to be altered as need be by domain scientists, which also leads to the ability of GrFNs of different systems to be composed into a larger GrFN of the over-arching real-world system.
+The structure of a GrFN also allows for the wiring of variables, and computations among variables to be altered as need be by domain modelers, which also leads to the ability of GrFNs of different systems to be composed into a larger GrFN of the over-arching real-world system.
 These properties combine to show that UMAF is able to convert models contained in source code programs and described in published texts into GrFNs that can be executed, analyzed, compared, altered, and composed by domain modelers who wish to have as many capabilities as possible when designing scientific models of the real-world systems they study.
 
 \begin{figure}[!htbp]
@@ -42,7 +42,7 @@ These equations can then be linked to mathematical equations extracted from sour
 This process is especially necessary when documentation for the variables found in source code is either missing or incomplete.
 In the following subsections I will briefly describe the methods used by each of these modules in order to obtain the outputs required by UMAF.
 
-\subsection{Overview of the Program Analysis Pipeline\label{sec:pa_overview}}
+\subsection{The Program Analysis Pipeline\label{sec:pa_overview}}
 In order for UMAF to create a GrFN from source code it requires the source code to be transformed into a representation that captures the computations required to compute the variables contained in a source code program and the wiring of variables in the source code program.
 In order to fulfill both of these requests the PA module performs a translation from the original source code into two components, a \textit{function collection} that stores the computations required to compute each variable and a \textit{container collection} that records what variables are used in each statement of each code container of the original source program.
 UMAF will be able to use these two components in order to produce the function network component of a GrFN that explicitly represents the wiring among variables in the GrFN while providing access to inspect the computations used to compute each variable.
@@ -69,7 +69,7 @@ the PA module handles conditional statements by splitting the statement into a c
 The computations and wiring required for the condition and decision statements are handled similarly to the assignment statement described above and added to the function collection and statement list of the container collection respectively.
 Once all containers of the original program have been processed, the function collection and container collection are ready to be sent to UMAF, where they will be translated into GrFN.
 
-\subsection{Overview of the Text and Equation Reading Modules \label{sec:ter_overview}}
+\subsection{The Text and Equation Reading Modules \label{sec:ter_overview}}
 While the PA module is able to provide all of the wiring needed to create a function network and the computations needed to make the network executable, UMAF requires additional inputs in order to perform the variable grounding necessary to create a GrFN.
 These inputs come from the TR Module and the ER Module.
 The information we are interested in gathering from these two modules is a mapping of variables mentioned in the program source code to real-world concepts present in the system being modeled.
@@ -134,29 +134,77 @@ Above we specified that GrFN will be acyclic, meaning that no cyclic edges can b
 In order to allow this property to hold and still represent loops as part of the function network, the plate for a loop will imply cyclic edges upon the looping variables that will not be a part of the static function network graph, but will be tracked and used for network traversal during execution.
 
 The function network for a GrFN is created by performing a recursive traversal through each container of the container collection passed in to UMAF by the PA module.
-Translating a container into the function network involves:
-\begin{enumerate}
-  \item Unify inputs to the container from its parent container, with the names used for the inputs in the containers statement list.
-  \item Process the containers statement list one line at a time.
-  \begin{enumerate}
-    \item If the line is a call to a new container:
-    \begin{enumerate}
-      \item Create a new plate in the function network that will contain all of the nodes created by this container.
-      \item Setup the container inputs
-      \item Recurse to and process the child container
-      \item Unify outputs from the child container with the current variables.
-    \end{enumerate}
-    \item Otherwise if the statement is an \texttt{assignment}, \texttt{condition}, or \texttt{decision} statement perform the following operations:
-    \begin{enumerate}
-      \item Generate a new function node containing the computation associated with the statement.
-      \item Create new variable nodes for each input recorded for the statement as well as the statements output.
-      \item Wire the inputs with directed arcs to the new function nodes
-      \item Wire a directed arc from the new function node to the output node
-    \end{enumerate}
-  \end{enumerate}
-  \item Prepare a collection of all of the outputs from the container. This is likely a mixture of container return values and updated variables whose scope survives the scope of the container.
-  \item Back out to the parent contained with the output variable set, or return the completed network if at the root container.
-\end{enumerate}
+Algorithm~\ref{alg:func_net_wiring}, shown below, will generate a function network to serve as the basis for a GrFN.
+The algorithm involves wiring all statements found in each container of the container collection during the recursive traversal of the containers.
+For each container a new function network object is created.
+For the purposes of the algorithm a function network is defined as $N~=~(V,~E,~P)$ where $V$ is the set of vertices in the network, $E$ is the set of edges in the network, and $P$ is the set of plates (or subnetworks) contained in the network $N$.
+Each statement in the container with its corresponding computation from the function collection is wired with its inputs and outputs as edges into $E$ and the nodes used to store the variables and computation are added into $V$.
+Once a new function network has been completely wired from a container it is added to the plate set $P$ for its parent function network.
+This process continues until all containers have been wired into function networks that form a function network for the overall model.
+
+\begin{algorithm}
+  \caption{Function network wiring algorithm}
+  \label{alg:func_net_wiring}
+  \begin{algorithmic}[1]
+    \Procedure{WireNetwork}{$\mathcal{C},~\mathcal{F}$} \Comment{Creates a function network}
+    \State $root \gets \mathcal{C}_{start}$
+    \State $N \gets (V,~E,~P)$
+    \State \Call{WireContainer}{$root,~N,~\mathcal{C},~\mathcal{F}$}
+    \State \Return $N$
+    \EndProcedure
+
+    \Procedure{WireContainer}{$C,~N,~\mathcal{C},~\mathcal{F}$}
+      \ForAll{$s \in C_{statements}$}
+        \If{$type(s) = call$}
+          \State $C^{'} \gets \mathcal{C}(s_{name})$
+          \State $N^{'} \gets (V^{'},~E^{'},~P^{'})$
+          \State $N^{'}_{inputs} \gets \{ N.V(v) \mid v \in s_{inputs} \}$
+          \State \Call{WireContainer}{$C^{'},~N^{'},~\mathcal{C},~\mathcal{F}$}
+          \State $N.P.append(N^{'})$
+          \State $N.V \gets \{ N^{'}.V(v) \mid v \in N^{'}_{outputs} \}$
+          \State $N.E \gets \{ (N.V(v),~N^{'}.V(v^{'})) \mid v \in s_{outputs},~v^{'} \in N^{'}_{outputs} \}$
+        \Else
+          \State $fn \gets \mathcal{F}(s_{name})$
+          \State $N.V.append(s_{inputs},~fn,~s_{output})$
+          \ForAll{$i \in s_{inputs}$}
+            \State $N.E.append((i,~fn))$
+          \EndFor
+          \State $N.E.append((fn,~s_{output}))$
+        \EndIf
+      \EndFor
+      \State \Return
+    \EndProcedure
+  \end{algorithmic}
+\end{algorithm}
+
+% \begin{enumerate}
+%   \item Unify inputs to the container from its parent container, with the names used for the inputs in the containers statement list.
+%   \item Process the containers statement list one line at a time.
+%   \begin{enumerate}
+%     \item If the line is a call to a new container:
+%     \begin{enumerate}
+%       \item Create a new plate in the function network that will contain all of the nodes created by this container.
+%       \item Setup the container inputs
+%       \item Recurse to and process the child container
+%       \item Unify outputs from the child container with the current variables.
+%     \end{enumerate}
+%     \item Otherwise if the statement is an \texttt{assignment}, \texttt{condition}, or \texttt{decision} statement perform the following operations:
+%     \begin{enumerate}
+%       \item Generate a new function node containing the computation associated with the statement.
+%       \item Create new variable nodes for each input recorded for the statement as well as the statements output.
+%       \item Wire the inputs with directed arcs to the new function nodes
+%       \item Wire a directed arc from the new function node to the output node
+%     \end{enumerate}
+%   \end{enumerate}
+%   \item Prepare a collection of all of the outputs from the container. This is likely a mixture of container return values and updated variables whose scope survives the scope of the container.
+%   \item Back out to the parent contained with the output variable set, or return the completed network if at the root container.
+% \end{enumerate}
+
+
+The only additional processing left to create a GrFN is to complete a traversal of the function network in order to visit every variable node, and to ground the variable nodes that have been linked using the inputs from the TR and ER modules.
+Once the traversal is complete the translation to GrFN has been completed.
+Figure~\ref{fig:grfn_cgs} shows two completed GrFNs one for the ASCE model and one for the Priestley Taylor model of potential evapo-transpiration.
+These GrFNs were translated from the actual Fortran source code for these two models from the DSSAT code base, both of which are available in Appendix~\ref{appendix:a}.
 
 \begin{figure}[!htbp]
   \label{fig:grfn_cgs}
@@ -172,12 +220,6 @@ Translating a container into the function network involves:
   }
   \caption[Evapo-transpiration GrFN Examples]{GrFNs for the PETPT and PETASCE evapo-transpiration modules. The visual representations include the variables, represented as circle nodes, with names derived from the names extracted in the source code and variable name grounding inference; the variable names also include a numeric index representing variable state changes during processing (see text for further details). Function nodes are depicted as squares with a single letter representing the type of function contained at the node. Function types include: assignment (A), conditional (C), decision (D), or literal (L).}
 \end{figure}
-
-The process described above will generate a function network to serve as the basis for a GrFN.
-The only additional processing left to create a GrFN is to complete a traversal of the function network in order to visit every variable node, and to ground the variable nodes that have been linked using the inputs from the TR and ER modules.
-Once the traversal is complete the translation to GrFN has been completed.
-Figure~\ref{fig:grfn_cgs} shows two completed GrFNs one for the ASCE model and one for the Priestley Taylor model of potential evapo-transpiration.
-These GrFNs were translated from the actual Fortran source code for these two models from the DSSAT code base, both of which are available in Appendix~\ref{appendix:a}.
 
 \subsection{Creating a GrFN Execution Stack \label{sec:exec_stack_creation}}
 Creating a GrFN allows us to formally represent a scientific model from source code as a dataflow program.
@@ -215,27 +257,36 @@ Therefore a GrFN NFG can be extracted from a GrFN by simply squashing any variab
 Now that we have an NFG we must find the maximum graph distance (MGD) from an input node to every internal and output node in the NFG, where graph distance is the number of directed arcs that must be traversed to go from the source node to the destination node.
 Using this metric will ensure that any function node, $f$, is placed in a deep enough execution level to ensure that all prerequisite functions will have executed before attempting execution of $f$.
 Computing the MGD for each node can be done with a walk over the nodes in the NFG, starting from the inputs and labeling nodes according to the number of arcs traversed during the path to the node from that input.
-The algorithm to conduct this process is shown in Figure~\ref{fig:mgd_algorithm}.
+The algorithm to conduct this process is shown in Figure~\ref{alg:mgd_algorithm}.
 Once the MGD for each node in the NFG has been computed, the MGDs can be used to place nodes of the NFG into execution stack levels.
 Starting at the greatest MGD values, a stack level is created for each unique MGD value.
 After all of the function nodes for a stack level have been placed in the level, the level can be pushed onto the execution stack.
 With all of the execution levels pushed onto the stack, in descending order of MGD, the execution stack can now be used to compute over a GrFN.
 An example of an execution stack for the PETPT Fortran program is shown in Figure~\ref{fig:petpt_nfg}.
 
-\begin{figure}
-  \begin{algorithmic}
-    \State $L_{curr} \gets \{$\textit{NFG input nodes}$\}$
-    \State $l \gets 0$
+% NOTE: from the algorithm caption
+In this code snippet the variable $l$ is used to mark each node in an NFG with a it's level. As the network is traversed levels for nodes will be updated when appropriate. Once the network walk has been completed The set $N_L$ will be returned, which is a set of node names with the corresponding execution stack level of that node.
+
+\begin{algorithm}
+  \caption{Maximum Graph Distance Computation}
+  \label{alg:mgd_algorithm}
+  \begin{algorithmic}[1]
+    \Procedure{MGD}{$G$}
+    \State $L_{curr} \gets \{n \mid n \in G_{nodes} \land isInputNode(n) \}$
+    \State $d \gets 0$
     \While{$L_{curr} \neq \emptyset$}
-    	\State \textit{Mark all members of} $L_{curr}$ \textit{with} $l$
-    	\State $L_{new} \gets \{ c \mid c \in \bigcup\limits_{node \in L_{curr}}$ \textit{children of node}$\}$
-      \State $L_{curr} \gets L_{new}$
+      \ForAll{$l \in L_{curr}$}
+        \State $l_{dist} \gets d$
+      \EndFor
+    	\State \textit{Mark all members of} $L_{curr}$ \textit{with} $e$
+    	\State $L_{curr} \gets \left\{ c \mid c \in \bigcup\limits_{n~\in~L_{curr}}^{} children(n) \right\}$ \Comment{Collect all children of $L_{curr}$}
+      \State $e \gets e + 1$
     \EndWhile
-    \State \Return $N_L \gets \{(node~name,~node~level) \mid node \in$ \textit{NFG nodes} $\}$
+    \State $N_L \gets \{(n_{name},~n_{dist}) \mid n \in G_{nodes} \}$
+    \Return $N_L$
+    \EndProcedure
   \end{algorithmic}
-  \caption[MGD Labeling Algorithm]{The algorithm needed to compute the Maximum Graph Distance (MGD) for each node in a GrFN NFG. In this code snippet the variable $l$ is used to mark each node in an NFG with a it's level. As the network is traversed levels for nodes will be updated when appropriate. Once the network walk has been completed The set $N_L$ will be returned, which is a set of node names with the corresponding execution stack level of that node.}
-  \label{fig:mgd_algorithm}
-\end{figure}
+\end{algorithm}
 
 \begin{figure}[!htbp]
   \label{fig:petpt_execution_stack}
@@ -281,13 +332,30 @@ The main challenge with representing these data types is that they are not singu
 Collections of variables need to have accessors and setters in order to retrieve values from the collection and place values into the collection.
 This presents a problem of representation that will be studied and resolved in future work that extends this thesis.
 
+\begin{algorithm}
+  \caption{GrFN Stack Execution}
+  \label{alg:stack_execution}
+  \begin{algorithmic}[1]
+    \Procedure{Execute}{G, S, I}
+      \State $G_{inputs} \gets I$
+      \ForAll{$stack\_level \in S$}
+        \ForAll{$fn \in stack\_level$}
+          \State $n \gets$ \Call{$fn$}{$fn_{inputs}$}
+          \State $G.V(fn_{output}) \gets n$
+        \EndFor
+      \EndFor
+      \State \Return $G_{output}$
+    \EndProcedure
+  \end{algorithmic}
+\end{algorithm}
+
 \section{Connecting GrFN to Graphical Modeling\label{sec:grfns_are_pgms}}
 Sections \ref{sec:umaf_inputs} and \ref{sec:grfn_assembly} covered the processes necessary for UMAF to translate a source code program to a GrFN as part of the AutoMATES pipeline.
 In section \ref{sec:translation_func_net} the structure of a GrFN was shown to be a dataflow program, and in section \ref{sec:exec_stack_creation} GrFNs were shown to be executable once an execution stack is created for the GrFN.
 GrFNs ability to be executable opens the door for GrFN to be used for model comparison and analysis.
 Since GrFNs are models of observable phenomena they must be able to represent beliefs about uncertainty in the observable variables of the real-world system they represent.
 Doing so will allow GrFNs to be used for methods of analysis that incorporate uncertainty information about model inputs into a measure of comparative model fitness.
-Domain scientists commonly use probabilistic graphical models (PGMs) during the study of observable systems to reason about the uncertainty present in the model \citep{pearl2014probabilistic}; therefore, in this section I will show that GrFNs are type of PGM.
+domain modelers commonly use probabilistic graphical models (PGMs) during the study of observable systems to reason about the uncertainty present in the model \citep{pearl2014probabilistic}; therefore, in this section I will show that GrFNs are type of PGM.
 Once it has been established that a GrFN is a PGM I will show that GrFNs are members of a specific class of PGMs called Dynamic Bayesian Networks (DBNs).
 
 All PGMs are represented as graphs of variables of the system that they are designed to model.
@@ -329,15 +397,28 @@ Afterwards the section will conclude with a discussion of a selection sample stu
 \subsection{General Program Idiom Coverage\label{sec:supported_program_constructs}}
 As discussed previously, many scientific models that currently exist in source code are defined in imperative programming languages.
 While these languages have several differences, they all share a general set of constructs that are used to define the scientific models as source code.
-To make GrFN as useful as possible to domain scientists the translation process that forms a GrFN from the imperative source code will need to be able to handle these constructs.
+To make GrFN as useful as possible to domain modelers the translation process that forms a GrFN from the imperative source code will need to be able to handle these constructs.
 Not all of the constructs found in the imperative languages will need to present in GrFN, since GrFN is a dataflow programming language.
 However, all of the dataflow present in any imperative programming construct will need to be present in GrFN.
-In Table~\ref{tab:prog_idioms} a list of imperative programming idioms is shown as well as the current GrFN coverage of the idiom.
+In Table~\ref{prog_idioms} a list of imperative programming idioms is shown as well as the current GrFN coverage of the idiom.
+
+\subsection{Fortran to GrFN Translation Evaluation\label{sec:translation_eval}}
+Since the AutoMATES project is still in its early stages, GrFN does not yet cover all the programming idioms it will need in order to guarantee coverage of any source code program, but the programming idioms that are currently covered allow for some source code models in the DSSAT codebase to be translated to GrFN.
+In order to determine the extent of GrFN coverage of the DSSAT codebase a sample of $10$ Fortran programs was taken from the DSSAT codebase (in addition to the PETPT and PETASCE models being studied during the course of this thesis).
+This sample of programs was sent through the AutoMATES pipeline to determine how many of the programs could be handled by the PA module and then to determine the accuracy of the GrFN translation of the programs that were parsed correctly by the PA module.
+Programs that failed to be parsed by the PA module were inspected to determine which Fortran construct caused the parser to fail.
+For the purpose of this study accuracy in translation to GrFN will be defined by precision (P), recall (R), and F1 (F1) measures of the directed edges between variable nodes in the GrFN CAG.
+P, R, and F1 are all measures defined over the interval $[0,~1]$ where higher scores represent better performance.
+If additional edges between the nodes in the GrFN are seen in the CAG that do not exist in the original source code the precision score will be lower.
+Equivalently, if directed edges that existed in the source code are not found in the GrFN then the recall score will be lower.
+F1 is the harmonic mean of the precision and recall scores, meaning that any lowering of either of those scores will drastically lower the F1 score.
+Table~\ref{pa_eval_table} shown below records the results for the sample study experiment in terms of which Fortran files were able to be parsed and how accurate the GrFN translation was for the Fortran files that were able to be translated to GrFN.
+As the results of the study indicate, the GrFN translation process was able to achieve perfect accuracy in translation for the source code programs that were able to be translated to GrFN.
 
 \FloatBarrier
 \begin{table}
   \centering
-  \label{tab:prog_idioms}
+  \label{prog_idioms}
   \begin{tabular}{ |c|c| }
    \hline
    \textbf{Imperative Program Idiom} & \textbf{GrFN Representation Status} \\
@@ -359,25 +440,10 @@ In Table~\ref{tab:prog_idioms} a list of imperative programming idioms is shown 
   \end{tabular}
   \caption[GrFN Program Idiom Coverage]{Programming idiom coverage of the GrFN representation language. Note that many programming idioms may be absent from this table and others that are not normally included are present. This is due to the nature of GrFN as representing a subset of programs that are used to communicate scientific models and needing to represent programs in the form of a graphical model for inference.}
 \end{table}
-\FloatBarrier
 
-\subsection{Fortran to GrFN Translation Evaluation\label{sec:translation_eval}}
-Since the AutoMATES project is still in its early stages, GrFN does not yet cover all the programming idioms it will need in order to guarantee coverage of any source code program, but the programming idioms that are currently covered allow for some source code models in the DSSAT codebase to be translated to GrFN.
-In order to determine the extent of GrFN coverage of the DSSAT codebase a sample of $10$ Fortran programs was taken from the DSSAT codebase (in addition to the PETPT and PETASCE models being studied during the course of this thesis).
-This sample of programs was sent through the AutoMATES pipeline to determine how many of the programs could be handled by the PA module and then to determine the accuracy of the GrFN translation of the programs that were parsed correctly by the PA module.
-Programs that failed to be parsed by the PA module were inspected to determine which Fortran construct caused the parser to fail.
-For the purpose of this study accuracy in translation to GrFN will be defined by precision (P), recall (R), and F1 (F1) measures of the directed edges between variable nodes in the GrFN CAG.
-P, R, and F1 are all measures defined over the interval $[0,~1]$ where higher scores represent better performance.
-If additional edges between the nodes in the GrFN are seen in the CAG that do not exist in the original source code the precision score will be lower.
-Equivalently, if directed edges that existed in the source code are not found in the GrFN then the recall score will be lower.
-F1 is the harmonic mean of the precision and recall scores, meaning that any lowering of either of those scores will drastically lower the F1 score.
-Table~\ref{tab:pa_eval_table} shown below records the results for the sample study experiment in terms of which Fortran files were able to be parsed and how accurate the GrFN translation was for the Fortran files that were able to be translated to GrFN.
-As the results of the study indicate, the GrFN translation process was able to achieve perfect accuracy in translation for the source code programs that were able to be translated to GrFN.
-
-\FloatBarrier
 \begin{table}
   \centering
-  \label{tab:pa_eval_table}
+  \label{pa_eval_table}
   \resizebox{\textwidth}{!}{
     \begin{tabular}{ |c|c|c|l| }
       \hline

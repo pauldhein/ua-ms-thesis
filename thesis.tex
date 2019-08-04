@@ -22,6 +22,7 @@
 \usepackage{graphicx}
 \usepackage[caption=false]{subfig}
 \usepackage{natbib}
+% \usepackage{biblatex}
 % natbib is available on most systems, and is terribly handy. If you want to use a different Bibliography package, you should be able to, just change this and the \bibliographystyle command below. Be warned that you may need to do a little hacking to get the REFERENCES item to show up in your TOC.
 
 % Compatibility with the AASTEX package of the American Astronomical Society.
@@ -51,13 +52,15 @@
 \usepackage{pifont}% http://ctan.org/pkg/pifont
 \usepackage{amsmath}
 \usepackage{amsfonts}
-\usepackage{algorithm}
+\usepackage[chapter]{algorithm}
+\usepackage{algorithmicx}
 \usepackage[noend]{algpseudocode}
 \usepackage[T1]{fontenc}
 % \usepackage{xcolor}
 % \usepackage{minted}
 \MakeRobust{\Call}
 
+\renewcommand{\listalgorithmname}{LIST OF ALGORITHMS}
 \newcommand{\cmark}{\ding{52}}  % NOTE: Use to make a checkmark
 \newcommand{\xmark}{\ding{56}}  % NOTE: Use to make a x-mark
 
@@ -96,9 +99,7 @@
 % \statementbyauthor[Clayton T. Morrison\\Professor of Information]
 
 % Include the ``Acknowledgements''
-% NOTE: Only need this if I need to acknowledge any one or any group
-% TODO: Ask Clay if I should acknowledge anyone (maybe UA HPC or some group members?)
-% \incacknowledgements{acknowledgements}
+\incacknowledgements{acknowledgements}
 
 % Include the ``Dedication''
 \incdedication{dedication}
@@ -106,13 +107,15 @@
 \tableofcontents        % Create a ``Table of Contents''
 \listoffigures          % Create a ``List of Figures''
 \listoftables           % Create a ``List of Tables''
+\listofalgorithms       % Create a ``List of Algorithms''
+\addcontentsline{toc}{chapter}{LIST OF ALGORITHMS}
 \incabstract{abstract}  % Include the ``Abstract''
 
 % Include the various chapters
 \include{mainmatter/introduction}
 \include{mainmatter/related_work}
 \include{mainmatter/umaf}
-\include{mainmatter/analysis}
+% \include{mainmatter/analysis}
 \include{mainmatter/conclusion}
 
 % Include the various appendices
