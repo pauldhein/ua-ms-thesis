@@ -1,48 +1,79 @@
 \chapter{RELATED WORK\label{chapter:related_work}}
-\section{Existing Model Composition\label{sec:bgrd_model_composition}}
-New methods have been created in recent years that are beginning to automate the process of extracting scientific models from free text.
-One such method is presented in the Eidos, INDRA, and Delphi \citep{EidosIndraDelphi} pipeline that seeks to extract models from textual documents, such as scientific publications and technical reports.
-This software has seen great success at the task of model extraction and assembly.
-Indeed many models are presented in the scientific literature and sometimes only in the scientific literature without being present in the form of source code in a software repository.
-However modelers will undoubtedly benefit from the reliability guarantees of models that are extracted from source code.
-Due to the nature of free text, identifying and extracting models from free text is very challenging: authors are not forced to write effective procedures, instead describing models at higher levels of descriptions and often eliding information assumed as common-sense (or domain-specific) background knowledge.
-Source code, on the other hand, is explicit.
-Source code also requires full specification in order to be executable, so models extracted from source code may include background assumptions that are left out of textual descriptions.
-A simple example of this phenomena would be the lack of data type information for numerical values. This information is commonly absent from the text descriptions of a model, but is vital in many cases when creating an executable version of the model.
+The work presented in this thesis is related to a wide body of research that shares a common theme of seeking to address the problems faced by domain modelers when attempting to conduct model analysis and comparison.
+Prior work that has been done on these three problems faced by modelers has ranged from domain-specific approaches that focus on assisting a single scientific domain to domain-agnostic general modeling frameworks.
+The frameworks and methods that have been created to assist modelers also have a large degree of variability in how they aim to assist modelers.
+Some tools have a direct impact on the problem of model analysis and comparison by serving as digital toolboxes filled with various analysis tests that can be performed on scientific models.
+Section~\ref{sec:rwork_analysis_compare} will introduce a collection of existing frameworks that seek to assist modelers with scientific model analysis and comparison with the goal of providing an overview of the analysis frameworks available to domain modelers, while describing the differences between the frameworks and explaining their influence on the development of UMAF.
 
-However, extracting models from source code does share at least one of the challenges associated with extracting models from free text:
-associating or \emph{grounding} the variables present in the source code to the aspects of the domain being modeled.
-The approach presented in this thesis makes use of the approach of the Eidos, INDRA, and Delphi system to ground textual mentions of concepts with domain taxonomies.
+Related to these are frameworks that do not directly address the task of model analysis or comparison, but focus on assisting domain modelers with the task of augmenting and composing existing scientific models.
+These frameworks provide a crucial support service for domain modelers by allowing existing scientific models of a single phenomena to be edited or combined and by assembling models of systems of phenomena into larger super-systems of a complex web of phenomena.
+While multiple models are present during the task of model analysis and model composition, a key difference between the two is that the task of analysis requires multiple models of the same system to compete with one another, while the task of composition requires multiple models of all different systems to cooperatively describe a joint system of real-world phenomena.
+In the same vein, the model augmentation does not require multiple models for comparisons to take place, instead the augmentation task requires only a single model and can produce new alternative models via editing the original model.
+The frameworks that address model augmentation and composition vary in how component models are discovered by the framework, in some cases component models must be provided by domain modelers and in others component models are extracted from a variety of sources.
+Section~\ref{sec:rwork_composition} will describe a selection of different frameworks that focus on the tasks of model augmentation and composition with the goal of highlighting the differences in how the various frameworks acquire component models as well as drawing attention to the mechanisms used to augment scientific models or combine scientific models into larger systems.
 
-\section{Manual Model Comparison\label{sec:manual_model_compare}}
-For modelers in many disciplines the current state-of-the art for addressing the problem of model selection is not to use an intelligent tool or service that performs the selection, but to dig into the literature and find examples of model comparisons that have already been done amongst competing models in a given application domain.
-Unsurprisingly, this approach has many disadvantages.
-The obvious initial cost of this approach is that it requires a group of scientists to devote a substantial portion of time to conducting this analysis by hand.
-A second disadvantage of this method is that the analysis performed and documented by research groups in scientific publications is difficult to extend.
-For example the analysis conducted by \citet{camargo2016six} contains information on the sensitivity of the compared models to certain inputs; however, modelers are left without any discussion or investigation into the pairwise affect of inputs on model sensitivity.
-In order for modelers to obtain this information, their best option is to request access to the software used by the authors so that they can manually extend the software to extend the analysis.
-This is a less-than-ideal solution as not only will additional time be required to extend the analysis, but modelers must now rely upon the generosity of the authors to release the software they used to conduct their analysis, otherwise extending the analysis presented would require conducting all of the software design necessary to produce the initial analysis.
-Therefore, it is easy to see how automating the process of model extraction, analysis, and selection would greatly benefit modelers by increasing the extensibility of an analysis.
-
-\section{Domain-specific Modeling Tools\label{sec:domain_model_tools}}
+Some frameworks that seek to solve the model composition task include the means to automate the extraction of scientific models from various sources.
+This introduces the task of model extraction and assembly, which assists domain modelers by discovering and verifying potential scientific models.
+The frameworks that focus on this task share the highest degree of similarity with UMAF, as the chief function of UMAF is to be an extraction/assembly framework.
+Scientific models can be expressed in any of many different structural representations, and this availability of representation has encouraged the development of several model extraction/assembly frameworks that focus on the extraction of models from a particular form of structured representation.
+While UMAF focuses on extracting models from source code as a structured representation, there are many other existing frameworks that extract models from sources such as natural language, structured data, and visual diagrams.
+Section~\ref{sec:rwork_extract_assemble} will survey frameworks that focus on extracting models from the structured representations listed above, and will explain how these alternate methods of model extraction influenced the development of UMAFs extraction methods were accurate and capable of extracting a majority of the models we expect to find in source code.
 
 
-\section{General Modeling Frameworks\label{sec:gen_model_frameworks}}
-Current tools such as the DAKOTA system make advances towards a generalized framework that provides modelers analysis tools that can be used to study and compare models \citep{adams2009dakota}.
-DAKOTA has been an excellent resource for modelers because of the many evaluation methods that are provided for model study.
-However DAKOTA has some disadvantages.
-The most notable disadvantage of the DAKOTA system is that modelers are still required to undergo the labor-intensive task of translating their models by hand into the pre-defined DAKOTA format.
-Not only does the labor and time present a barrier to entry for modelers wishing to use the DAKOTA system, but this system comes with an additional barrier for modelers who wish to use models from other researchers.
-While the modelers will likely be familiar with the structure of their own models, allowing for a simple translation task, they will likely require additional time and mental labor to become well-acquainted with model specifications developed for the models in other software systems in order to create a faithful translation of the groups model to the required DAKOTA format.
-Adaptation or reimplementation of other code bases introduces an unnecessary potential source of error.
-Another shortcoming of the DAKOTA system is that it does not provide any service to \emph{compare} models.
-Modelers may be interested in what variables overlap between competing models, and may wish to augment the existing models to allow for analysis upon the overlapped portions of two competing models.
-DAKOTA does not offer any approach to help with this task.
-This means that while DAKOTA is a very useful tool for modelers to analyze existing models that they are well-acquainted enough to translate, it does not provide help in performing larger scale model selection, as modelers are still required to do large amounts of setup, reconstruction, and investigation of analysis methods in order to gather useful information from DAKOTA that they can then use to select a model.
+\section{Model Analysis and Comparison Frameworks \label{sec:rwork_analysis_compare}}
+The usage and pervasiveness of scientific models has ensured that scientific model analysis and comparison are the most studied topics by researchers who seek to assist domain modelers.
+Consequentially the work done related to model analysis and comparison spans a large breadth of systems that vary from fully manual analyses to frameworks that introduce collections of automatic methods to analyze and compare scientific models provided to the framework by domain modelers.
+The research of \citet{camargo2016six} provides a case study example of a manual model analysis and comparison.
+Their work focused on comparing six competing models of root-water uptake.
+In their analysis they compare the models based on the variables that are present, and use analysis methods to show which variables differentiate the models the most as a surrogate for the true value of root-water uptake.
+From this manual analysis we find that a key concern for modelers is to understand the differences between model output based upon the inputs to the model.
+The lesson learned for designing UMAF from observing the results of this work is that we will need to be able to recognize when variables are shared between competing models and the models produced by UMAF will need need to support execution to enable simulation studies.
 
-\textbf{Need to mention:}
-\begin{enumerate}
-  \item ISI Mint (believe this is the model store)
-  \item GTRI
-  \item Galois
-\end{enumerate}
+\citet{peckham2017reproducible} introduced an automated domain-specific modeling toolkit known as TopoFlow.
+This toolkit provides many forms of analysis to be conducted on hydrologic models, and the researchers argue the need for domain specific knowledge to be present when conducting analysis of models.
+UMAF incorporates this concept into the design of GrFN models through the grounding step that links variables in the models to the real-world phenomena to which the variables correspond.
+One of the most well known tools that pioneered domain-independent frameworks for model analysis is the DAKOTA framework for design optimization, parameter estimation, uncertainty quantification, and sensitivity analysis \citep{adams2009dakota}.
+This framework presents domain modelers with a large toolbox of methods of analysis for the study and comparison of scientific models.
+DAKOTA requires domain modelers to specify the models they wish to analyze with a DAKOTA specification that requires explicit wiring and computation information as well as a specification for all variables contained in the models.
+UMAF adopts the DAKOTA strategy of ensuring explicit representations of variables, wiring between variables, and computations amongst the variables present in the models it produces; however, UMAF differs from DAKOTA and other analysis frameworks by providing a mechanism to assemble explicit models from source code.
+
+\section{Model Augmentation and Composition Frameworks \label{sec:rwork_composition}}
+Studying competing scientific models of a system of real-world phenomena is critical to ensuring that the most accurate model is being used to make predictions about the real-world system.
+However, once models have been analyzed, a common secondary goal is to update the original models or to combine models into larger models of a grander system of real-world variables.
+Since the goal of UMAF is to assemble models that can be augmented and composed into larger models it is worthwhile to review what previous work has been done to address these tasks.
+Model augmentation is the process of changing a component of a model to either increase model accuracy or adapt the model to a different system than the original model was intended to be used for.
+The work done by \citet{semanticModels2019} introduces \texttt{SemanticModels.jl}\footnote{\url{https://github.com/jpfairbanks/SemanticModels.jl}}, which provides a formal connection of model augmentation to mathematical category theory, and is largely focused on transforming models from modeling one set of scientific phenomena to another, mostly by expanding the set of variables.
+\texttt{SemanticModels.jl} requires models to be explicitly defined graph-based structures with variables that are explicitly typed in order for transformations to be performed upon the models.
+This coincides with the planned explicit representation of models that will be produced by UMAF.
+
+The model augmentation produced by \texttt{SemanticModels.jl} is closely related to model composition as normally the augmentation adds variables that expand the overall scope of the model.
+Model composition goes further than this to directly address the task of how to combine existing models of multiple phenomena into a meta-model.
+The work of \citet{gil2018mint} introduces the Model INTegration framework (MINT) that accomplishes the goal of model composition through enabling the creation of workflows that combine together many existing models stored in MINT's semantic model catalog.
+Representing scientific models as workflows is not unique to the MINT framework, the work done by \citet{fei2010dataflow} introduced the VIEW system, which was also focused on composing models into scientific workflows.
+What is interesting about VIEW is that an emphasis was placed on scientific workflows being representations of dataflow through a composition of models.
+UMAF utilizes this dataflow approach for the models extracted from scientific source code, as the dataflow representation of a scientific model is a much more natural form to present to domain modelers that allows for easy visual inspection of how variables are used and combined in a scientific model.
+For each of the composition frameworks discussed above a critical component is for the variables included in the models to be explicitly linked to real-world phenomena.
+This crucial step allows inputs and outputs of models to be aligned and permits model composition to occur.
+In order to enable this, the models produced by UMAF will ensure that all variables contained in the models are linked to observable variables in the real-world from the information extracted by other components of the AutoMATES pipeline.
+
+\section{Model Extraction and Assembly Frameworks \label{sec:rwork_extract_assemble}}
+While the design of UMAF is directly informed by the prior work done on the tasks of model analysis, comparison, augmentation, and composition, the true purpose of UMAF is to extract and assemble models.
+However, UMAF is not the first framework to provide assistance to modelers with the task of automatically extracting and assembling scientific models.
+Prior work has been done on this task and has focused on extracting scientific models from a wide range of sources.
+The prior work done by \citet{gyori2017word} produced the Integrated Network and Dynamical Reasoning Assembler (INDRA), which was capable of using natural language processing systems to extract information about signaling pathways from published texts.
+With the aid of Pathway Commons, developed by \citet{cerami2010pathway}, this information was transformed into scientific models of the signaling pathways described in the textual sources.
+
+The extraction methods presented in INDRA were later extended by \citet{EidosIndraDelphi} to form the Eidos, INDRA, and Delphi pipeline that generalized the extraction methods in INDRA to create scientific models from published texts for any scientific domain.
+Eidos provides the pipeline with a new form of model extraction from causal statements, which represents a new data type to extract models from, even if the source material is still free text from scientific publications.
+Delphi plays the role of model assembler that combines the information extracted from Eidos and INDRA into Causal Analysis Graphs that represent scientific models in a form that permits statistical inference during analysis.
+The focus on ensuring that assembled scientific models permit statistical inference is another key takeaway that was used during the development of UMAF, as one of the goals of UMAF is to ensure that scientific models generated during UMAF permit as many forms of analysis as possible.
+
+The extraction methods covered so far all focus on extracting from unstructured textual sources.
+While these methods are highly valuable, the accuracy of the models extracted is at the very least questionable as errors will always be present in the extraction systems as well as error from the authors in transcribing the model into text.
+Some of the error in extraction can be eliminated by instead utilizing structured sources of information.
+This is the approach taken by \citet{nigam2015datums} who develop a method for deriving executable scientific models of networks of biological reactions from formalized experimental findings called \textit{datums}.
+\textit{Datums} limit the error induced by the extraction method for producing a scientific model by utilizing a data source that includes structured information that can be leveraged to better inform model assembly.
+However, error is still possible even when using datums, because this method is still open to error caused from faulty transcription of datums that are used for assembly.
+UMAF pushes the boundaries of error minimization in model extraction by using source code as a data source for the creation of scientific models.
+While errors in transcription are still possible in source code, the specification in its original form must have still been executable.
+This provides a guaranteed amount of error elimination from the model transcription phase that is unparalleled by the other data sources presented here that have been used as inputs to a model extraction and assembly framework.
