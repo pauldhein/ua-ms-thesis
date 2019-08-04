@@ -1,12 +1,26 @@
 \chapter{INTRODUCTION\label{chapter:introduction}}
+The nature of scientific models is a deep philosophical topic \citep{giere2010explaining}, \citep{morrison2009models}, \citep{frigg2006models}.
+Scientific models play an integral role in making predictions about as well as explaining how aspects of the physical world behave.
+For the purposes of this thesis, we will consider a very abstracted view of scientific models as assertions about a collection of variables that refer to aspects of the world, along with a set of functional relations between variables that stipulate how the state of one variable is a function of zero or more other variables.
+This form of scientific model can be depicted as a graph, such as the model shown in Fig~\ref{fig:example_sci_model}.
+As shown in the figure, scientific models can be used to study real-world systems by providing sets of inputs values to the model and observing the model outputs.
+
+\begin{figure}[!htbp]
+  \label{fig:example_sci_model}
+  \centering
+  \includegraphics[width=\textwidth]{example_scientific_model}
+  \caption[An Example of a Scientific Model]{An illustration of a scientific model that shows how a distribution over a model input can be used to make predictions about the models output.}
+\end{figure}
+
+
 Scientific models are explicit explanations of how observable phenomena influence one another as a system.
 For the purposes of this thesis, a scientific model will be thought of as a collection of variables that form a system as well as a set of functional relations upon the variables.
 Scientific models are particularly useful when they facilitate the ability to predict the output of a system, given observations of the systems inputs.
 For many systems of observable phenomena that domain modelers are interested in studying multiple competing scientific models of the system exist.
-An example of such a situation is shown in Figure~\ref{simple_crop_CAG} which depicts two competing scientific models of a system of variables that seeks to describe how the yield of a particular crop is affected by changes in the amount of rain and soil water absorption rate over time (expressed in \emph{Day}s).
+An example of such a situation is shown in Figure~\ref{fig:simple_crop_CAG} which depicts two competing scientific models of a system of variables that seeks to describe how the yield of a particular crop is affected by changes in the amount of rain and soil water absorption rate over time (expressed in \emph{Day}s).
 
 \begin{figure}[!htbp]
-  \label{simple_crop_CAG}
+  \label{fig:simple_crop_CAG}
   \centering
   \tikz{ % Simple Crop Yield model example
     \tikzstyle{readable}=[rectangle, thick, rounded corners]
@@ -44,7 +58,7 @@ An example of such a situation is shown in Figure~\ref{simple_crop_CAG} which de
   \caption[Competing Models of Crop Yield]{Two competing scientific models depicting the affects of rain on the yield of a crop over a span of days given a set of input variables (shaded). We see that the two models share many of their inputs but that some inputs may not be shared and the wiring of the inputs to the output variable differs between the two models.}
 \end{figure}
 
-We can see that, while the two scientific models shown in Figure~\ref{simple_crop_CAG} share many variables, some variables are not shared between the two models, and the wiring between these two models is not identical.
+We can see that, while the two scientific models shown in Figure~\ref{fig:simple_crop_CAG} share many variables, some variables are not shared between the two models, and the wiring between these two models is not identical.
 This presents a problem to domain modelers, which of these models is more suitable to use when studying the crop yield system?
 This question is formalized as the model choice problem.
 The model choice problem requires domain modelers to analyze the available competing models of their system of interest and then to select which model will best describes the system for their experimental data.

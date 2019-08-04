@@ -146,60 +146,39 @@ This process continues until all containers have been wired into function networ
   \caption{Function network wiring algorithm}
   \label{alg:func_net_wiring}
   \begin{algorithmic}[1]
-    \Procedure{WireNetwork}{$\mathcal{C},~\mathcal{F}$} \Comment{Creates a function network}
-    \State $root \gets \mathcal{C}_{start}$
-    \State $N \gets (V,~E,~P)$
-    \State \Call{WireContainer}{$root,~N,~\mathcal{C},~\mathcal{F}$}
+    \Procedure{WireNetwork}{$\mathcal{C},~\mathcal{F}$} \Comment{Creates a GrFN}
+    \State $root \gets \Call{getRootContainer}{\mathcal{C}}$
+    \State $N \gets$ \Call{WireContainer}{$root,~\mathcal{C},~\mathcal{F}$}
     \State \Return $N$
     \EndProcedure
 
-    \Procedure{WireContainer}{$C,~N,~\mathcal{C},~\mathcal{F}$}
-      \ForAll{$s \in C_{statements}$}
-        \If{$type(s) = call$}
-          \State $C^{'} \gets \mathcal{C}(s_{name})$
-          \State $N^{'} \gets (V^{'},~E^{'},~P^{'})$
-          \State $N^{'}_{inputs} \gets \{ N.V(v) \mid v \in s_{inputs} \}$
-          \State \Call{WireContainer}{$C^{'},~N^{'},~\mathcal{C},~\mathcal{F}$}
-          \State $N.P.append(N^{'})$
-          \State $N.V \gets \{ N^{'}.V(v) \mid v \in N^{'}_{outputs} \}$
-          \State $N.E \gets \{ (N.V(v),~N^{'}.V(v^{'})) \mid v \in s_{outputs},~v^{'} \in N^{'}_{outputs} \}$
-        \Else
-          \State $fn \gets \mathcal{F}(s_{name})$
-          \State $N.V.append(s_{inputs},~fn,~s_{output})$
-          \ForAll{$i \in s_{inputs}$}
-            \State $N.E.append((i,~fn))$
+    \Procedure{WireContainer}{$C,~\mathcal{C},~\mathcal{F}$} \Comment{Creates a function network}
+      \State $N \gets (V,~E,~P)$
+      \ForAll{$s \in C.statements$} \Comment{Process the containers statements}
+        \If{$\Call{type}{s} = call$} \Comment{Perform wiring for container $s$}
+          \State $C^{'} \gets \Call{getContainerFrom}{s.name,~\mathcal{C}}$
+          \State $N^{'} \gets$ \Call{WireContainer}{$C^{'},~\mathcal{C},~\mathcal{F}$}
+          \State $N^{'}.inputs \gets \{ v \mid v \in N.V ~\land~ v \in s.inputs \}$
+          \ForAll{$(i,~o) \in N^{'}.inputs, N^{'}.outputs$}
+            \State \Call{push}{$o,~N.V$}
+            \State \Call{push}{$(i,~o),~N.E$}
           \EndFor
-          \State $N.E.append((fn,~s_{output}))$
+          \State \Call{push}{$N^{'},~N.P$}
+        \Else \Comment{Wire inputs and outputs for statement $s$}
+          \State $fn \gets \mathcal{F}(s.name)$
+          \State \Call{push}{$s.output,~N.V$}
+          \State \Call{push}{$fn,~N.V$}
+          \State \Call{push}{$(fn,~s.output),~N.E$}
+          \ForAll{$i \in s.inputs$}
+            \State \Call{push}{$i,~N.V$}
+            \State \Call{push}{$(i,~fn),~N.E$}
+          \EndFor
         \EndIf
       \EndFor
-      \State \Return
+      \State \Return $N$
     \EndProcedure
   \end{algorithmic}
 \end{algorithm}
-
-% \begin{enumerate}
-%   \item Unify inputs to the container from its parent container, with the names used for the inputs in the containers statement list.
-%   \item Process the containers statement list one line at a time.
-%   \begin{enumerate}
-%     \item If the line is a call to a new container:
-%     \begin{enumerate}
-%       \item Create a new plate in the function network that will contain all of the nodes created by this container.
-%       \item Setup the container inputs
-%       \item Recurse to and process the child container
-%       \item Unify outputs from the child container with the current variables.
-%     \end{enumerate}
-%     \item Otherwise if the statement is an \texttt{assignment}, \texttt{condition}, or \texttt{decision} statement perform the following operations:
-%     \begin{enumerate}
-%       \item Generate a new function node containing the computation associated with the statement.
-%       \item Create new variable nodes for each input recorded for the statement as well as the statements output.
-%       \item Wire the inputs with directed arcs to the new function nodes
-%       \item Wire a directed arc from the new function node to the output node
-%     \end{enumerate}
-%   \end{enumerate}
-%   \item Prepare a collection of all of the outputs from the container. This is likely a mixture of container return values and updated variables whose scope survives the scope of the container.
-%   \item Back out to the parent contained with the output variable set, or return the completed network if at the root container.
-% \end{enumerate}
-
 
 The only additional processing left to create a GrFN is to complete a traversal of the function network in order to visit every variable node, and to ground the variable nodes that have been linked using the inputs from the TR and ER modules.
 Once the traversal is complete the translation to GrFN has been completed.
@@ -254,37 +233,52 @@ Therefore a GrFN NFG can be extracted from a GrFN by simply squashing any variab
     \caption[PETPT GrFN Network Flow Graph]{This figure is a visualization of the Network Flow Graph (NFG) for the PETPT model. The nodes in this graph represent function nodes in the PETPT GrFN and connections between nodes represent the flow of data through the function nodes in the PETPT GrFN.}
 \end{figure}
 
-Now that we have an NFG we must find the maximum graph distance (MGD) from an input node to every internal and output node in the NFG, where graph distance is the number of directed arcs that must be traversed to go from the source node to the destination node.
+Now that we have an NFG we must find the maximum graph distance (MGD) from an input node to every internal and output node in the NFG.
+Graph distance is defined as the number of directed arcs that must be traversed to go from a source node to a destination node.
 Using this metric will ensure that any function node, $f$, is placed in a deep enough execution level to ensure that all prerequisite functions will have executed before attempting execution of $f$.
-Computing the MGD for each node can be done with a walk over the nodes in the NFG, starting from the inputs and labeling nodes according to the number of arcs traversed during the path to the node from that input.
-The algorithm to conduct this process is shown in Figure~\ref{alg:mgd_algorithm}.
-Once the MGD for each node in the NFG has been computed, the MGDs can be used to place nodes of the NFG into execution stack levels.
-Starting at the greatest MGD values, a stack level is created for each unique MGD value.
-After all of the function nodes for a stack level have been placed in the level, the level can be pushed onto the execution stack.
-With all of the execution levels pushed onto the stack, in descending order of MGD, the execution stack can now be used to compute over a GrFN.
-An example of an execution stack for the PETPT Fortran program is shown in Figure~\ref{fig:petpt_nfg}.
-
-% NOTE: from the algorithm caption
-In this code snippet the variable $l$ is used to mark each node in an NFG with a it's level. As the network is traversed levels for nodes will be updated when appropriate. Once the network walk has been completed The set $N_L$ will be returned, which is a set of node names with the corresponding execution stack level of that node.
+UMAF computes the MGD for each node in a GrFN NFG using Algorithm~\ref{alg:mgd_algorithm} shown below, which computes the MGDs by walking over the nodes in the NFG, starting from the inputs and labeling nodes according to the number of arcs traversed during the path to the node from that input.
 
 \begin{algorithm}
   \caption{Maximum Graph Distance Computation}
   \label{alg:mgd_algorithm}
   \begin{algorithmic}[1]
-    \Procedure{MGD}{$G$}
-    \State $L_{curr} \gets \{n \mid n \in G_{nodes} \land isInputNode(n) \}$
-    \State $d \gets 0$
-    \While{$L_{curr} \neq \emptyset$}
-      \ForAll{$l \in L_{curr}$}
-        \State $l_{dist} \gets d$
-      \EndFor
-    	\State \textit{Mark all members of} $L_{curr}$ \textit{with} $e$
-    	\State $L_{curr} \gets \left\{ c \mid c \in \bigcup\limits_{n~\in~L_{curr}}^{} children(n) \right\}$ \Comment{Collect all children of $L_{curr}$}
-      \State $e \gets e + 1$
-    \EndWhile
-    \State $N_L \gets \{(n_{name},~n_{dist}) \mid n \in G_{nodes} \}$
-    \Return $N_L$
+    \Procedure{MGD}{$F$} \Comment{F is a GrFN Network Flow Graph}
+      \State $N \gets \{n \mid n \in F.V~\land~\Call{isInputNode}{n, F} \}$ \Comment{Initialize $N$ from $F$}
+      \State $d \gets 1$
+      \While{$N \neq \emptyset$}
+        \ForAll{$n \in N$}
+          \State $n.dist \gets d$ \Comment{Mark nodes with current distance}
+        \EndFor
+      	\State $N \gets \left\{ c \mid c \in \bigcup\limits_{n~\in~N}^{} \Call{isSuccessorOf}{c, n} \right\}$ \Comment{Collect successors of $N$}
+        \State $d \gets d + 1$
+      \EndWhile
+      \State \Return $d$
     \EndProcedure
+  \end{algorithmic}
+\end{algorithm}
+
+Once the MGD for each node in the NFG has been computed, the MGDs can be used to place nodes of the NFG into execution stack levels.
+Adding all function nodes to the appropriate execution stack levels completes the creation of the GrFN execution stack and ensures that the GrFN can be efficiently executed.
+Algorithm~\ref{alg:exec_stack_creation} shown below details the steps required to fully create a GrFN execution stack.
+Starting at the greatest MGD values, a stack level is created for each unique MGD value.
+After all of the function nodes for a stack level have been placed in the level, the level can be pushed onto the execution stack.
+With all of the execution levels pushed onto the stack, in descending order of MGD, the execution stack can now be used to compute over a GrFN.
+The execution stack for the PETPT Fortran program is shown in Figure~\ref{fig:petpt_nfg} below.
+
+\begin{algorithm}
+  \caption{GrFN Execution Stack Creation}
+  \label{alg:exec_stack_creation}
+  \begin{algorithmic}[1]
+    \Procedure{CreateExecStack}{$G$} \Comment{G is a GrFN}
+      \State $F \gets$ \Call{toNetworkFlowGraph}{$G$}
+      \State $depth \gets $\Call{MGD}{$F$} \Comment{Annotate $F$ with MGD values}
+      \State $S \gets [[~]_{1} \ldots [~]_{depth}]$ \Comment{Initialize execution stack}
+      \ForAll{$n \in F$}
+        \State $l \gets n.dist$
+        \State \Call{push}{$n,~S[l]$} \Comment{Add $n$ to stack level $l$ in $S$}
+      \EndFor
+      \State \Return $S$
+      \EndProcedure
   \end{algorithmic}
 \end{algorithm}
 
@@ -307,6 +301,7 @@ In this code snippet the variable $l$ is used to mark each node in an NFG with a
   \caption[PETPT GrFN Execution Stack]{This figure shows the execution stack partial ordering for the PETPT GrFN model. The names present in the stack correspond to function nodes that are showed in PETPT's NFG diagram in Fig~\ref{fig:petpt_nfg}. Executing all of the function nodes at each stack level in order will complete the execution process for the PETPT GrFN.}
 \end{figure}
 
+Algorithm~\ref{alg:stack_execution} shown below describes the detailed procedure necessary to compute the output of a GrFN for an input set.
 Computing a GrFN with an execution stack is as simple as popping execution levels one at a time, executing all function nodes in the level in any order, and then repeating with the next level until no levels remain.
 During execution, popped execution levels from the execution stack can be pushed onto a new stack.
 After execution, the execution levels can be popped from the temporary stack and pushed back on to the original execution stack.
@@ -315,6 +310,25 @@ During execution, a GrFN utilizes a value storage tag at each variable node.
 When it is time to execute a function node the input data for the function node is gathered from the value tag of each parent variable node to the function node.
 The output from the function node is stored in the value tag of the variable node that is the child of the function node.
 After all function nodes have been executed the output variable node of the GrFN will have the computed output value stored in its value tag.
+
+\begin{algorithm}
+  \caption{Input Set Execution on GrFN}
+  \label{alg:stack_execution}
+  \begin{algorithmic}[1]
+    \Procedure{Execute}{G, S, I} \Comment{G is a GrFN and I is an input set}
+      \State \Call{setInputs}{$G,~I$} \Comment{Assign values in $I$ to $G$}
+      \ForAll{$L \in S$} \Comment{Loop over each stack level in $S$}
+        \ForAll{$fn \in L$} \Comment{Loop over function nodes in level $L$}
+          \State $args \gets$ \Call{predecessorsOf}{$fn$}
+          \State $out \gets$ \Call{successorsOf}{$fn$}
+          \State $n \gets$ \Call{$fn$}{$args$} \Comment{Evaluate the function node}
+          \State \Call{setNodeValue}{$out,~n,~G$}
+        \EndFor
+      \EndFor
+      \State \Return \Call{getOutput}{$G$} \Comment{Return the value of the output node of $G$}
+    \EndProcedure
+  \end{algorithmic}
+\end{algorithm}
 
 \subsection{Data Type Assignment\label{sec:data_type_assg}}
 So far I have discussed the wiring needed to create the computation graph that will allow a GrFN to be executed, and I have described the processes necessary to make the GrFN executable.
@@ -331,23 +345,6 @@ The infrastructure to represent complex data types such as Arrays, user-defined 
 The main challenge with representing these data types is that they are not singular variables, but are instead collections of variables.
 Collections of variables need to have accessors and setters in order to retrieve values from the collection and place values into the collection.
 This presents a problem of representation that will be studied and resolved in future work that extends this thesis.
-
-\begin{algorithm}
-  \caption{GrFN Stack Execution}
-  \label{alg:stack_execution}
-  \begin{algorithmic}[1]
-    \Procedure{Execute}{G, S, I}
-      \State $G_{inputs} \gets I$
-      \ForAll{$stack\_level \in S$}
-        \ForAll{$fn \in stack\_level$}
-          \State $n \gets$ \Call{$fn$}{$fn_{inputs}$}
-          \State $G.V(fn_{output}) \gets n$
-        \EndFor
-      \EndFor
-      \State \Return $G_{output}$
-    \EndProcedure
-  \end{algorithmic}
-\end{algorithm}
 
 \section{Connecting GrFN to Graphical Modeling\label{sec:grfns_are_pgms}}
 Sections \ref{sec:umaf_inputs} and \ref{sec:grfn_assembly} covered the processes necessary for UMAF to translate a source code program to a GrFN as part of the AutoMATES pipeline.
@@ -400,7 +397,7 @@ While these languages have several differences, they all share a general set of 
 To make GrFN as useful as possible to domain modelers the translation process that forms a GrFN from the imperative source code will need to be able to handle these constructs.
 Not all of the constructs found in the imperative languages will need to present in GrFN, since GrFN is a dataflow programming language.
 However, all of the dataflow present in any imperative programming construct will need to be present in GrFN.
-In Table~\ref{prog_idioms} a list of imperative programming idioms is shown as well as the current GrFN coverage of the idiom.
+In Table~\ref{tab:prog_idioms} a list of imperative programming idioms is shown as well as the current GrFN coverage of the idiom.
 
 \subsection{Fortran to GrFN Translation Evaluation\label{sec:translation_eval}}
 Since the AutoMATES project is still in its early stages, GrFN does not yet cover all the programming idioms it will need in order to guarantee coverage of any source code program, but the programming idioms that are currently covered allow for some source code models in the DSSAT codebase to be translated to GrFN.
@@ -412,38 +409,40 @@ P, R, and F1 are all measures defined over the interval $[0,~1]$ where higher sc
 If additional edges between the nodes in the GrFN are seen in the CAG that do not exist in the original source code the precision score will be lower.
 Equivalently, if directed edges that existed in the source code are not found in the GrFN then the recall score will be lower.
 F1 is the harmonic mean of the precision and recall scores, meaning that any lowering of either of those scores will drastically lower the F1 score.
-Table~\ref{pa_eval_table} shown below records the results for the sample study experiment in terms of which Fortran files were able to be parsed and how accurate the GrFN translation was for the Fortran files that were able to be translated to GrFN.
+Table~\ref{tab:pa_eval_table} records the results for the sample study experiment in terms of which Fortran files were able to be parsed and how accurate the GrFN translation was for the Fortran files that were able to be translated to GrFN.
 As the results of the study indicate, the GrFN translation process was able to achieve perfect accuracy in translation for the source code programs that were able to be translated to GrFN.
 
 \FloatBarrier
-\begin{table}
+\begin{table}[!htpb]
   \centering
-  \label{prog_idioms}
-  \begin{tabular}{ |c|c| }
-   \hline
-   \textbf{Imperative Program Idiom} & \textbf{GrFN Representation Status} \\
-   \hline
-   Variable Declarations & Included \\
-   Assignment Statement & Included \\
-   Conditional Statement & Included \\
-   Procedure Calls & Included \\
-   Indexed Loops & Included \\
-   Open-ended Loops & In Progress \\
-   Case Statements & In Progress \\
-   File I/O & In Progress \\
-   Array Indexing & In Progress \\
-   Derived Types & In Progress \\
-   Multiple/Variable Outputs & Future \\
-   Early Exit & Future \\
-   Error Cases & Future \\
-   \hline
-  \end{tabular}
+  \label{tab:prog_idioms}
+  \resizebox{0.8\textwidth}{!}{
+    \begin{tabular}{ |c|c| }
+     \hline
+     \textbf{Imperative Program Idiom} & \textbf{GrFN Representation Status} \\
+     \hline
+     Variable Declarations & Included \\
+     Assignment Statement & Included \\
+     Conditional Statement & Included \\
+     Procedure Calls & Included \\
+     Indexed Loops & Included \\
+     Open-ended Loops & In Progress \\
+     Case Statements & In Progress \\
+     File I/O & In Progress \\
+     Array Indexing & In Progress \\
+     Derived Types & In Progress \\
+     Multiple/Variable Outputs & Future \\
+     Early Exit & Future \\
+     Error Cases & Future \\
+     \hline
+    \end{tabular}
+  }
   \caption[GrFN Program Idiom Coverage]{Programming idiom coverage of the GrFN representation language. Note that many programming idioms may be absent from this table and others that are not normally included are present. This is due to the nature of GrFN as representing a subset of programs that are used to communicate scientific models and needing to represent programs in the form of a graphical model for inference.}
 \end{table}
 
 \begin{table}
   \centering
-  \label{pa_eval_table}
+  \label{tab:pa_eval_table}
   \resizebox{\textwidth}{!}{
     \begin{tabular}{ |c|c|c|l| }
       \hline

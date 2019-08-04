@@ -9,7 +9,6 @@
     linenos
   ]
   {fortran}
-C=======================================================================
       SUBROUTINE PETPT(
      &    MSALB, SRAD, TMAX, TMIN, XHLAI,                 !Input
      &    EO)                                             !Output
@@ -39,8 +38,6 @@ C=======================================================================
       RETURN
       END SUBROUTINE PETPT
 !-----------------------------------------------------------------------
-!     PETPT VARIABLES:
-!-----------------------------------------------------------------------
 ! ALBEDO  Reflectance of soil-crop surface (fraction)
 ! EEQ     Equilibrium evaporation (mm/d)
 ! EO      Potential evapotranspiration rate (mm/d)
@@ -52,8 +49,6 @@ C=======================================================================
 ! TMIN    Minimum daily temperature (C)
 ! XHLAI   Leaf area index (m2[leaf] / m2[ground])
 !-----------------------------------------------------------------------
-!     END SUBROUTINE PETPT
-C=======================================================================
 \end{minted}
 
 \section{ASCE PET Model Source Code \label{sec:asce_src_code}}
@@ -65,7 +60,6 @@ C=======================================================================
     linenos
   ]
   {fortran}
-C=======================================================================
       SUBROUTINE PETASCE(
      &        CANHT, DOY, MSALB, MEEVP, SRAD, TDEW,       !Input
      &        TMAX, TMIN, WINDHT, WINDRUN, XHLAI,         !Input
@@ -86,7 +80,6 @@ C=======================================================================
       REAL FCD, TK4, RNL, RN, G, WINDSP, WIND2m, Cn, Cd, KCMAX, RHMIN
       REAL WND, CHT
       REAL REFET, SKC, KCBMIN, KCBMAX, KCB, KE, KC
-!-----------------------------------------------------------------------
 !     ASCE Standardized Reference Evapotranspiration
 !     Average temperature (ASCE Standard Eq. 2)
       TAVG = (TMAX + TMIN) / 2.0 !deg C
@@ -196,5 +189,4 @@ C=======================================================================
       EO = MAX(EO,0.0001)
       RETURN
       END SUBROUTINE PETASCE
-!-------------------------------------------------------------------
 \end{minted}

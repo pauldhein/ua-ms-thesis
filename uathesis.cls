@@ -980,31 +980,31 @@ The University of Arizona, #4
 %% This was modified from the definition for listoffigures from
 %% 2001/04/21 v1.4e book.cls.
 %%
-\renewcommand{\listoffigures}{%
-% This bracket begins an unnmaed environment in which we will temporarily
-% override the document's page style and margins
-{
-\renewcommand{\baselinestretch}{1}	% single spaced here
-\small\normalsize					% size switch to make the spacing behave
-
-    \if@twocolumn
-      \@restonecoltrue\onecolumn
-    \else
-      \@restonecolfalse
-    \fi
-	% vspace added to account for the TOC, LOF, & LOT running header business.
-    \chapter*{\vspace*{-0.5in}\listfigurename}%
-
-	% \markboth{\protect\raisebox{-0.5in}{\textbf{\emph{\listfigurename} -- Continued}\hspace{1.5in}} }{
-	% 		  \protect\raisebox{-0.5in}{\hspace{1.5in}\textbf{\emph{\listfigurename} -- Continued}} }
-	\markboth{\protect\raisebox{-0.5in}{{\emph{\listfigurename} -- Continued}\hspace{1.5in}} }{
-			  \protect\raisebox{-0.5in}{\hspace{1.5in}{\emph{\listfigurename} -- Continued}} }
-
-	\addcontentsline{toc}{chapter}{\listfigurename}
-    \@starttoc{lof}%
-    \if@restonecol\twocolumn\fi
-}
-}
+% \renewcommand{\listoffigures}{%
+% % This bracket begins an unnmaed environment in which we will temporarily
+% % override the document's page style and margins
+% {
+% \renewcommand{\baselinestretch}{1}	% single spaced here
+% \small\normalsize					% size switch to make the spacing behave
+%
+%     \if@twocolumn
+%       \@restonecoltrue\onecolumn
+%     \else
+%       \@restonecolfalse
+%     \fi
+% 	% vspace added to account for the TOC, LOF, & LOT running header business.
+%     \chapter*{\vspace*{-0.5in}\listfigurename}%
+%
+% 	% \markboth{\protect\raisebox{-0.5in}{\textbf{\emph{\listfigurename} -- Continued}\hspace{1.5in}} }{
+% 	% 		  \protect\raisebox{-0.5in}{\hspace{1.5in}\textbf{\emph{\listfigurename} -- Continued}} }
+% 	\markboth{\protect\raisebox{-0.5in}{{\emph{\listfigurename} -- Continued}\hspace{1.5in}} }{
+% 			  \protect\raisebox{-0.5in}{\hspace{1.5in}{\emph{\listfigurename} -- Continued}} }
+%
+% 	\addcontentsline{toc}{chapter}{\listfigurename}
+%     \@starttoc{lof}%
+%     \if@restonecol\twocolumn\fi
+% }
+% }
 
 %%---------------------------- List of Tables -------------------------
 %%
@@ -1013,32 +1013,32 @@ The University of Arizona, #4
 %% This was modified from the definition for listoffigures from
 %% 2001/04/21 v1.4e book.cls.
 %%
-\renewcommand{\listoftables}{%
-% This bracket begins an unnmaed environment in which we will temporarily
-% override the document's page style and margins
-{
-\renewcommand{\baselinestretch}{1}	% single spaced here
-\small\normalsize					% size switch to make the spacing behave
-
-    \if@twocolumn
-      \@restonecoltrue\onecolumn
-    \else
-      \@restonecolfalse
-    \fi
-	% vspace added to account for the TOC, LOF, & LOT running header business.
-    \chapter*{\vspace*{-0.5in}\listtablename}%
-
-	% \markboth{\protect\raisebox{-0.5in}{\textbf{\emph{\listtablename} -- Continued}\hspace{1.5in}} }{
-	% 		  \protect\raisebox{-0.5in}{\hspace{1.5in}\textbf{\emph{\listtablename} -- Continued}} }
-	\markboth{\protect\raisebox{-0.5in}{{\emph{\listtablename} -- Continued}\hspace{1.5in}} }{
-			  \protect\raisebox{-0.5in}{\hspace{1.5in}{\emph{\listtablename} -- Continued}} }
-
-	\addcontentsline{toc}{chapter}{\listtablename}
-    \@starttoc{lot}%
-    \if@restonecol\twocolumn\fi
-}
-
-\clearpage
-\addtolength{\headsep}{-0.5in}		% Un-adjust things for the running
-\addtolength{\textheight}{0.5in}	% headers for TOC, LOF, LOT.
-}
+% \renewcommand{\listoftables}{%
+% % This bracket begins an unnmaed environment in which we will temporarily
+% % override the document's page style and margins
+% {
+% \renewcommand{\baselinestretch}{1}	% single spaced here
+% \small\normalsize					% size switch to make the spacing behave
+%
+%     \if@twocolumn
+%       \@restonecoltrue\onecolumn
+%     \else
+%       \@restonecolfalse
+%     \fi
+% 	% vspace added to account for the TOC, LOF, & LOT running header business.
+%     \chapter*{\vspace*{-0.5in}\listtablename}%
+%
+% 	% \markboth{\protect\raisebox{-0.5in}{\textbf{\emph{\listtablename} -- Continued}\hspace{1.5in}} }{
+% 	% 		  \protect\raisebox{-0.5in}{\hspace{1.5in}\textbf{\emph{\listtablename} -- Continued}} }
+% 	\markboth{\protect\raisebox{-0.5in}{{\emph{\listtablename} -- Continued}\hspace{1.5in}} }{
+% 			  \protect\raisebox{-0.5in}{\hspace{1.5in}{\emph{\listtablename} -- Continued}} }
+%
+% 	\addcontentsline{toc}{chapter}{\listtablename}
+%     \@starttoc{lot}%
+%     \if@restonecol\twocolumn\fi
+% }
+%
+% \clearpage
+% \addtolength{\headsep}{-0.5in}		% Un-adjust things for the running
+% \addtolength{\textheight}{0.5in}	% headers for TOC, LOF, LOT.
+% }

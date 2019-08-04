@@ -56,8 +56,8 @@
 \usepackage{algorithmicx}
 \usepackage[noend]{algpseudocode}
 \usepackage[T1]{fontenc}
-% \usepackage{xcolor}
-% \usepackage{minted}
+\usepackage{xcolor}
+\usepackage{minted}
 \MakeRobust{\Call}
 
 \renewcommand{\listalgorithmname}{LIST OF ALGORITHMS}
@@ -104,12 +104,25 @@
 % Include the ``Dedication''
 \incdedication{dedication}
 
-\tableofcontents        % Create a ``Table of Contents''
+
+% Create a ``Table of Contents''
+\tableofcontents
+
+% Setting figures, tables, and algs list to be on the same page.
 \listoffigures          % Create a ``List of Figures''
+\begingroup
+\let\clearpage\relax
 \listoftables           % Create a ``List of Tables''
 \listofalgorithms       % Create a ``List of Algorithms''
+\endgroup
+
+% Adding entries for each list to the ToC
+\addcontentsline{toc}{chapter}{LIST OF FIGURES}
+\addcontentsline{toc}{chapter}{LIST OF TABLES}
 \addcontentsline{toc}{chapter}{LIST OF ALGORITHMS}
-\incabstract{abstract}  % Include the ``Abstract''
+
+% Include the ``Abstract''
+\incabstract{abstract}
 
 % Include the various chapters
 \include{mainmatter/introduction}
@@ -119,8 +132,8 @@
 \include{mainmatter/conclusion}
 
 % Include the various appendices
-% \appendix
-% \include{appendix_A}
+\appendix
+\include{appendix_A}
 
 % Switch the spacing to single-spaced for the references
 \renewcommand{\baselinestretch}{1}		% changing the value
