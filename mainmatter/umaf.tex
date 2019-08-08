@@ -12,10 +12,10 @@ The structure of a GrFN also allows for the wiring of variables, and computation
 These properties combine to show that UMAF is able to convert models contained in source code programs and described in published texts into GrFNs that can be executed, analyzed, compared, altered, and composed by domain modelers who wish to have as many capabilities as possible when designing models of the real-world systems they study.
 
 \begin{figure}[!htbp]
-    \label{fig:automates_pipeline}
     \centering
     \includegraphics[width=.8\columnwidth]{automates_pipeline}%
     \caption[The AutoMATES Pipeline]{A view of the wiring of all the modules of the AutoMATES pipeline. This figure shows the various inputs of the separate \textit{Program Analysis}, \textit{Text Reading}, and \textit{Equation Reading} modules. UMAF is contained in the portions of the pipeline comprising the intermediate representation and model analysis sections. Different colored arrows on the pipeline inputs where blue represents program source code, green represents program documentation, red represents free text found in published works, and orange represents equation images found in published works. As shown in the pipeline, the outputs from the three first modules are combined into an intermediate representation that is used by UMAF to generate models that can then be used in the model analysis phase.}
+    \label{fig:automates_pipeline}
 \end{figure}
 
 This chapter will begin with a background section that covers the modules of the AutoMATES pipeline (Fig~\ref{fig:automates_pipeline}) that provide input to UMAF.
@@ -25,10 +25,10 @@ Therefore the third section of this chapter will focus on connecting the semanti
 Finally, the chapter will conclude with an evaluation study that discusses the current program idiom coverage of UMAF as a means to evaluate what source code programs can be converted by UMAF into GrFN representations of models.
 
 \begin{figure}[!htbp]
-    \label{fig:umaf_diagram}
     \centering
     \includegraphics[width=\columnwidth]{UMAF}%
     \caption[Diagram of UMAF]{This figure shows the entirety of the UMAF framework. We see that the framework takes in a function collection, container collection, and variable grounding information from the original source code program and then converts these inputs into a GrFN. The GrFN can then be used for model comparison and analysis, and the results of these processes are packaged into a model report.}
+    \label{fig:umaf_diagram}
 \end{figure}
 
 \section{UMAF Inputs from the AutoMATES Pipeline\label{sec:umaf_inputs}}
@@ -81,10 +81,10 @@ The TR module can perform the mapping by computing a word-overlap score between 
 Descriptions that have high enough overlap are then linked and the variables present in the source code that correspond to the documentation snippet are considered grounded to the variable extracted from the associated publication.
 
 \begin{figure}[!htbp]
-    \label{fig:odin_extraction_example}
     \centering
     \includegraphics[width=.8\columnwidth]{TR_Odin_extraction_rules}%
     \caption[Example Variable Extraction via ODIN]{An example of variables and associated text descriptions being extracted by the ODIN rule-based extraction framework.}
+    \label{fig:odin_extraction_example}
 \end{figure}
 
 However, sometimes documentation snippets do not exist for the variables found in source code, or the documentation could be incomplete.
@@ -186,18 +186,16 @@ Figure~\ref{fig:grfn_cgs} shows two completed GrFNs one for the ASCE model and o
 These GrFNs were translated from the actual Fortran source code for these two models from the DSSAT code base, both of which are available in Appendix~\ref{appendix:a}.
 
 \begin{figure}[!htbp]
-  \label{fig:grfn_cgs}
   \centering
   \subfloat[PETPT GrFN]{
     \includegraphics[width=0.45\textwidth]{PETPT_GrFN_smaller}
-    \label{fig:petpt_grfn_cg}
   }
   \hfill
   \subfloat[PETASCE GrFN]{
     \includegraphics[width=0.45\textwidth]{PETASCE_GrFN_smaller}
-    \label{fig:petasce_grfn_cg}
   }
   \caption[Evapo-transpiration GrFN Examples]{GrFNs for the PETPT and PETASCE evapo-transpiration modules. The visual representations include the variables, represented as circle nodes, with names derived from the names extracted in the source code and variable name grounding inference; the variable names also include a numeric index representing variable state changes during processing (see text for further details). Function nodes are depicted as squares with a single letter representing the type of function contained at the node. Function types include: assignment (A), conditional (C), decision (D), or literal (L).}
+  \label{fig:grfn_cgs}
 \end{figure}
 
 \subsection{Creating a GrFN Execution Stack \label{sec:exec_stack_creation}}
@@ -227,10 +225,11 @@ A GrFN is bipartite \citep{bondy1976graph} with respect to the variable and func
 Therefore a GrFN NFG can be extracted from a GrFN by simply squashing any variable node between a pair of function nodes into a singular edge connecting the two function nodes.
 
 \begin{figure}[!htbp]
-    \label{fig:petpt_nfg}
+
     \centering
     \includegraphics[width=\columnwidth]{PETPT_GrFN_NFG}%
     \caption[PETPT GrFN Network Flow Graph]{This figure is a visualization of the Network Flow Graph (NFG) for the PETPT model. The nodes in this graph represent function nodes in the PETPT GrFN and connections between nodes represent the flow of data through the function nodes in the PETPT GrFN.}
+    \label{fig:petpt_nfg}
 \end{figure}
 
 Now that we have an NFG we must find the maximum graph distance (MGD) from an input node to every internal and output node in the NFG.
@@ -263,7 +262,7 @@ Algorithm~\ref{alg:exec_stack_creation} shown below details the steps required t
 Starting at the greatest MGD values, a stack level is created for each unique MGD value.
 After all of the function nodes for a stack level have been placed in the level, the level can be pushed onto the execution stack.
 With all of the execution levels pushed onto the stack, in descending order of MGD, the execution stack can now be used to compute over a GrFN.
-The execution stack for the PETPT Fortran program is shown in Figure~\ref{fig:petpt_nfg} below.
+The execution stack for the PETPT Fortran program is shown in Figure~\ref{fig:petpt_execution_stack} below.
 
 \begin{algorithm}
   \caption{GrFN Execution Stack Creation}
@@ -283,7 +282,6 @@ The execution stack for the PETPT Fortran program is shown in Figure~\ref{fig:pe
 \end{algorithm}
 
 \begin{figure}[!htbp]
-  \label{fig:petpt_execution_stack}
   \centering
   \resizebox{\textwidth}{!}{
     \begin{tikzpicture}[stack/.style={rectangle split, rectangle split parts=#1,draw, anchor=center}]
@@ -299,6 +297,7 @@ The execution stack for the PETPT Fortran program is shown in Figure~\ref{fig:pe
     \end{tikzpicture}
   }
   \caption[PETPT GrFN Execution Stack]{This figure shows the execution stack partial ordering for the PETPT GrFN model. The names present in the stack correspond to function nodes that are showed in PETPT's NFG diagram in Fig~\ref{fig:petpt_nfg}. Executing all of the function nodes at each stack level in order will complete the execution process for the PETPT GrFN.}
+  \label{fig:petpt_execution_stack}
 \end{figure}
 
 Algorithm~\ref{alg:stack_execution} shown below describes the detailed procedure necessary to compute the output of a GrFN for an input set.
@@ -368,10 +367,10 @@ The dependencies shown are also entail a conditional dependence of child nodes u
 Therefore the directed edges of a GrFN function network do represent the conditional dependencies between the variable nodes they contain, meaning that GrFNs are indeed bayesian networks.
 
 \begin{figure}[!tbp]
-  \label{fig:petpt_cag}
   \centering
   \includegraphics[width=0.8\textwidth]{PETPT_GrFN_CAG}
   \caption[PETPT GrFN Causal Analysis Graph]{An illustration of the Causal Analysis Graph (CAG) extracted from the GrFN for the PETPT evapo-transpiration model.}
+  \label{fig:petpt_cag}
 \end{figure}
 
 Within the class of bayesian networks exists a subclass of networks known as Dynamic Bayesian Networks (DBNs).
@@ -415,7 +414,6 @@ As the results of the study indicate, the GrFN translation process was able to a
 \FloatBarrier
 \begin{table}[!htpb]
   \centering
-  \label{tab:prog_idioms}
   \resizebox{0.8\textwidth}{!}{
     \begin{tabular}{ |c|c| }
      \hline
@@ -438,11 +436,11 @@ As the results of the study indicate, the GrFN translation process was able to a
     \end{tabular}
   }
   \caption[GrFN Program Idiom Coverage]{Programming idiom coverage of the GrFN representation language. Note that many programming idioms may be absent from this table and others that are not normally included are present. This is due to the nature of GrFN as representing a subset of programs that are used to communicate models and needing to represent programs in the form of a graphical model for inference.}
+  \label{tab:prog_idioms}
 \end{table}
 
 \begin{table}
   \centering
-  \label{tab:pa_eval_table}
   \resizebox{\textwidth}{!}{
     \begin{tabular}{ |c|c|c|l| }
       \hline
@@ -465,5 +463,6 @@ As the results of the study indicate, the GrFN translation process was able to a
     \end{tabular}
   }
   \caption[Program Analysis Module Evaluation]{Evaluation results for the program analysis module. This evaluation tested the program analysis modules capability to parse and transfer correct GrFN representation wiring for 10 models found in the DSSAT Fortran codebase.}
+  \label{tab:pa_eval_table}
 \end{table}
 \FloatBarrier
