@@ -1,7 +1,7 @@
 \chapter{UNIFIED MODEL ASSEMBLY FRAMEWORK\label{chapter:umaf}}
 The Unified Model Assembly Framework (UMAF) is a collection of algorithms designed to transform source code programs into executable models of the real-world system under study.
 In order to accomplish this task, UMAF will use the original source code program as well as variable grounding information from supporting texts in order to build executable models that are linked to real-world variables.
-domain modelers commonly desire for scientific models to facilitate the inspection of the computations contained in the model and for the wiring of variables in the model to be easily observable.
+domain modelers commonly desire for models to facilitate the inspection of the computations contained in the model and for the wiring of variables in the model to be easily observable.
 To meet these desires, the form of the executable models produced by UMAF will be a function network, a graphical model that shows variables as nodes wired together by the computations of the model, while hiding the actual computations performed in function nodes that can be inspected as necessary.
 UMAF will then utilize information from supporting texts to link the source code variables in the function network to real-world variables in the physical system of interest.
 This process is termed \textit{grounding the variable nodes}, and once this process is complete the function network is now a Grounded Function Network (GrFN), which is the final form of models produced by UMAF.
@@ -9,7 +9,7 @@ This process is termed \textit{grounding the variable nodes}, and once this proc
 Due to the function network structure GrFNs are executable and, since they are executable, GrFNs can also be analyzed by functional analysis methods.
 As a side-effect of the variable grounding process, competing GrFNs can be structurally compared upon the wiring of their variables, allowing for comparisons to be made amongst competing GrFNs of the same real-world system.
 The structure of a GrFN also allows for the wiring of variables, and computations among variables to be altered as need be by domain modelers, which also leads to the ability of GrFNs of different systems to be composed into a larger GrFN of the over-arching real-world system.
-These properties combine to show that UMAF is able to convert models contained in source code programs and described in published texts into GrFNs that can be executed, analyzed, compared, altered, and composed by domain modelers who wish to have as many capabilities as possible when designing scientific models of the real-world systems they study.
+These properties combine to show that UMAF is able to convert models contained in source code programs and described in published texts into GrFNs that can be executed, analyzed, compared, altered, and composed by domain modelers who wish to have as many capabilities as possible when designing models of the real-world systems they study.
 
 \begin{figure}[!htbp]
     \label{fig:automates_pipeline}
@@ -22,7 +22,7 @@ This chapter will begin with a background section that covers the modules of the
 Once the inputs to UMAF have been fully covered I will proceed to discuss how UMAF utilizes these inputs to perform the translation to GrFN as shown in Fig~\ref{fig:umaf_diagram}, as well as discuss how the grounding process is performed upon variables in a GrFN.
 The main purpose for transforming source code programs into GrFNs is to facilitate model analysis, and many of the model analysis methods we seek to support require probabilistic models that allow for probabilistic inference and sampling techniques to be performed on the model.
 Therefore the third section of this chapter will focus on connecting the semantics of UMAF's GrFN models to the world of probabilistic graphical modeling.
-Finally, the chapter will conclude with an evaluation study that discusses the current program idiom coverage of UMAF as a means to evaluate what source code programs can be converted by UMAF into GrFN representations of scientific models.
+Finally, the chapter will conclude with an evaluation study that discusses the current program idiom coverage of UMAF as a means to evaluate what source code programs can be converted by UMAF into GrFN representations of models.
 
 \begin{figure}[!htbp]
     \label{fig:umaf_diagram}
@@ -73,7 +73,7 @@ Once all containers of the original program have been processed, the function co
 While the PA module is able to provide all of the wiring needed to create a function network and the computations needed to make the network executable, UMAF requires additional inputs in order to perform the variable grounding necessary to create a GrFN.
 These inputs come from the TR Module and the ER Module.
 The information we are interested in gathering from these two modules is a mapping of variables mentioned in the program source code to real-world concepts present in the system being modeled.
-In order to perform the mapping, the TR module makes use of text information from publications associated with the scientific models, as well as variable documentation present in the source code.
+In order to perform the mapping, the TR module makes use of text information from publications associated with the models, as well as variable documentation present in the source code.
 The TR module will first extract possible variables from the associated publications using the ODIN \footnote{\url{https://github.com/clulab/processors/wiki/ODIN-(Open-Domain-INformer)}} event extraction framework \citep{valenzuela2015Odin}.
 During the extraction process each of variable will have a text portion associated with it that has been determined to be a description of the variable from the publication.
 An example of extracting variables with associated descriptions is shown in Fig~\ref{fig:odin_extraction_example}.
@@ -392,8 +392,8 @@ First this section will discuss the current general program idiom coverage curre
 Afterwards the section will conclude with a discussion of a selection sample study that seeks to determine how many Fortran source code models from the DSSAT code base can be parsed by the PA module and translated into GrFN.
 
 \subsection{General Program Idiom Coverage\label{sec:supported_program_constructs}}
-As discussed previously, many scientific models that currently exist in source code are defined in imperative programming languages.
-While these languages have several differences, they all share a general set of constructs that are used to define the scientific models as source code.
+As discussed previously, many models that currently exist in source code are defined in imperative programming languages.
+While these languages have several differences, they all share a general set of constructs that are used to define the models as source code.
 To make GrFN as useful as possible to domain modelers the translation process that forms a GrFN from the imperative source code will need to be able to handle these constructs.
 Not all of the constructs found in the imperative languages will need to present in GrFN, since GrFN is a dataflow programming language.
 However, all of the dataflow present in any imperative programming construct will need to be present in GrFN.
@@ -437,7 +437,7 @@ As the results of the study indicate, the GrFN translation process was able to a
      \hline
     \end{tabular}
   }
-  \caption[GrFN Program Idiom Coverage]{Programming idiom coverage of the GrFN representation language. Note that many programming idioms may be absent from this table and others that are not normally included are present. This is due to the nature of GrFN as representing a subset of programs that are used to communicate scientific models and needing to represent programs in the form of a graphical model for inference.}
+  \caption[GrFN Program Idiom Coverage]{Programming idiom coverage of the GrFN representation language. Note that many programming idioms may be absent from this table and others that are not normally included are present. This is due to the nature of GrFN as representing a subset of programs that are used to communicate models and needing to represent programs in the form of a graphical model for inference.}
 \end{table}
 
 \begin{table}
@@ -464,6 +464,6 @@ As the results of the study indicate, the GrFN translation process was able to a
       \hline
     \end{tabular}
   }
-  \caption[Program Analysis Module Evaluation]{Evaluation results for the program analysis module. This evaluation tested the program analysis modules capability to parse and transfer correct GrFN representation wiring for 10 scientific models found in the DSSAT Fortran codebase.}
+  \caption[Program Analysis Module Evaluation]{Evaluation results for the program analysis module. This evaluation tested the program analysis modules capability to parse and transfer correct GrFN representation wiring for 10 models found in the DSSAT Fortran codebase.}
 \end{table}
 \FloatBarrier

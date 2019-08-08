@@ -1,16 +1,16 @@
 \chapter{CONCLUSIONS AND FUTURE WORK\label{chapter:conc_and_future}}
 The Third Industrial Revolution (the information, computer or digital revolution) in the latter half of the 20th century has had a profound impact on how science is conducted.
 Large-scale scientific progress today has become increasingly dependent on scientific modeling to ensure validity and reproducibility of experimental results.
-This reliance has resulted in an explosion of available scientific models for domain modelers to use for their research.
-While this creates opportunities for great scientific advancement, it also creates new challenges faced by domain modelers who seek to benefit by the increased availability of scientific models.
+This reliance has resulted in an explosion of available models for domain modelers to use for their research.
+While this creates opportunities for great scientific advancement, it also creates new challenges faced by domain modelers who seek to benefit by the increased availability of models.
 These challenges center around the problem of choosing which model to use when simulating a real world system -- the model choice problem.
 Associated with the model choice problem are the tasks of model analysis and comparison that are necessary for domain modelers to make an informed choice among multiple competing models.
-Along with the model choice problem, domain modelers are presented with new opportunities from the prevalence of scientific models, such as the possibility of composing scientific models into larger meta-models.
+Along with the model choice problem, domain modelers are presented with new opportunities from the prevalence of models, such as the possibility of composing models into larger meta-models.
 
-In order to address the problem of model choice and to enable the process of model composition, domain modelers need access to implementations of scientific models that are executable, analyzable, comparable, augmentable, and extendable.
-Domain modelers also benefit from these implementations of scientific models being as free from error as possible.
+In order to address the problem of model choice and to enable the process of model composition, domain modelers need access to implementations of models that are executable, analyzable, comparable, augmentable, and extendable.
+Domain modelers also benefit from these implementations of models being as free from error as possible.
 In order to develop model implementations that fit these criteria research efforts focused on assisting domain modelers have begun to focus on the problem of model extraction and assembly.
-Current research efforts have focused on extracting models from unstructured as well as structured data sources, such as published text and formal \textit{datums}, and utilizing knowledge bases to assemble the extracted information into executable scientific models.
+Current research efforts have focused on extracting models from unstructured as well as structured data sources, such as published text and formal \textit{datums}, and utilizing knowledge bases to assemble the extracted information into executable models.
 In this thesis I introduced the Unified Model Assembly Framework (UMAF), a framework that is a component of the larger AutoMATES pipeline.
 Given the source code for a scientific model, UMAF extracts executable information embedded in the source code, transforms the information into a dataflow program that serves as an executable model known as a function network, and then links the variables contained in the function network to real-world variables using grounding information extracted from published texts and equations.
 The output from UMAF is a Grounded Function Network (GrFN) that accomplishes the goals of being an executable representation of a model that allows analysis methods and comparisons to be carried out upon the GrFN or a set of competing GrFNs, which entails that GrFNs can be used to assist domain modelers with answering the model choice problem.
@@ -23,7 +23,7 @@ In particular, the algorithm that enables the extraction of a GrFN execution sta
 The structure of a GrFN, a function network, was then shown to be directly related to data structures from the family of probabilistic graphical models, in particular a dynamic bayesian network.
 This implies that it is possible to conduct statistical inference over GrFN models using the toolbox of graphical modeling, which shows that GrFNs can be analyzed and compared.
 Finally evaluation studies were conducted on UMAF that demonstrated the coverage of program structures by UMAF as well as the accuracy of model extraction/assembly by UMAF from source code into GrFN.
-The final product from this thesis is a framework that increases access to high fidelity executable, analyzable, comparable, augmentable, and extendable scientific models by extracting and assembling models found in source code along with supporting information from published texts and equations.
+The final product from this thesis is a framework that increases access to high fidelity executable, analyzable, comparable, augmentable, and extendable models by extracting and assembling models found in source code along with supporting information from published texts and equations.
 The scope of UMAF is still limited, but the AutoMATES project is still in its infancy, and the work described in this thesis serves as a firm foundation for the continued development of UMAF to further enable domain modelers realize the full potential of scientific modeling in their own research.
 
 
