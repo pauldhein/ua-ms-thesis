@@ -1,14 +1,15 @@
 \chapter{RELATED WORK\label{chapter:related_work}}
-The work presented in this thesis is related to a wide body of research that shares a common theme of seeking to address the problems faced by domain modelers when attempting to conduct model analysis and comparison.
-Prior work that has been done on these three problems faced by modelers has ranged from domain-specific approaches that focus on assisting a single scientific domain to domain-agnostic general modeling frameworks.
+The work presented in this thesis is related to a wide body of research that shares a common theme of seeking to address the problems faced by scientists when attempting to conduct model analysis and comparison.
+Prior work % that has been done on these three problems faced by modelers 
+has ranged from domain-specific approaches that focus on assisting a single scientific domain to domain-agnostic general modeling frameworks.
 The frameworks and methods that have been created to assist modelers also have a large degree of variability in how they aim to assist modelers.
-Some tools have a direct impact on the problem of model analysis and comparison by serving as digital toolboxes filled with various analysis tests that can be performed on models.
-Section~\ref{sec:rwork_analysis_compare} will introduce a collection of existing frameworks that seek to assist modelers with scientific model analysis and comparison with the goal of providing an overview of the analysis frameworks available to domain modelers, while describing the differences between the frameworks and explaining their influence on the development of UMAF.
+Some tools have a direct impact on the problem of model analysis and comparison by serving as digital toolboxes filled with various analysis algorithms that can be performed on models.
+Section~\ref{sec:rwork_analysis_compare} will introduce a collection of existing frameworks that seek to assist modelers with scientific model analysis and comparison, with the goal of providing an overview of the analysis frameworks available to domain modelers, while describing the differences between the frameworks and explaining their influence on the development of UMAF.
 
 Related to these are frameworks that do not directly address the task of model analysis or comparison, but focus on assisting domain modelers with the task of augmenting and composing existing models.
-These frameworks provide a crucial support service for domain modelers by allowing existing models of a single phenomena to be edited or combined and by assembling models of systems of phenomena into larger super-systems of a complex web of phenomena.
+These frameworks provide a crucial support service for domain modelers by allowing existing models of a single phenomena to be edited or combined and by assembling models of systems of phenomena into larger aggregated systems of a complex web of phenomena.
 While multiple models are present during the task of model analysis and model composition, a key difference between the two is that the task of analysis requires multiple models of the same system to compete with one another, while the task of composition requires multiple models of all different systems to cooperatively describe a joint system of real-world phenomena.
-In the same vein, the model augmentation does not require multiple models for comparisons to take place, instead the augmentation task requires only a single model and can produce new alternative models via editing the original model.
+In the same vein, model augmentation does not require multiple models for comparisons to take place, instead the augmentation task requires only a single model and can produce new alternative models via editing the original model.
 The frameworks that address model augmentation and composition vary in how component models are discovered by the framework, in some cases component models must be provided by domain modelers and in others component models are extracted from a variety of sources.
 Section~\ref{sec:rwork_composition} will describe a selection of different frameworks that focus on the tasks of model augmentation and composition with the goal of highlighting the differences in how the various frameworks acquire component models as well as drawing attention to the mechanisms used to augment models or combine models into larger systems.
 
@@ -29,9 +30,9 @@ In their analysis they compare the models based on the variables that are presen
 From this manual analysis we find that a key concern for modelers is to understand the differences between model output based upon the inputs to the model.
 The lesson learned for designing UMAF from observing the results of this work is that we will need to be able to recognize when variables are shared between competing models and the models produced by UMAF will need need to support execution to enable simulation studies.
 
-\citet{peckham2017reproducible} introduced an automated domain-specific modeling toolkit known as TopoFlow.
+\citet{peckham2017reproducible} introduced an automated domain-specific modeling toolkit called TopoFlow.
 This toolkit provides many forms of analysis to be conducted on hydrologic models, and the researchers argue the need for domain specific knowledge to be present when conducting analysis of models.
-UMAF incorporates this concept into the design of GrFN models through the grounding step that links variables in the models to the real-world phenomena to which the variables correspond.
+UMAF incorporates this concept into the design of the GrFN representation presented in this thesis, through the grounding step that links variables in the models to the real-world phenomena to which the variables correspond.
 One of the most well known tools that pioneered domain-independent frameworks for model analysis is the DAKOTA framework for design optimization, parameter estimation, uncertainty quantification, and sensitivity analysis \citep{adams2009dakota}.
 This framework presents domain modelers with a large toolbox of methods of analysis for the study and comparison of models.
 DAKOTA requires domain modelers to specify the models they wish to analyze with a DAKOTA specification that requires explicit wiring and computation information as well as a specification for all variables contained in the models.
