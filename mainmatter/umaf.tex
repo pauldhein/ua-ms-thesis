@@ -1,25 +1,25 @@
 \chapter{UNIFIED MODEL ASSEMBLY FRAMEWORK\label{chapter:umaf}}
 The Unified Model Assembly Framework (UMAF) is a collection of algorithms designed to transform source code programs into executable models of the real-world system under study.
-In order to accomplish this task, UMAF will use the original source code program as well as variable grounding information from supporting texts in order to build executable models that are linked to real-world variables.
+In order to accomplish this task, UMAF will use the original source code program as well as variable grounding information from supporting texts in order to build executable models that are linked to domain concepts.
 domain modelers commonly desire for models to facilitate the inspection of the computations contained in the model and for the wiring of variables in the model to be easily observable.
-To meet these desires, the form of the executable models produced by UMAF will be a function network, a graphical model that shows variables as nodes wired together by the computations of the model, while hiding the actual computations performed in function nodes that can be inspected as necessary.
-UMAF will then utilize information from supporting texts to link the source code variables in the function network to real-world variables in the physical system of interest.
-This process is termed \textit{grounding the variable nodes}, and once this process is complete the function network is now a Grounded Function Network (GrFN), which is the final form of models produced by UMAF.
+To meet these goals, the form of the executable models produced by UMAF will be a function network, a graphical model that represents variables as nodes that are then wired together by the functions that determine the state of a variable as a function of other variables. The computations performed in function nodes can be inspected as necessary.
+UMAF combines information from supporting texts to link the source code variables in the function network to concepts used by domain modelers to describe the aspect of the world being modeled.
+This process is termed \textit{grounding the variable nodes}, and once this process is complete, the function network is now a Grounded Function Network (GrFN), which is the final form of models produced by UMAF.
 
 Due to the function network structure GrFNs are executable and, since they are executable, GrFNs can also be analyzed by functional analysis methods.
-As a side-effect of the variable grounding process, competing GrFNs can be structurally compared upon the wiring of their variables, allowing for comparisons to be made amongst competing GrFNs of the same real-world system.
+As a side-effect of the variable grounding process, competing GrFNs can be structurally compared based on the wiring of their variables, allowing for comparisons to be made amongst competing GrFNs of the same real-world system.
 The structure of a GrFN also allows for the wiring of variables, and computations among variables to be altered as need be by domain modelers, which also leads to the ability of GrFNs of different systems to be composed into a larger GrFN of the over-arching real-world system.
 These properties combine to show that UMAF is able to convert models contained in source code programs and described in published texts into GrFNs that can be executed, analyzed, compared, altered, and composed by domain modelers who wish to have as many capabilities as possible when designing models of the real-world systems they study.
 
 \begin{figure}[!htbp]
     \centering
     \includegraphics[width=.8\columnwidth]{automates_pipeline}%
-    \caption[The AutoMATES Pipeline]{A view of the wiring of all the modules of the AutoMATES pipeline. This figure shows the various inputs of the separate \textit{Program Analysis}, \textit{Text Reading}, and \textit{Equation Reading} modules. UMAF is contained in the portions of the pipeline comprising the intermediate representation and model analysis sections. Different colored arrows on the pipeline inputs where blue represents program source code, green represents program documentation, red represents free text found in published works, and orange represents equation images found in published works. As shown in the pipeline, the outputs from the three first modules are combined into an intermediate representation that is used by UMAF to generate models that can then be used in the model analysis phase.}
+    \caption[The AutoMATES Pipeline]{A schematic view of the AutoMATES architecture. This figure shows the various inputs of the separate \textit{Program Analysis}, \textit{Text Reading}, and \textit{Equation Reading} modules. UMAF is contained in the portions of the pipeline comprising the intermediate representation and model analysis sections. Different colored arrows on the pipeline inputs where blue represents program source code, green represents program documentation, red represents free text found in published works, and orange represents equation images found in published works. As shown in the pipeline, the outputs from the three first modules are combined into an intermediate representation that is used by UMAF to generate models that can then be used in the model analysis phase.}
     \label{fig:automates_pipeline}
 \end{figure}
 
-This chapter will begin with a background section that covers the modules of the AutoMATES pipeline (Fig~\ref{fig:automates_pipeline}) that provide input to UMAF.
-Once the inputs to UMAF have been fully covered I will proceed to discuss how UMAF utilizes these inputs to perform the translation to GrFN as shown in Fig~\ref{fig:umaf_diagram}, as well as discuss how the grounding process is performed upon variables in a GrFN.
+This chapter will begin with a background section that covers the modules of the AutoMATES architecture (Fig~\ref{fig:automates_pipeline}) that provide input to UMAF.
+Once the inputs to UMAF have been fully covered, I will proceed to discuss how UMAF utilizes these inputs to perform the translation to GrFN as shown in Fig~\ref{fig:umaf_diagram}, as well as discuss how the grounding process is performed upon variables in a GrFN.
 The main purpose for transforming source code programs into GrFNs is to facilitate model analysis, and many of the model analysis methods we seek to support require probabilistic models that allow for probabilistic inference and sampling techniques to be performed on the model.
 Therefore the third section of this chapter will focus on connecting the semantics of UMAF's GrFN models to the world of probabilistic graphical modeling.
 Finally, the chapter will conclude with an evaluation study that discusses the current program idiom coverage of UMAF as a means to evaluate what source code programs can be converted by UMAF into GrFN representations of models.
@@ -32,7 +32,7 @@ Finally, the chapter will conclude with an evaluation study that discusses the c
 \end{figure}
 
 \section{UMAF Inputs from the AutoMATES Pipeline\label{sec:umaf_inputs}}
-In this section I will provide a brief overview of the current state of the modules in the AutoMATES pipeline whose outputs serve as input to UMAF.
+In this section I will provide a brief overview of the current state of the modules in the AutoMATES architecture whose outputs serve as input to UMAF.
 The three modules that provide inputs to UMAF are \textit{Program Analysis} (PA), \textit{Text Reading} (TR), and \textit{Equation Reading} (ER). As seen in Fig~\ref{fig:automates_pipeline}, the PA module takes a Fortran program as its input and produces an abstract syntax tree of the scientific model portion of the program as its output.
 The TR module reads both associated texts from the scientific literature for a particular source code model and the documentation found in source code for that model.
 From these texts the TR module extracts useful information that can be used to link the variables in source code to the real-world values they represent.
