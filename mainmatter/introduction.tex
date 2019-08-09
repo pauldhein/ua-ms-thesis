@@ -108,7 +108,8 @@ Executable models are generally implemented in a wide range of different program
 
 In this thesis, I propose a framework to help automate and augment significant portions of this process, in order to reduce the additional labor required to bring models together into a common representation.
 %Obtaining such a collection of well-represented models requires \textit{source curation} to discover materials that can be used to construct the models and a process of 
-In particular, I propose a set of methods for \textit{model extraction and assembly} that can transform raw data from the source code into uniformly represented executable models.
+In particular, I propose a set of methods for \textit{model extraction and assembly} that can identify and extract information about computation performed by the model from the source code into uniformly represented executable model framework.
+
 %Improving methods of source curation, model extraction, and assembly improves the access of domain modelers to high quality models that can be used for the other tasks previously mentioned that promote better results when using models.
 %Source curation is a challenging and important task for this process; however, it is beyond the scope of this thesis.
 %For this thesis we assume that we already have access to the curated data needed and focus on addressing the task of model extraction and assembly.
@@ -124,7 +125,7 @@ In particular, I propose a set of methods for \textit{model extraction and assem
 The work presented in this thesis is a component of the larger AutoMATES\footnote{\url{https://ml4ai.github.io/automates/}} (Automated Model Assembly from Text, Equations, and Software) project \citep{pyarelal2019} that is currently under way in the UofA School of Information ML4AI lab.
 As the name suggests, the goal of the AutoMATES project is to assemble models from source code and documentation containing definitions of modeling domain concepts and equations that describe the relationships between variables.
 To accomplish this goal, the AutoMATES project has three information extraction modules, focused on extracting information about models from the sources mentioned in the AutoMATES title.
-The three extraction modules are the Text Reading (TR) module, which extracts information about models from publications and other source texts, the Equation Reading (ER) module, which extracts information from pictures of equations associated with models found in publications, and the Program Analysis (PA) module, which extracts the functional wiring among variables to represent the computation expressed in source code as a dataflow model.
+The three extraction modules are the Text Reading (TR) module, which extracts information about models from publications and other source texts, the Equation Reading (ER) module, which extracts information from pictures of equations associated with models found in publications, and the Program Analysis (PA) module, which extracts the functional wiring among variables to represent the computation expressed in source code as a dataflow model. The PA module currently focusses on extracting the dataflow model from Fortran, but this will be extended in the future to support program analysis of other languages as well.
 
 In this thesis, I present my contribution to the AutoMATES project, the \emph{Unified Model Assembly Framework} (UMAF).
 As a component of the AutoMATES project, this framework plays the role of automatic assembly of models given the information extracted from the TR, ER, and PA modules.
