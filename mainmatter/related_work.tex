@@ -43,9 +43,9 @@ Studying competing models of a system of real-world phenomena is critical to ens
 However, once models have been analyzed, a common secondary goal is to update the original models or to combine models into larger models of a grander system of real-world variables.
 Since the goal of UMAF is to assemble models that can be augmented and composed into larger models it is worthwhile to review what previous work has been done to address these tasks.
 Model augmentation is the process of changing a component of a model to either increase model accuracy or adapt the model to a different system than the original model was intended to be used for.
-The work done by \citet{semanticModels2019} introduces \texttt{SemanticModels.jl}\footnote{\url{https://github.com/jpfairbanks/SemanticModels.jl}}, which provides a formal connection of model augmentation to mathematical category theory, and is largely focused on transforming models from modeling one set of scientific phenomena to another, mostly by expanding the set of variables.
-\texttt{SemanticModels.jl} requires models to be explicitly defined graph-based structures with variables that are explicitly typed in order for transformations to be performed upon the models.
-This coincides with the planned explicit representation of models that will be produced by UMAF.
+The work done by \citet{semanticModels2019} introduces \texttt{SemanticModels.jl}\footnote{\url{https://github.com/jpfairbanks/SemanticModels.jl}}, which provides a formalization of model augmentation using Category Theory, and is largely focused on transforming models from modeling one set of scientific phenomena to another, mostly by expanding the set of variables.
+\texttt{SemanticModels.jl} requires models to be explicitly defined as graph-based structures with variables that are explicitly typed in order for transformations to be performed upon the models.
+This coincides with the planned explicit representation of models produced by UMAF in GrFN.
 
 The model augmentation produced by \texttt{SemanticModels.jl} is closely related to model composition as normally the augmentation adds variables that expand the overall scope of the model.
 Model composition goes further than this to directly address the task of how to combine existing models of multiple phenomena into a meta-model.
@@ -70,7 +70,7 @@ Delphi plays the role of model assembler that combines the information extracted
 The focus on ensuring that assembled models permit statistical inference is another key takeaway that was used during the development of UMAF, as one of the goals of UMAF is to ensure that models generated during UMAF permit as many forms of analysis as possible.
 
 The extraction methods covered so far all focus on extracting from unstructured textual sources.
-While these methods are highly valuable, the accuracy of the models extracted is at the very least questionable as errors will always be present in the extraction systems as well as error from the authors in transcribing the model into text.
+While these methods are highly valuable, the accuracy of the models extracted is at the very least questionable as errors will always be present in the extraction systems as well as imprecision in how authors necessarily abstract, eliding implementation details assumed as background knowledge when describing models in text.
 Some of the error in extraction can be eliminated by instead utilizing structured sources of information.
 This is the approach taken by \citet{nigam2015datums} who develop a method for deriving executable models of networks of biological reactions from formalized experimental findings called \textit{datums}.
 \textit{Datums} limit the error induced by the extraction method for producing a scientific model by utilizing a data source that includes structured information that can be leveraged to better inform model assembly.
