@@ -33,10 +33,10 @@ The lesson learned for designing UMAF from observing the results of this work is
 \citet{peckham2017reproducible} introduced an automated domain-specific modeling toolkit called TopoFlow.
 This toolkit provides many forms of analysis to be conducted on hydrologic models, and the researchers argue the need for domain specific knowledge to be present when conducting analysis of models.
 UMAF incorporates this concept into the design of the GrFN representation presented in this thesis, through the grounding step that links variables in the models to the real-world phenomena to which the variables correspond.
-One of the most well known tools that pioneered domain-independent frameworks for model analysis is the DAKOTA framework for design optimization, parameter estimation, uncertainty quantification, and sensitivity analysis \citep{adams2009dakota}.
-This framework presents domain modelers with a large toolbox of methods of analysis for the study and comparison of models.
+One of the most well-known tools that pioneered domain-independent frameworks for model analysis is the DAKOTA framework for design optimization, parameter estimation, uncertainty quantification, and sensitivity analysis \citep{adams2009dakota}.
+This framework presents domain modelers with a large toolbox of analysis methods for the study and comparison of models.
 DAKOTA requires domain modelers to specify the models they wish to analyze with a DAKOTA specification that requires explicit wiring and computation information as well as a specification for all variables contained in the models.
-UMAF adopts the DAKOTA strategy of ensuring explicit representations of variables, wiring between variables, and computations amongst the variables present in the models it produces; however, UMAF differs from DAKOTA and other analysis frameworks by providing a mechanism to assemble explicit models from source code.
+UMAF adopts the DAKOTA strategy of ensuring explicit representations of variables, wiring between variables, and computations amongst the variables present in the models it produces; however, UMAF differs from DAKOTA and other analysis frameworks by not requiring modelers to themselves create the wiring and other metadata needed by DAKOTA; instead UMAF itself extracts the wiring and metadata needed directly from the modeler's source code.
 
 \section{Model Augmentation and Composition Frameworks \label{sec:rwork_composition}}
 Studying competing models of a system of real-world phenomena is critical to ensuring that the most accurate model is being used to make predictions about the real-world system.
