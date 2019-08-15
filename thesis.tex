@@ -48,6 +48,7 @@
 \usepackage{placeins}
 \graphicspath{ {mainmatter/figs/} }
 
+\usepackage{pdfpages}
 \usepackage{amssymb}
 \usepackage{pifont}% http://ctan.org/pkg/pifont
 \usepackage{amsmath}
@@ -71,8 +72,7 @@
 \usepackage[bookmarks,colorlinks=true,urlcolor=black,linkcolor=black,citecolor=black]{hyperref}
 
 % Set up some values.
-\completetitle{Assembling Executable Scientific Models from Source Code and Free Text}
-% \completetitle{A Framework for Automating Scientific Software Model Analysis}
+\completetitle{Assembling Executable Scientific Models \protect \\ from Source Code and Free Text}
 \fullname{Paul Douglas Hein} % Grad college wants your full name here.
 \degreename{Master of Science}	% Title of your degree.
 
@@ -85,14 +85,17 @@
 {DEPARTMENT OF COMPUTER SCIENCE}	% Title of your department.
 {2019}
 
-% Insert the approval form.
-\approval
-{3 June 2019}		% Defense Date
-{Clayton Morrison}		% Dissertation Director
-{Mihai Surdeanu}		% 1st committee member
-{Richard Snodgrass}		% 2nd committee member
-{Associate Professor}
-{School of Information}
+% NOTE: not using this now.
+% \approval
+% {3 June 2019}		% Defense Date
+% {Clayton Morrison}		% Dissertation Director
+% {Mihai Surdeanu}		% 1st committee member
+% {Richard Snodgrass}		% 2nd committee member
+% {Associate Professor}
+% {School of Information}
+
+% NOTE: Insert the approval form.
+\includepdf[pages=-,pagecommand={}]{mainmatter/thesis-signature-page}
 
 % Include the ``Statement by Author'' for Dissertations
 % NOTE: Apparently I only need this if I want to file for copyright
@@ -110,9 +113,9 @@
 
 % Setting figures, tables, and algs list to be on the same page.
 \listoffigures          % Create a ``List of Figures''
+\listoftables           % Create a ``List of Tables''
 \begingroup
 \let\clearpage\relax
-\listoftables           % Create a ``List of Tables''
 \listofalgorithms       % Create a ``List of Algorithms''
 \endgroup
 

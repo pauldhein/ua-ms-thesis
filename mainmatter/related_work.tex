@@ -3,21 +3,22 @@ The work presented in this thesis is related to a wide body of research that sha
 Prior work has ranged from domain-specific approaches that focus on assisting a single scientific domain to domain-agnostic general modeling frameworks.
 The frameworks and methods that have been created to assist modelers also have a large degree of variability in how they aim to assist modelers.
 Some tools have a direct impact on the problem of model analysis and comparison by serving as digital toolboxes filled with various analysis algorithms that can be performed on models.
-Section~\ref{sec:rwork_analysis_compare} will introduce a collection of existing frameworks that seek to assist modelers with scientific model analysis and comparison, with the goal of providing an overview of the analysis frameworks available to domain modelers, while describing the differences between the frameworks and explaining their influence on the development of UMAF.
+Section~\ref{sec:rwork_analysis_compare} introduces a collection of existing frameworks that seek to assist modelers with scientific model analysis and comparison, with the goal of providing an overview of the analysis frameworks available to domain modelers, while describing the differences between the frameworks and explaining their influence on the development of UMAF.
 
 Related to these are frameworks that do not directly address the task of model analysis or comparison, but focus on assisting domain modelers with the task of augmenting and composing existing models.
 These frameworks provide a crucial support service for domain modelers by allowing existing models of a single phenomena to be edited or combined and by assembling models of systems of phenomena into larger aggregated systems of a complex web of phenomena.
 While multiple models are present during the task of model analysis and model composition, a key difference between the two is that the task of analysis requires multiple models of the same system to compete with one another, while the task of composition requires multiple models of all different systems to cooperatively describe a joint system of real-world phenomena.
-In the same vein, model augmentation does not require multiple models for comparisons to take place, instead the augmentation task requires only a single model and can produce new alternative models via editing the original model.
-The frameworks that address model augmentation and composition vary in how component models are discovered by the framework, in some cases component models must be provided by domain modelers and in others component models are extracted from a variety of sources.
-Section~\ref{sec:rwork_composition} will describe a selection of different frameworks that focus on the tasks of model augmentation and composition with the goal of highlighting the differences in how the various frameworks acquire component models as well as drawing attention to the mechanisms used to augment models or combine models into larger systems.
+In the same vein, model augmentation does not require multiple models for comparisons to take place; instead the augmentation task requires only a single model and can produce new alternative models via editing the original model.
+The frameworks that address model augmentation and composition vary in how component models are discovered by the framework; in some cases component models must be provided by domain modelers and in others component models are extracted from a variety of sources.
+Section~\ref{sec:rwork_composition} describes a selection of different frameworks that focus on the tasks of model augmentation and composition with the goal of highlighting the differences in how the various frameworks acquire component models as well as drawing attention to the mechanisms used to augment models or combine models into larger systems.
 
 Some frameworks that seek to solve the model composition task include the means to automate the extraction of models from various sources.
-This introduces the task of model extraction and assembly, which assists domain modelers by discovering and verifying potential models.
+This introduces the task of model extraction and assembly which assists domain modelers by discovering and verifying potential models.
 The frameworks that focus on this task share the highest degree of similarity with UMAF, as the chief function of UMAF is to be an extraction/assembly framework.
 Models can be expressed in any of many different structural representations, and this availability of representation has encouraged the development of several model extraction/assembly frameworks that focus on the extraction of models from a particular form of structured representation.
 While UMAF focuses on extracting models from source code as a structured representation, there are many other existing frameworks that extract models from sources such as natural language, structured data, and visual diagrams.
-Section~\ref{sec:rwork_extract_assemble} will survey frameworks that focus on extracting models from the structured representations listed above, and will explain how these alternate methods of model extraction influenced the development of UMAFs extraction methods were accurate and capable of extracting a majority of the models we expect to find in source code.
+Section~\ref{sec:rwork_extract_assemble} surveys frameworks that focus on extracting models from the structured representations listed above and explains how these alternate methods of model extraction influenced the development of UMAFs extraction methods were accurate and capable of extracting a majority of the models we expect to find in source code.
+The chapter on related work concludes with Section~\ref{sec:rwork_dataflow_and_extraction} that covers tangential work related to knowledge extraction from structured information and the assembly of dataflow programs.
 
 
 \section{Model Analysis and Comparison Frameworks \label{sec:rwork_analysis_compare}}
@@ -25,13 +26,13 @@ The usage and pervasiveness of models has ensured that scientific model analysis
 Consequentially the work done related to model analysis and comparison spans a large breadth of systems that vary from fully manual analyses to frameworks that introduce collections of automatic methods to analyze and compare models provided to the framework by domain modelers.
 The research of \citet{camargo2016six} provides a case study example of a manual model analysis and comparison.
 Their work focused on comparing six competing models of root-water uptake.
-In their analysis they compare the models based on the variables that are present, and use analysis methods to show which variables differentiate the models the most as a surrogate for the true value of root-water uptake.
+In their analysis they compare the models based on the variables that are present and use analysis methods to show which variables differentiate the models the most as a surrogate for the true value of root-water uptake.
 From this manual analysis we find that a key concern for modelers is to understand the differences between model output based upon the inputs to the model.
-The lesson learned for designing UMAF from observing the results of this work is that we will need to be able to recognize when variables are shared between competing models and the models produced by UMAF will need need to support execution to enable simulation studies.
+The lesson learned for designing UMAF from observing the results of this work is that we need to be able to recognize when variables are shared between competing models and the models produced by UMAF must support execution to enable simulation studies.
 
 \citet{peckham2017reproducible} introduced an automated domain-specific modeling toolkit called TopoFlow.
 This toolkit provides many forms of analysis to be conducted on hydrologic models, and the researchers argue the need for domain specific knowledge to be present when conducting analysis of models.
-UMAF incorporates this concept into the design of the GrFN representation presented in this thesis, through the grounding step that links variables in the models to the real-world phenomena to which the variables correspond.
+UMAF incorporates this concept into the design of the GrFN representation presented in this thesis through the grounding step that links variables in the models to the real-world phenomena to which the variables correspond.
 One of the most well-known tools that pioneered domain-independent frameworks for model analysis is the DAKOTA framework for design optimization, parameter estimation, uncertainty quantification, and sensitivity analysis \citep{adams2009dakota}.
 This framework presents domain modelers with a large toolbox of analysis methods for the study and comparison of models.
 DAKOTA requires domain modelers to specify the models they wish to analyze with a DAKOTA specification that requires explicit wiring and computation information as well as a specification for all variables contained in the models.
@@ -39,7 +40,7 @@ UMAF adopts the DAKOTA strategy of ensuring explicit representations of variable
 
 \section{Model Augmentation and Composition Frameworks \label{sec:rwork_composition}}
 Studying competing models of a system of real-world phenomena is critical to ensuring that the most accurate model is being used to make predictions about the real-world system.
-However, once models have been analyzed, a common secondary goal is to update the original models or to combine models into larger models of a grander system of real-world variables.
+However, once models have been analyzed a common secondary goal is to update the original models or to combine models into larger models of a grander system of real-world variables.
 Since the goal of UMAF is to assemble models that can be augmented and composed into larger models it is worthwhile to review what previous work has been done to address these tasks.
 Model augmentation is the process of changing a component of a model to either increase model accuracy or adapt the model to a different system than the original model was intended to be used for.
 The work done by \citet{semanticModels2019} introduces \texttt{SemanticModels.jl}\footnote{\url{https://github.com/jpfairbanks/SemanticModels.jl}}, which provides a formalization of model augmentation using Category Theory, and is largely focused on transforming models from modeling one set of scientific phenomena to another, mostly by expanding the set of variables.
@@ -50,14 +51,14 @@ The model augmentation produced by \texttt{SemanticModels.jl} is closely related
 Model composition goes further than this to directly address the task of how to combine existing models of multiple phenomena into a meta-model.
 The work of \citet{gil2018mint} introduces the Model INTegration framework (MINT) that accomplishes the goal of model composition through enabling the creation of workflows that combine together many existing models stored in MINT's semantic model catalog.
 Representing models as workflows is not unique to the MINT framework, the work done by \citet{fei2010dataflow} introduced the VIEW system, which was also focused on composing models into scientific workflows.
-What is interesting about VIEW is that an emphasis was placed on scientific workflows being representations of dataflow through a composition of models.
+VIEW places an emphasis on scientific workflows being representations of dataflow through a composition of models.
 UMAF utilizes this dataflow approach for the models extracted from scientific source code, as the dataflow representation of a scientific model is a much more natural form to present to domain modelers that allows for easy visual inspection of how variables are used and combined in a scientific model.
 For each of the composition frameworks discussed above a critical component is for the variables included in the models to be explicitly linked to real-world phenomena.
 This crucial step allows inputs and outputs of models to be aligned and permits model composition to occur.
-In order to enable this, the models produced by UMAF will ensure that all variables contained in the models are linked to observable variables in the real-world from the information extracted by other components of the AutoMATES pipeline.
+In order to enable this, UMAF ensure that all variables contained in the models are linked to observable variables in the real-world from the information extracted by other components of the AutoMATES pipeline.
 
 \section{Model Extraction and Assembly Frameworks \label{sec:rwork_extract_assemble}}
-While the design of UMAF is directly informed by the prior work done on the tasks of model analysis, comparison, augmentation, and composition, the true purpose of UMAF is to extract and assemble models.
+While the design of UMAF is directly informed by the prior work done on the tasks of model analysis, comparison, augmentation, and composition, the central purpose of UMAF is to extract and assemble models.
 However, UMAF is not the first framework to provide assistance to modelers with the task of automatically extracting and assembling models.
 Prior work has been done on this task and has focused on extracting models from a wide range of sources.
 The prior work done by \citet{gyori2017word} produced the Integrated Network and Dynamical Reasoning Assembler (INDRA), which was capable of using natural language processing systems to extract information about signaling pathways from published texts.
@@ -77,3 +78,5 @@ However, error is still possible even when using datums, because this method is 
 UMAF pushes the boundaries of error minimization in model extraction by using source code as a data source for the creation of models.
 While errors in transcription are still possible in source code, the specification in its original form must have still been executable.
 This provides a guaranteed amount of error elimination from the model transcription phase that is unparalleled by the other data sources presented here that have been used as inputs to a model extraction and assembly framework.
+
+\section{Knowledge Extraction and Dataflow Model Assembly \label{sec:rwork_dataflow_and_extraction}}

@@ -1,40 +1,27 @@
 \chapter{CONCLUSIONS AND FUTURE WORK\label{chapter:conc_and_future}}
-The Third Industrial Revolution (the information, computer or digital revolution) in the latter half of the 20th century has had a profound impact on how science is conducted.
-Large-scale scientific progress today has become increasingly dependent on scientific modeling to ensure validity and reproducibility of experimental results.
-This reliance has resulted in an explosion of available models for domain modelers to use for their research.
-While this creates opportunities for great scientific advancement, it also creates new challenges faced by domain modelers who seek to benefit by the increased availability of models.
-These challenges center around the problem of choosing which model to use when simulating a real world system -- the model choice problem.
-Associated with the model choice problem are the tasks of model analysis and comparison that are necessary for domain modelers to make an informed choice among multiple competing models.
-Along with the model choice problem, domain modelers are presented with new opportunities from the prevalence of models, such as the possibility of composing models into larger meta-models.
-
 In order to address the problem of model choice and to enable the process of model composition, domain modelers need access to implementations of models that are executable, analyzable, comparable, augmentable, and extendable.
 Domain modelers also benefit from these implementations of models being as free from error as possible.
 In order to develop model implementations that fit these criteria research efforts focused on assisting domain modelers have begun to focus on the problem of model extraction and assembly.
 Current research efforts have focused on extracting models from unstructured as well as structured data sources, such as published text and formal \textit{datums}, and utilizing knowledge bases to assemble the extracted information into executable models.
-In this thesis I introduced the Unified Model Assembly Framework (UMAF), a framework that is a component of the larger AutoMATES pipeline.
-Given the source code for a scientific model, UMAF extracts executable information embedded in the source code, transforms the information into a dataflow program that serves as an executable model known as a function network, and then links the variables contained in the function network to real-world variables using grounding information extracted from published texts and equations.
-The output from UMAF is a Grounded Function Network (GrFN) that accomplishes the goals of being an executable representation of a model that allows analysis methods and comparisons to be carried out upon the GrFN or a set of competing GrFNs, which entails that GrFNs can be used to assist domain modelers with answering the model choice problem.
-Due to the grounding of variables in a GrFN, they are also augmentable and extendable allowing for GrFNs to be composed into larger meta-models.
 
-In this thesis I introduced the components of the AutoMATES pipeline that provide input data to UMAF, including the translation of source code into an imperative intermediate representation and the extraction of variable grounding information from text and equation sources.
-Afterwards I outlined the algorithm required to translate the imperative intermediate representation of a scientific model into the dataflow representation of a scientific model used as the basis for a GrFN, and showed how the variables in the GrFN could then be easily linked to real-world phenomena via variable grounding.
+In this thesis we introduced the components of the AutoMATES pipeline that provide input data to UMAF, including the translation of source code into an imperative intermediate representation and the extraction of variable grounding information from text and equation sources.
+Afterwards we outlined the algorithm required to translate the imperative intermediate representation of a scientific model into the dataflow representation of a scientific model used as the basis for a GrFN, and showed how the variables in the GrFN could then be easily linked to real-world phenomena via variable grounding.
 GrFNs were then shown to be executable by introducing the algorithms necessary to efficiently execute sets of inputs.
 In particular, the algorithm that enables the extraction of a GrFN execution stack to ensure the proper execution order of the computations contained in a GrFN was introduced.
 The structure of a GrFN, a function network, was then shown to be directly related to data structures from the family of probabilistic graphical models, in particular a dynamic bayesian network.
 This implies that it is possible to conduct statistical inference over GrFN models using the toolbox of graphical modeling, which shows that GrFNs can be analyzed and compared.
-Finally evaluation studies were conducted on UMAF that demonstrated the coverage of program structures by UMAF as well as the accuracy of model extraction/assembly by UMAF from source code into GrFN.
-The final product from this thesis is a framework that increases access to high fidelity executable, analyzable, comparable, augmentable, and extendable models by extracting and assembling models found in source code along with supporting information from published texts and equations.
-The scope of UMAF is still limited, but the AutoMATES project is still in its infancy, and the work described in this thesis serves as a firm foundation for the continued development of UMAF to further enable domain modelers realize the full potential of scientific modeling in their own research.
+Finally language feature coverage analyses were conducted on UMAF that demonstrated the coverage of program structures by UMAF as well as the accuracy of model extraction/assembly by UMAF from source code into GrFN.
 
+The final product from this thesis is a framework that increases access to high fidelity executable, analyzable, comparable, augmentable, and extendable models by extracting and assembling models found in source code along with supporting information from published texts and equations.
+The AutoMATES project is still in its infancy, and the work described in this thesis can serve as a firm foundation for the continued development of UMAF to further enable domain modelers realize the full potential of scientific modeling.
 
 \section{Future Work\label{sec:future_work}}
-As mentioned in the section above, UMAF is still limited in its impact and requires further development in order to assist domain modelers to the largest degree possible.
+As mentioned in the section above, UMAF will requires further development to assist domain modelers to the largest degree possible.
 Some limitations upon UMAF stem from limitations from other components of the AutoMATES pipeline, such as the lack of complete coverage of Fortran code idioms by the Program Analysis Pipeline.
-The AutoMATES pipeline components are continuing to experience ongoing rapid development and therefore these limitations on UMAF will soon vanish.
-In addition, there are limitations upon UMAF that stem from a need to continue development of the algorithms and methods necessary to translate imperative source code into a GrFN.
-In this section, I will describe future work directions that have been identified by the UMAF team as next steps of development to address the later set of limitations.
+In addition, there are limitations that stem from a need to continue development of the algorithms and methods necessary to translate imperative source code into a GrFN.
+In this section, we describe the future work that is necessary to resolve the current limitations of UMAF.
 
-\subsection{Converting Complex Control Flow Structures\label{sec:early_exit}}
+\subsection{Converting Complex Control Flow Structures \label{sec:early_exit}}
 GrFNs are dataflow programs, and this means that they represent models as a flow of data, free from the control flow structures that are normally associated with imperative programs.
 Currently UMAF is capable of converting many control flow structures, including conditionals, function calls, and loops into a dataflow form.
 These forms of control flow that are supported by UMAF all behave as basic blocks that have one point of entry and one point of exit for any scope that they define.
@@ -42,7 +29,7 @@ However, UMAF does not yet support more complex forms of control flow that corre
 Some examples of such control structures are multiple returns from a function, break/continue statements inside of loops, and error handling in straight-line code.
 Along with these issues comes the issue of exiting from nested scope layers, such as the presence of a conditional return statement in a loop that is contained in a function.
 These structures present challenges to UMAF that will require the translation process of programs to GrFN to be extended.
-In order to handle a wide range of scientific source code developed by a large array of domain experts with varying programming styles the UMAF team will seek to extend the translation process of GrFN presented in this thesis to handle the complex control flow styles discussed above and others that are discovered during the course of the AutoMATES project.
+In order to handle a wide range of scientific source code developed by a large array of domain experts with varying programming styles we will extend the translation process of GrFN presented in this thesis to handle the complex control flow styles discussed above and others that are discovered during the course of the AutoMATES project.
 
 \subsection{Handling Complex Data Types \label{sec:complex_types}}
 Currently, the UMAF framework is able to represent variables in GrFN that are derived from primitive data types.
@@ -57,7 +44,7 @@ This task includes determining how to represent complex types in a GrFN, as well
 Currently UMAF assumes that all variables provided in a source code program correspond to real-world phenomena.
 While this assumption may be true for some models, it is certainly the case that programmers and domain experts can utilize temporary variables that do not directly correspond to real-world phenomena.
 This presents UMAF with the challenge of detecting which variables described in source code do directly correlate to real-world phenomena.
-To address this challenge the UMAF team will be to utilize more information from the text and equation reading modules of AutoMATES to discover which variables in the source code for a model are in fact real-world phenomena.
+To address this challenge we will utilize more information from the text and equation reading modules of AutoMATES to discover which variables in the source code for a model are in fact real-world phenomena.
 A trivial first pass to solve this problem is to utilize the results from variable grounding, but this solution can be extended by using information from equation reading to analyze the functional form of the computations in the source code to determine where temporary variables may exist.
 Incorporating this step into UMAF will allow for the removal of temporary variables before the wiring and grounding processes begin and result in a more accurate model representation of the real-world system.
 
@@ -66,8 +53,8 @@ One key issue that has not been addressed in this thesis so far is the issue of 
 Scientific models that are expressed in code are generally unlimited in terms of their functional form.
 However certain mathematical functions place limits on the domains of variables used in their computation.
 A classic example of this can be found in the source code for the PETASCE evapo-transpiration model found in Appendix~\ref{sec:asce_src_code}.
-In line $40$ we find the computation of variable \textit{RHMIN} the depends upon variables \textit{EA} and \textit{EMAX}.
-From the functional form of the computation we can observe that \textit{EMAX} cannot be equal zero, otherwise a division by zero error would occur during computation.
+In line $40$ we find the computation of variable \textit{RHMIN} depends upon variables \textit{EA} and \textit{EMAX}.
+From the functional form of the computation we can observe that \textit{EMAX} cannot equal zero, otherwise a division by zero error would occur during computation.
 That is a constraint upon the domain for \textit{EMAX}; however, \textit{EMAX} is not an input for the PETASCE model but is the result from a computation from inputs to the PETASCE model.
 This shows that one task required for domain detection is for constraints from inner variables computed in the computations of the model, such as \textit{EMAX}, to be propagated backwards to the input variables responsible for their computation.
 This task is necessary to support model analysis upon the GrFNs produced by UMAF, since a key portion of analysis is to sample over the domains of the inputs.

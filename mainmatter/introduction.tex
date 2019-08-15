@@ -1,15 +1,15 @@
 \chapter{INTRODUCTION\label{chapter:introduction}}
 The nature of scientific models is a deep philosophical topic \citep{giere2010explaining}, \citep{morrison2009models}, \citep{frigg2006models}.
-For the purposes of this thesis, we will consider a family of abstracted scientific models as assertions about a collection of variables that refer to aspects of the world, along with a set of functional relations between variables that stipulate how the state of one variable is a function of zero or more other variables. We refer to these as {\em executable} models. Executable models specify enough detail such that given values of input variables, the model can calculate the state of all of the other variables of the model.
-This form of model can be represented as a graph, such as that shown in Figure~\ref{fig:example_sci_model}, where variables (ovals) are connected to one another by functions (boxes) that determine how variables influence each other.
-As shown in the figure, models like these can be used to study real-world systems by making a claim (potentially directly testable) about how different observed states of the world are causally related: the executable model asserts that states of parent (input) variables will (partially) determine the states of child (output) variables as according to the function between the variables.
+For the purposes of this thesis, we consider a family of abstracted scientific models as assertions about a collection of variables that refer to aspects of the world, along with a set of functional relations between variables that stipulate how the state of one variable is a function of zero or more other variables. We refer to these as {\em executable} models. Executable models specify enough detail such that given values of input variables, the model can calculate the state of all of the other variables of the model.
+This form of model can be represented as a graph, such as that illustrated in Figure~\ref{fig:example_sci_model}, where variables (ovals) are connected to one another by functions (boxes) that determine how variables influence each other.
+As illustrated in the figure, models like these can be used to study real-world systems by making a claim (potentially directly testable) about how different observed states of the world are causally related: the executable model asserts that states of parent (input) variables will (partially) determine the states of child (output) variables as according to the function between the variables.
 Additionally, uncertainty in variables can be represented explicitly by an empirical or estimated distribution over variable values. For example, the empirical distribution over {\tt Total Daily Rainfall} in Fig~\ref{fig:example_sci_model} is used to characterize the uncertainty in the {\tt Water} input variable to the model.
 Using the functions included in the model that describe how variables effect each other, the uncertainty imposed upon the inputs then induces a distribution over output variable of the model: In Fig.~\ref{fig:example_sci_model}, this is seen in the distribution over predicted {\tt Crop Yield} values, which is a direct result of the uncertainty in amount of {\tt Water} present.
 
 \begin{figure}[!htbp]
   \centering
-  \includegraphics[width=\textwidth]{example_scientific_model}
-  \caption[Example of a Scientific Model]{An illustration of an executable model that shows how a distribution over a model input can be used to make predictions about the models output.}
+  \includegraphics[width=\textwidth]{example_executable_model}
+  \caption[Example of a Scientific Model]{An illustration of an executable model that shows how a distribution over a model input can be used to make predictions about the models output. In this function node of this model \textit{w, s, d} represent model inputs and $\theta$ represents the collection of model parameters.}
   \label{fig:example_sci_model}
 \end{figure}
 
@@ -22,13 +22,13 @@ Consider the following question that could be posed to a team of domain modelers
 At its core, this question is asking domain modelers to make a prediction about the state of several real-world variables.
 For this example, domain modelers need to be able to make predictions about the expected food production, the expected population size, and the expected security of food transportation networks of South Sudan for the next three years.
 The importance of this question also dictates that the predictions proposed by the domain modelers comes with an interpretable explanation that accounts for why the predictions are what they are.
-Domain modelers can design a scientific model to answer each of the component questions included in the overall question, where each model will provide an explainable prediction.
+Domain modelers can design a scientific model to answer each of the component questions included in the overall question, where each model provides an explainable prediction.
 This ability to make explainable predictions, such as the ones necessary to answer important questions including the one above, has particularly led to the increasing adoption of executable models by the scientific community for studying complex systems.
 
 \section{Motivation\label{sec:motivation}}
 The use of executable models has lead to the development of many supporting tasks that are carried out by \emph{domain modelers}, the scientists who seek to use models in their research studying a specific domain.
 In general, science is driven by the repeated process of proposing multiple different, competing models of how observable phenomena may work.
-A simple example of such a situation is shown in Figure~\ref{fig:simple_crop_CAG}, which depicts two competing models, each of which seeks to describe how the yield of a particular crop is affected by changes in the amount of rain and soil water absorption rate over time (expressed in \emph{Day}s).
+A simple example of such a situation is illustrated in Figure~\ref{fig:simple_crop_CAG}, which depicts two competing models, each of which seeks to describe how the yield of a particular crop is affected by changes in the amount of rain and soil water absorption rate over time (expressed in \emph{Day}s).
 
 \begin{figure}[!htbp]
   \centering
@@ -69,25 +69,28 @@ A simple example of such a situation is shown in Figure~\ref{fig:simple_crop_CAG
   \label{fig:simple_crop_CAG}
 \end{figure}
 
-We can see that, while the two models shown in the figure share many variables, some variables are not shared between the two models and the directed edges in the two models, representing how one variable’s state is a function of other variable(s) is not identical.
+We can see that, while the two models shown in the figure share several variables, some variables are not shared between the two models and the directed edges in the two models, representing how one variable’s state is a function of other variable(s) is not identical.
 Each of these models makes a different set of claims about how the state of \emph{Yield} is determined by other states of the world.
 A critical task of scientific reasoning is to determine which model is a better description of how nature works (or the possibility that neither is a good account).
 This is an example of the general task of \textit{model choice}.
 The model choice task requires domain modelers to analyze the available competing models of their system of interest and then to select which model best describes the outcomes of experiments or other observations.
+
 Another, closely related task is \emph{model analysis}.
 In model analysis, properties of an executable model are studied, such as how sensitive variations in output variables are to changes in input variables.
-
-\begin{figure}[!htbp]
-  \centering
-  \includegraphics[width=.8\textwidth]{model-composition}
-  \caption[Model Composition Web]{An illustration of how multiple scientific models from a diverse array of fields can be combined together to produce a meta-model of a much larger real-world system. In this meta-model each node represents a system that is modeled with a scientific model. Links between nodes correspond to connections between the separate models. Model composition is the process of determining which of these links are appropriate to make.}
-  \label{fig:composition_example}
-\end{figure}
+For example, in the case of the comparative crop yield examples shown in Figure~\ref{fig:simple_crop_CAG} domain modelers may use model analysis to measure the comparative uncertainty of the output of each model that is caused by {\tt Absorption}.
 
 Similar to how multiple competing models of the same real-world systems exist, there are also models for different aspects of real-world systems that interact with one another.
 Accounting for crop yield as a function of soil, water and disease is just a small part of a much larger set of interacting processes that include the impact of climate on the presence of water and other growing conditions, as well as how the yield impacts local and global economics. A model of crop yield should be composed with other models of related real-world systems to form an aggregate model that now links the interactions between a larger set of world states.
 This is the task of \textit{model composition}.
 Figure~\ref{fig:composition_example} presents a ``map'' of the relationships between families of models (colored regions) that describe a number of different aspects of the world that are all involved in predicting and understanding food security.
+
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[width=\textwidth]{model-composition}
+  \caption[Model Composition Web]{An illustration of how multiple scientific models from a diverse array of fields can be combined together to produce a meta-model of a much larger real-world system. In this meta-model each node represents a system that is modeled with a scientific model. Links between nodes correspond to connections between the separate models. Model composition is the process of determining which of these links are appropriate to make.}
+  \label{fig:composition_example}
+\end{figure}
+
 Models can be composed when links can be identified between models.
 These links are commonly in the form of shared model variables, where the output of one model may be the input of another, but more complex linkages can occur as well.
 Sometimes a small structure of additional variables must be added in order to compose two models together.
@@ -95,30 +98,32 @@ This structure creation is an example of the task of \textit{model augmentation}
 
 Executable models are generally implemented in a wide range of different programming languages, using a variety of different programming paradigms, and also appear in a context of different conventions for documentation through publications and code comments. Engaging in any of the modeling tasks described above generally requires significant additional labor, such as defining a common model interface that allows for linking of variables, adapting model analysis techniques to specific code bases, or additional coding in a specific code base in order to implement model augmentations. These tasks also require direct involvement of a number of different kinds of expertise, including the domain modelers, model analysts, decision makers, and software engineers.
 
-In this thesis, I propose a framework to help automate and augment significant portions of this process, in order to reduce the additional labor required to bring models together into a common representation.
-In particular, I propose a set of methods for \textit{model extraction and assembly} that can identify and extract information about computation performed by the model from the source code into uniformly represented executable model framework.
+In this thesis, we propose a framework to help automate and augment significant portions of this process, in order to reduce the additional labor required to bring models together into a common representation.
+In particular, we propose a set of methods for \textit{model extraction and assembly} that can identify and extract information about computation performed by the model from the source code into uniformly represented executable model framework.
 
 \section{Contributions\label{sec:contributions}}
 The work presented in this thesis is a component of the larger AutoMATES\footnote{\url{https://ml4ai.github.io/automates/}} (Automated Model Assembly from Text, Equations, and Software) project \citep{pyarelal2019} that is currently under way in the UofA School of Information ML4AI lab.
 As the name suggests, the goal of the AutoMATES project is to assemble models from source code and documentation containing definitions of modeling domain concepts and equations that describe the relationships between variables.
 To accomplish this goal, the AutoMATES project has three information extraction modules, focused on extracting information about models from the sources mentioned in the AutoMATES title.
-The three extraction modules are the Text Reading (TR) module, which extracts information about models from publications and other source texts, the Equation Reading (ER) module, which extracts information from pictures of equations associated with models found in publications, and the Program Analysis (PA) module, which extracts the functional wiring among variables to represent the computation expressed in source code as a dataflow model. The PA module currently focusses on extracting the dataflow model from Fortran, but this will be extended in the future to support program analysis of other languages as well.
+The three extraction modules are the \textit{Text Reading} (TR) module, which extracts information about models from publications and other source texts, the \textit{Equation Reading} (ER) module, which extracts information from pictures of equations associated with models found in publications, and the \textit{Program Analysis} (PA) module, which extracts the functional wiring among variables to represent the computation expressed in source code as a dataflow model. The PA module currently focusses on extracting the dataflow model from Fortran, but this will be extended in the future to support program analysis of other languages as well.
 
-In this thesis, I present my contribution to the AutoMATES project, the \emph{Unified Model Assembly Framework} (UMAF).
+In this thesis, we present my contribution to the AutoMATES project, the \emph{Unified Model Assembly Framework} (UMAF).
 As a component of the AutoMATES project, this framework plays the role of automatic assembly of models given the information extracted from the TR, ER, and PA modules.
 UMAF integrates source code, text and equation information into a unified representation of a scientific model, called the \emph{Grounded Function Network} (GrFN), that is executable, comparable, and composable.
 Combining these capabilities into a single framework provides a facility for domain-expert model developers and analysts to now analyze and compare models within a uniform framework, greatly simplifying model analysis tasks that to-date have required enormous manual effort.
 
-UMAF does not take the human out of the loop: domain expertise and human guidance are still needed to identify variable value ranges of interest to a modeling application, as well as supplement mistakes of omission and commission that may be made during variable grounding.
+UMAF does not take the human out of the loop: domain expertise and human guidance are still needed to identify variable value ranges of interest to a modeling application, as well as to identify supplement mistakes of omission and commission that may be made during variable grounding.
 Ongoing and future development is also required to scale the methods to effectively handle larger model code bases.
 UMAF is, to our knowledge, the first general approach to automating model extraction and assembly from source code to support model analysis, comparison, choice, and composition.
-We also believe these tools provide a basis for a new kind of model curation and debugging, allowing one to compare changes within evolving code bases but from a modeling domain-semantics perspective; however, exploring use of UMAF for this purpose will be the subject of future work.
+We also believe that UMAF provides a basis for a new kind of model curation and debugging, allowing one to compare changes within evolving code bases but from a modeling domain-semantics perspective
+However, exploring use of UMAF for this purpose will be the subject of future work.
 
 \section{Roadmap\label{sec:roadmap}}
 This thesis is organized to present how UMAF is able to assemble models from information extraction from source code, text and equations, and then to show how to models created by UMAF can be used to aid modelers in analysis, model choice, and model composition.
-During the course of this thesis I will use two models from the Decision Support System for Agrotechnology Transfer (DSSAT)\footnote{\url{https://dssat.net/}} software system \citep{DSSAT} to illustrate the capabilities of UMAF and the associated analysis methods outlined in Section~\ref{sec:contributions}.
+During the course of this thesis we use two models from the Decision Support System for Agrotechnology Transfer (DSSAT)\footnote{\url{https://dssat.net/}} software system \citep{DSSAT} to illustrate the capabilities of UMAF and the associated analysis methods outlined in Section~\ref{sec:contributions}.
 The source code used in this study is aimed at modeling the natural phenomena of Potential Evapo-Transpiration (PET).
-The specific models I use are the Priestly-Taylor model of Potential Evapo-Transpiration (PETPT) and the ASCE model of Potential Evapo-Transpiration (PETASCE).
+The specific models we use are the Priestly-Taylor model of Potential Evapo-Transpiration (PETPT) and the ASCE model of Potential Evapo-Transpiration (PETASCE).
+
 Chapter~\ref{chapter:related_work} reviews previous work that has been done in the areas of scientific model extraction, assembly, analysis, comparison, and composition.
 Chapter~\ref{chapter:umaf} introduces the algorithms used to assemble models from source code into a form that is both executable and comparable across competing models by utilizing information from source texts to ground variables present in the models.
-Finally, Chapter~\ref{chapter:conc_and_future} concludes with a discussion of the results and implications of UMAF and will introduce possible extensions for continuing this research.
+Finally, Chapter~\ref{chapter:conc_and_future} concludes with a discussion of the results and implications of UMAF and introduces possible extensions for continuing this research.
