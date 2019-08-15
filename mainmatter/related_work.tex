@@ -18,7 +18,7 @@ The frameworks that focus on this task share the highest degree of similarity wi
 Models can be expressed in any of many different structural representations, and this availability of representation has encouraged the development of several model extraction/assembly frameworks that focus on the extraction of models from a particular form of structured representation.
 While UMAF focuses on extracting models from source code as a structured representation, there are many other existing frameworks that extract models from sources such as natural language, structured data, and visual diagrams.
 Section~\ref{sec:rwork_extract_assemble} surveys frameworks that focus on extracting models from the structured representations listed above and explains how these alternate methods of model extraction influenced the development of UMAFs extraction methods were accurate and capable of extracting a majority of the models we expect to find in source code.
-The chapter on related work concludes with Section~\ref{sec:rwork_dataflow_and_extraction} that covers tangential work related to knowledge extraction from structured information and the assembly of dataflow programs.
+The chapter on related work concludes with Section~\ref{sec:rwork_knowlegde_extraction} that covers tangential work related to knowledge extraction from structured information and the assembly of dataflow programs.
 
 
 \section{Model Analysis and Comparison Frameworks \label{sec:rwork_analysis_compare}}
@@ -79,4 +79,22 @@ UMAF pushes the boundaries of error minimization in model extraction by using so
 While errors in transcription are still possible in source code, the specification in its original form must have still been executable.
 This provides a guaranteed amount of error elimination from the model transcription phase that is unparalleled by the other data sources presented here that have been used as inputs to a model extraction and assembly framework.
 
-\section{Knowledge Extraction and Dataflow Model Assembly \label{sec:rwork_dataflow_and_extraction}}
+The work done by \citet{Patterson2017DataflowRO} has also focused on extracting models from source code.
+Their approach introduced a dataflow graph, described as a \textit{flow graph} that captures the semantics of a program.
+In contrast to GrFNs produced by UMAF, \textit{flow graphs} are used to compare the functional form of dataflow through a program, not the variables in a connected context to scientific modeling.
+The research team who created \textit{flow graphs} go on to show that they can be transformed into a \textit{semantic flow graphs} by connecting the functional forms of programs to a specific domain ontology \citep{Patterson2018TeachingMT}.
+This approach similar and complementary to the approach of UMAF that seeks to link variables found in programs to domain-specific real-world concepts.
+
+\section{Knowledge Extraction from Structured Sources \label{sec:rwork_knowlegde_extraction}}
+The approaches discussed above deal with scientific model extraction from structured sources of information.
+Although the field of extracting scientific models from structured sources is a new concept, its origins are found in the \textit{Knowledge Extraction} (KE) community.
+This community has made great progress on improving tools for gaining knowledge from a variety of structured and unstructured sources.
+However, for UMAF we are particularly interested in the progress that has been made on extracting information from structured sources.
+One of the earliest forms of structured knowledge extraction is \textit{Knowledge Discovery in Databases} (KDD).
+Today there exist surveys of the literature and methods that provide an excellent overview of the data-mining techniques used to aid KDD \citep{Fayyad1996FromDM}, \citep{Fayyad1997KnowledgeDI}.
+As the internet age began KE became focused on extracting information from web-based sources to build the \textit{Web of Data}\footnote{\url{http://www.w3.org/DesignIssues/Semantic.html}} more formally known as the \textit{Semantic Web}.
+\citet{Unbehauen2012KnowledgeEF} provides a survey of structured KE methods that utilize KDD in order to transform relational databases into information for the Semantic Web.
+While data-mining for knowledge extraction proved useful for building the Semantic Web, the formation of ontologies and mapping of relational database schemas to such ontologies proved another useful KE strategy for continuing the creation of the Semantic Web.
+\citet{Wimalasuriya2010OntologybasedIE} presented a survey of such ontology based KE methods from relational databases as well as other web-based sources of information such as XML and CSV data.
+From the maturity of the field of knowledge extraction came the lesson that linking information extracted from structured data to domain concepts is a necessary task of any extraction method to ensure the usefulness of the information extracted.
+This lesson informed the desire for the models extracted and assembled by UMAF to be linked to scientific domain concepts upon the variables contained in the models.

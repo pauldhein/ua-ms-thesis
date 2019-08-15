@@ -3,18 +3,6 @@
 %  University of Arizona Thesis Class,     %
 %               uathesis.cls               %
 %------------------------------------------%
-
-% There are five copyright options.  Copyright, no copyright, and three
-% different Creative Commons licences.  Use the one you want (If you go
-% Creative Commons, I (DM) think the CC-BY-ND makes the most sense)  See
-% uathesis.cls for the reason why the non-commercial licenses are not
-% included.
-
-%\documentclass[dissertation,copyright]{uathesis}
-%\documentclass[dissertation,CC-BY]{uathesis}
-%\documentclass[dissertation,CC-BY-SA]{uathesis}
-% \documentclass[dissertation,CC-BY-ND]{uathesis}
-%\documentclass[dissertation,generatedon]{uathesis}
 \documentclass[thesis]{uathesis}
 
 % Package Usage
@@ -22,21 +10,6 @@
 \usepackage{graphicx}
 \usepackage[caption=false]{subfig}
 \usepackage{natbib}
-% \usepackage{biblatex}
-% natbib is available on most systems, and is terribly handy. If you want to use a different Bibliography package, you should be able to, just change this and the \bibliographystyle command below. Be warned that you may need to do a little hacking to get the REFERENCES item to show up in your TOC.
-
-% Compatibility with the AASTEX package of the American Astronomical Society.
-%\usepackage{deluxetable}		% Allows use of AASTEX deluxe tables
-%\usepackage{aastex_hack}		% Allows other AASTEX functionality.
-
-% These are other packages that you might find useful.
-% For controlling the fonts, see http://www.math.uiuc.edu/~hartke/computer/latex/survey/survey.html
-
-% The following is a nice font set:
-% \usepackage{mathtime}			% Times for letters; Belleek math.
-
-%\usepackage{lscape}			% Used for making fitting large tables in by putting them landscape
-%\usepackage{refs}
 
 % PACKAGES ADDED BY PAUL HEIN
 \usepackage{indentfirst}
@@ -57,8 +30,8 @@
 \usepackage{algorithmicx}
 \usepackage[noend]{algpseudocode}
 \usepackage[T1]{fontenc}
-\usepackage{xcolor}
-\usepackage{minted}
+% \usepackage{xcolor}
+% \usepackage{minted}
 \MakeRobust{\Call}
 
 \renewcommand{\listalgorithmname}{LIST OF ALGORITHMS}
@@ -134,8 +107,8 @@
 \include{mainmatter/conclusion}
 
 % Include the various appendices
-\appendix
-\include{appendix_A}
+% \appendix
+% \include{appendix_A}
 
 % Switch the spacing to single-spaced for the references
 \renewcommand{\baselinestretch}{1}		% changing the value
