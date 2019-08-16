@@ -54,8 +54,8 @@ This is necessary in order to complete the variable wiring for a GrFN across the
 Under each container exists an ordered list of statements.
 Statement are either assignment statements or conditional statements, both of which produce variables that need to be wired into a GrFN and include a computation that details how the variable is produced as a product of other variables.
 
-Assignment statements an AST represent that a value, either a literal value or derived from a computation involving zero or more other variables, is assigned to a target variable.
-The PA module identifies these forms int eh AST and extracts and separate the computation as a \textit{black-box} function, associated with the variable being assigned, and adds the extracted function to the function collection.
+Assignment statements in an AST represent that a value, either a literal value or derived from a computation involving zero or more other variables, is assigned to a target variable.
+The PA module identifies these forms in the AST and extracts and separate the computation as a \textit{black-box} function, associated with the variable being assigned, and adds the extracted function to the function collection.
 With a minor amount of inspection, the PA module can determine what variables are used in the computation that need to be wired to the assignment variable as inputs and adds an entry to the containers statement list in the container collection.
 While multiple assignment statements to the same variable can occur in a program, GrFN is concerned with the flow of data through the scientific model represented by a program.
 Thus the PA module performs the additional task when translating an assignment statement of indexing updates to variables with the same name to preserve the flow of data for the wiring step of GrFN creation.
@@ -213,7 +213,7 @@ Figure~\ref{fig:statement_wiring} illustrates examples of the GrFN wiring for st
 
 The only additional processing left to create a GrFN is to complete a traversal of the function network in order to visit every variable node, and to ground the variable nodes that have been linked using the inputs from the TR and ER modules.
 Once the traversal is complete the translation to GrFN has been completed.
-Figure~\ref{fig:grfn_cgs} shows two completed GrFNs one for the ASCE model and one for the Priestley Taylor model of potential evapo-transpiration.
+Figure~\ref{fig:grfn_cgs} shows two completed GrFNs one for the ASCE model and one for the Priestley Taylor model of potential evapotranspiration.
 These GrFNs were translated from the actual Fortran source code for these two models from the DSSAT code base, both of which are available in Appendix~\ref{appendix:a}.
 The visual representations of GrFNs include the variables, represented as circle nodes, with names derived from the names extracted in the source code and variable name grounding inference; the variable names also include a numeric index representing variable state changes during processing (see text for further details).
 Function nodes are depicted as squares with a single letter representing the type of function contained at the node.
@@ -229,7 +229,7 @@ Function types include: assignment (A), conditional (C), decision (D), or litera
   \subfloat[PETASCE GrFN]{
     \includegraphics[width=0.48\textwidth]{PETASCE_GrFN_smaller}
   }
-  \caption[Evapo-transpiration GrFN Examples]{GrFNs for the PETPT and PETASCE evapo-transpiration modules.}
+  \caption[Evapo-transpiration GrFN Examples]{GrFNs for the PETPT and PETASCE evapotranspiration modules.}
   \label{fig:grfn_cgs}
 \end{figure}
 \FloatBarrier
@@ -416,7 +416,7 @@ Therefore the directed edges of a GrFN function network do represent the conditi
 \begin{figure}[!tbp]
   \centering
   \includegraphics[width=0.8\textwidth]{PETPT_GrFN_CAG}
-  \caption[PETPT GrFN Causal Analysis Graph]{An illustration of the Causal Analysis Graph (CAG) extracted from the GrFN for the PETPT evapo-transpiration model.}
+  \caption[PETPT GrFN Causal Analysis Graph]{An illustration of the Causal Analysis Graph (CAG) extracted from the GrFN for the PETPT evapotranspiration model.}
   \label{fig:petpt_cag}
 \end{figure}
 

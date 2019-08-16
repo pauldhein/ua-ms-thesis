@@ -50,7 +50,7 @@ Identifying a variable as being a member of the cover set stems from the initial
 All nodes along the shared structure must be compared to the node structure in the original CG.
 If any nodes are missing a branch that is present in the original CG then the immediate parent of the node must be added to the set of cover nodes and is grafted on to the FIB.
 Once the set of cover nodes are added to the shared graph structure the FIBs for each model are complete.
-To visualize what a FIB looks like for both a small and large CG we have added the FIBs that denote the overlap between the two evapo-transpiration models.
+To visualize what a FIB looks like for both a small and large CG we have added the FIBs that denote the overlap between the two evapotranspiration models.
 
 \FloatBarrier
 \begin{figure}[!tbp]
@@ -58,7 +58,7 @@ To visualize what a FIB looks like for both a small and large CG we have added t
   \subfloat[PETPT FIB CAG]{\includegraphics[width=0.75\textwidth]{PETPT_FIB_CAG}\label{fig:petpt_fib}}
 
   \subfloat[PETASCE FIB CAG]{\includegraphics[width=0.75\textwidth]{PETASCE_FIB_CAG_smaller}\label{fig:petasce_fib}}
-  \caption[Forward Influence Blanket CAG Examples]{Forward Influence Blanket (FIB) CAGs for the PETPT and PETASCE evapo-transpiration models that depicts the overlap with each other. Note that shared variables are shaded in blue and shared input variables are both shaded blue and bolded. Note that while the PETPT model did not have any variable nodes in the cover set the PETASCE model has several variables in the cover set. These variables are shaded green.}
+  \caption[Forward Influence Blanket CAG Examples]{Forward Influence Blanket (FIB) CAGs for the PETPT and PETASCE evapotranspiration models that depicts the overlap with each other. Note that shared variables are shaded in blue and shared input variables are both shaded blue and bolded. Note that while the PETPT model did not have any variable nodes in the cover set the PETASCE model has several variables in the cover set. These variables are shaded green.}
 \end{figure}
 \FloatBarrier
 
@@ -157,7 +157,7 @@ The figure below shows what the calculated sensitivity indices from a call to th
     \label{sens_idxs}
     \centering
     \includegraphics[width=.8\columnwidth]{sensitivity_indices}%
-    \caption[PETPT Sensitivity Indices]{An example of all of the sensitivity indices returned by SALib for the PETPT evapo-transpiration model. This set of indices was created from a sample set of $50,000$ input samples for the PETPT model.}
+    \caption[PETPT Sensitivity Indices]{An example of all of the sensitivity indices returned by SALib for the PETPT evapotranspiration model. This set of indices was created from a sample set of $50,000$ input samples for the PETPT model.}
 \end{figure}
 \FloatBarrier
 
@@ -213,14 +213,14 @@ Generation requires model evaluation over large numbers of sets of inputs.
 Since the plot itself takes the form of a meshgrid the amount of required evaluations will scale as expected for a meshgrid structure.
 This means that if we want to study $1,000$ examples of each of the two variables under study we will need $1,000,000$ total evaluations.
 Luckily this computation can be done efficiently using PyTorch tensor computation.
-Once the evaluations are completed a MOS plot can be easily rendered and will appear interactively for the modelers. Below is an example of a MOS plot that would be presented for a modeler interested in working with the PETPT evapo-transpiration model.
+Once the evaluations are completed a MOS plot can be easily rendered and will appear interactively for the modelers. Below is an example of a MOS plot that would be presented for a modeler interested in working with the PETPT evapotranspiration model.
 
 \FloatBarrier
 \begin{figure}[!htbp]
     \label{mos_plot_ex}
     \centering
     \includegraphics[width=.8\columnwidth]{sensitivity_surface}%
-    \caption[PETPT Example MOS Plot]{An example of a MOS plot for the PETPT evapo-transpiration model. In this plot the two variables under study are solar radiation and the maximum temperature. Notice that these two variables covary and their variance greatly affects the shape of the model output surface.}
+    \caption[PETPT Example MOS Plot]{An example of a MOS plot for the PETPT evapotranspiration model. In this plot the two variables under study are solar radiation and the maximum temperature. Notice that these two variables covary and their variance greatly affects the shape of the model output surface.}
 \end{figure}
 \FloatBarrier
 
