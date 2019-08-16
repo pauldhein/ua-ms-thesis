@@ -52,7 +52,7 @@ Incorporating this step into UMAF will allow for the removal of temporary variab
 One key issue that has not been addressed in this thesis so far is the issue of discovering the domain limitations of input variables in computation graphs.
 Scientific models that are expressed in code are generally unlimited in terms of their functional form.
 However certain mathematical functions place limits on the domains of variables used in their computation.
-A classic example of this can be found in the source code for the PETASCE evapo-transpiration model found in Appendix~\ref{sec:asce_src_code}.
+A classic example of this can be found in the source code for the PETASCE evapotranspiration model found in Appendix~\ref{sec:asce_src_code}.
 In line $40$ we find the computation of variable \textit{RHMIN} depends upon variables \textit{EA} and \textit{EMAX}.
 From the functional form of the computation we can observe that \textit{EMAX} cannot equal zero, otherwise a division by zero error would occur during computation.
 That is a constraint upon the domain for \textit{EMAX}; however, \textit{EMAX} is not an input for the PETASCE model but is the result from a computation from inputs to the PETASCE model.
