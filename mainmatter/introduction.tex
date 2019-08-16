@@ -4,7 +4,7 @@ For the purposes of this thesis, we consider a family of abstracted scientific m
 This form of model can be represented as a graph, such as that illustrated in Figure~\ref{fig:example_sci_model}, where variables (ovals) are connected to one another by functions (boxes) that determine how variables influence each other.
 As illustrated in the figure, models like these can be used to study real-world systems by making a claim (potentially directly testable) about how different observed states of the world are causally related: the executable model asserts that states of parent (input) variables will (partially) determine the states of child (output) variables as according to the function between the variables.
 Additionally, uncertainty in variables can be represented explicitly by an empirical or estimated distribution over variable values. For example, the empirical distribution over {\tt Total Daily Rainfall} in Fig~\ref{fig:example_sci_model} is used to characterize the uncertainty in the {\tt Water} input variable to the model.
-Using the functions included in the model that describe how variables effect each other, the uncertainty imposed upon the inputs then induces a distribution over output variable of the model: In Fig.~\ref{fig:example_sci_model}, this is seen in the distribution over predicted {\tt Crop Yield} values, which is a direct result of the uncertainty in amount of {\tt Water} present.
+Using the functions included in the model that describe how variables effect each other, the uncertainty imposed upon the inputs then induces a distribution over output variables of the model: In Fig.~\ref{fig:example_sci_model} (which has only one output variable), this is seen in the distribution over predicted {\tt Crop Yield} values, which is a direct result of the uncertainty in amount of {\tt Water} present.
 
 \begin{figure}[!htbp]
   \centering
@@ -13,8 +13,8 @@ Using the functions included in the model that describe how variables effect eac
   \label{fig:example_sci_model}
 \end{figure}
 
-Translating knowledge about the uncertainty present in the inputs of a scientific model into a statement about the uncertainty of the models output gives domain modelers an incredibly useful tool: the ability to make predictions along with a basis for assessing our confidence in the predictions.
-Not only are scientific models able to make predictions, but the structure of models as a functional representation of variables allows those predictions to be interpreted and explained.
+Translating knowledge about the uncertainty present in the inputs of a scientific model into a statement about the uncertainty in the model's output gives domain modelers an incredibly useful tool: the ability to make predictions along with a basis for assessing our confidence in the predictions.
+Not only are scientific models able to make predictions, but the structure of the functional relations among variables allows those predictions to be interpreted and explained.
 Consider the following question that could be posed to a team of domain modelers:
 \begin{quote}
 \textit{Will South Sudan be able to generate and deliver enough food to its population over the next three years?}
@@ -23,7 +23,7 @@ At its core, this question is asking domain modelers to make a prediction about 
 For this example, domain modelers need to be able to make predictions about the expected food production, the expected population size, and the expected security of food transportation networks of South Sudan for the next three years.
 The importance of this question also dictates that the predictions proposed by the domain modelers comes with an interpretable explanation that accounts for why the predictions are what they are.
 Domain modelers can design a scientific model to answer each of the component questions included in the overall question, where each model provides an explainable prediction.
-This ability to make explainable predictions, such as the ones necessary to answer important questions including the one above, has particularly led to the increasing adoption of executable models by the scientific community for studying complex systems.
+This ability to make explainable predictions, such as the ones necessary to answer important questions including the one above, has particularly led to the increased adoption of executable models by the scientific community for studying complex systems.
 
 \section{Motivation\label{sec:motivation}}
 The use of executable models has lead to the development of many supporting tasks that are carried out by \emph{domain modelers}, the scientists who seek to use models in their research studying a specific domain.
@@ -69,7 +69,7 @@ A simple example of such a situation is illustrated in Figure~\ref{fig:simple_cr
   \label{fig:simple_crop_CAG}
 \end{figure}
 
-We can see that, while the two models shown in the figure share several variables, some variables are not shared between the two models and the directed edges in the two models, representing how one variable’s state is a function of other variable(s) is not identical.
+We can see that, while the two models shown in the figure share several variables, some variables are not shared and the directed edges in the two models, representing how one variable’s state is a function of other variable(s), is not identical.
 Each of these models makes a different set of claims about how the state of \emph{Yield} is determined by other states of the world.
 A critical task of scientific reasoning is to determine which model is a better description of how nature works (or the possibility that neither is a good account).
 This is an example of the general task of \textit{model choice}.
@@ -98,16 +98,16 @@ This structure creation is an example of the task of \textit{model augmentation}
 
 Executable models are generally implemented in a wide range of different programming languages, using a variety of different programming paradigms, and also appear in a context of different conventions for documentation through publications and code comments. Engaging in any of the modeling tasks described above generally requires significant additional labor, such as defining a common model interface that allows for linking of variables, adapting model analysis techniques to specific code bases, or additional coding in a specific code base in order to implement model augmentations. These tasks also require direct involvement of a number of different kinds of expertise, including the domain modelers, model analysts, decision makers, and software engineers.
 
-In this thesis, we propose a framework to help automate and augment significant portions of this process, in order to reduce the additional labor required to bring models together into a common representation.
-In particular, we propose a set of methods for \textit{model extraction and assembly} that can identify and extract information about computation performed by the model from the source code into uniformly represented executable model framework.
+{\bf In this thesis, we propose a framework to help automate and augment significant portions of this process, in order to reduce the additional labor required to bring models together into a common representation.
+In particular, we propose a set of methods for \textit{model extraction and assembly} that can identify and extract information about computation performed by the model from the source code into uniformly represented executable model framework.}
 
 \section{Contributions\label{sec:contributions}}
-The work presented in this thesis is a component of the larger AutoMATES\footnote{\url{https://ml4ai.github.io/automates/}} (Automated Model Assembly from Text, Equations, and Software) project \citep{pyarelal2019} that is currently under way in the UofA School of Information ML4AI lab.
+The work presented in this thesis is a component of the larger AutoMATES\footnote{\url{https://ml4ai.github.io/automates/}} (Automated Model Assembly from Text, Equations, and Software) project \citep{pyarelal2019}, which is currently under way in the UofA School of Information ML4AI lab.
 As the name suggests, the goal of the AutoMATES project is to assemble models from source code and documentation containing definitions of modeling domain concepts and equations that describe the relationships between variables.
 To accomplish this goal, the AutoMATES project has three information extraction modules, focused on extracting information about models from the sources mentioned in the AutoMATES title.
 The three extraction modules are the \textit{Text Reading} (TR) module, which extracts information about models from publications and other source texts, the \textit{Equation Reading} (ER) module, which extracts information from pictures of equations associated with models found in publications, and the \textit{Program Analysis} (PA) module, which extracts the functional wiring among variables to represent the computation expressed in source code as a dataflow model. The PA module currently focusses on extracting the dataflow model from Fortran, but this will be extended in the future to support program analysis of other languages as well.
 
-In this thesis, we present my contribution to the AutoMATES project, the \emph{Unified Model Assembly Framework} (UMAF).
+This thesis presents a core contribution to the AutoMATES project, the \emph{Unified Model Assembly Framework} (UMAF).
 As a component of the AutoMATES project, this framework plays the role of automatic assembly of models given the information extracted from the TR, ER, and PA modules.
 UMAF integrates source code, text and equation information into a unified representation of a scientific model, called the \emph{Grounded Function Network} (GrFN), that is executable, comparable, and composable.
 Combining these capabilities into a single framework provides a facility for domain-expert model developers and analysts to now analyze and compare models within a uniform framework, greatly simplifying model analysis tasks that to-date have required enormous manual effort.

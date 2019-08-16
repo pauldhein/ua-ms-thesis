@@ -3,7 +3,7 @@ The Unified Model Assembly Framework (UMAF) is a collection of algorithms design
 In order to accomplish this task, UMAF uses the original source code program as well as variable grounding information from supporting texts in order to build executable models that are linked to domain concepts.
 Domain modelers commonly desire for models to facilitate the inspection of the computations contained in the model and for the wiring of variables in the model to be easily observable.
 To meet these goals, the form of the executable models produced by UMAF is a function network.
-We define a function network to be a graphical model that represents variables as nodes that are then wired together by the functions that determine the state of a variable as a function of other variables. The computations performed in function nodes can be inspected as necessary.
+We define a \emph{function network} to be a graphical model that represents variables as nodes that are then wired together by the functions that determine the state of a variable as a function of other variables. The computations performed in function nodes can be inspected as necessary.
 UMAF combines information from supporting texts to link the source code variables in the function network to concepts used by domain modelers to describe the aspect of the world being modeled.
 This process is termed \textit{grounding the variable nodes}, and once this process is complete, the function network becomes a Grounded Function Network (GrFN), which is the final form of models produced by UMAF.
 
@@ -31,16 +31,16 @@ Finally, Section~\ref{sec:grfn_eval} concludes the chapter with two language fea
 In this section we provide a brief overview of the current state of the modules in the AutoMATES architecture whose outputs serve as input to UMAF.
 The three modules that provide inputs to UMAF are \textit{Program Analysis} (PA), \textit{Text Reading} (TR), and \textit{Equation Reading} (ER). As seen in Fig~\ref{fig:automates_pipeline}, the PA module takes a Fortran program as its input and produces an abstract syntax tree of the scientific model portion of the program as its output.
 The TR module reads both associated texts from the scientific literature for a particular source code model and the documentation found in source code for that model.
-From these texts the TR module extracts useful information that can be used to link the variables in source code to the real-world values they represent.
-The ER module module can also be used to facilitate this linking process.
+From these texts the TR module extracts useful information that can be used to link the variables in source code to the scientific domain concepts represent, as they are described in text.
+% The ER module module can also be used to facilitate this linking process.
 The ER module uses images extracted from publications related to the source code models to reconstruct the mathematical equations present in the images.
 These equations can then be linked to mathematical equations extracted from source code in order to assist in linking source code variables to descriptions of variables found in an equation that was present in a publication.
 This process is especially necessary when documentation for the variables found in source code is either missing or incomplete.
 In the following subsections we briefly describe the methods used by each of these modules in order to obtain the outputs required by UMAF.
 
 \subsection{The Program Analysis Pipeline\label{sec:pa_overview}}
-In order for UMAF to create a GrFN from source code it requires the source code to be transformed into a representation that captures the computations required to compute the variables contained in a source code program and the wiring of variables in the source code program.
-In order to fulfill both of these requests the PA module performs a translation from the original source code into two components, a \textit{function collection} that stores the computations required to compute each variable and a \textit{container collection} that records what variables are used in each statement of each code container of the original source program.
+In order for UMAF to create a GrFN from source code it requires the source code to be transformed into a representation that captures the computations (functions) required to compute the state of variables contained in a source code program and the ``wiring'' that species how variables in the source code program are connected as inputs and outputs of the functions.
+In order to fulfill both of these requests the PA module performs a translation from the original source code into two components, a \textit{function collection} that stores the computations required to compute each variable and a \textit{container collection} that records what variables are used in each program source code statement and groups them according to variable scope environments (as determined by source code idioms such as functions/subroutines, loops, conditionals, etc.).
 UMAF is able to use these two components in order to produce the function network component of a GrFN that explicitly represents the wiring among variables in the GrFN while providing access to inspect the computations used to compute each variable.
 An added component of the functionality of the PA module is to translate the source code programs from their initial programming language into a single intermediate representation language that can be read by UMAF.
 This allows for UMAF to focus on translating a single input source (namely the statement list produced by the PA module) as opposed to needing to be able to translate all of the many programming languages and idioms into GrFN.
@@ -54,8 +54,8 @@ This is necessary in order to complete the variable wiring for a GrFN across the
 Under each container exists an ordered list of statements.
 Statement are either assignment statements or conditional statements, both of which produce variables that need to be wired into a GrFN and include a computation that details how the variable is produced as a product of other variables.
 
-Assignment statements represented in an AST have an explicit variable being assigned and a computation used to perform the assignment.
-This form easily allows the PA module to extract and separate the computation as a \textit{black-box} function, associated with the variable being assigned, and added to the function collection.
+Assignment statements an AST represent that a value, either a literal value or derived from a computation involving zero or more other variables, is assigned to a target variable.
+The PA module identifies these forms int eh AST and extracts and separate the computation as a \textit{black-box} function, associated with the variable being assigned, and adds the extracted function to the function collection.
 With a minor amount of inspection, the PA module can determine what variables are used in the computation that need to be wired to the assignment variable as inputs and adds an entry to the containers statement list in the container collection.
 While multiple assignment statements to the same variable can occur in a program, GrFN is concerned with the flow of data through the scientific model represented by a program.
 Thus the PA module performs the additional task when translating an assignment statement of indexing updates to variables with the same name to preserve the flow of data for the wiring step of GrFN creation.
@@ -70,7 +70,7 @@ While the PA module is able to provide all of the wiring needed to create a func
 These inputs come from the TR Module and the ER Module.
 The information we are interested in gathering from these two modules is a mapping of variables mentioned in the program source code to real-world concepts present in the system being modeled.
 In order to perform the mapping, the TR module makes use of text information from publications associated with the models, as well as variable documentation present in the source code.
-The TR module first extracts possible variables from the associated publications using the ODIN \footnote{\url{https://github.com/clulab/processors/wiki/ODIN-(Open-Domain-INformer)}} event extraction framework \citep{valenzuela2015Odin}.
+The TR module first extracts possible variables from the associated publications using the ODIN\footnote{\url{https://github.com/clulab/processors/wiki/ODIN-(Open-Domain-INformer)}} event extraction framework \citep{valenzuela2015Odin}.
 During the extraction process each of the variables will have a text portion associated with it that has been determined to be a description of the variable from the publication.
 An example of extracting variables with associated descriptions is shown in Fig~\ref{fig:odin_extraction_example}.
 The TR module can perform the mapping by computing a word-overlap score between the text description of each of the possible variables from the associated publication with the variable documentation snippets found in the source code.
@@ -83,20 +83,21 @@ Descriptions that have high enough overlap are then linked and the variables pre
     \label{fig:odin_extraction_example}
 \end{figure}
 
-However, sometimes documentation snippets do not exist for the variables found in source code, or the documentation could be incomplete.
-In these cases the Equation Reading (ER) module can be used to help determine how to correctly ground variables to those found in the associated publication.
-The ER module works by transforming images of equations found in the associated publication into a programmatic structure of the computation defined by the equation.
-This structure can then be linked to the similar computation contained in the source code, thus linking the computation to the equation in the associated publication.
-Once this is accomplished the variables in the computation are linked to symbols in the initial equation.
+Another important source of domain concept grounding information comes from equations, which are often the best direct source of information about how different domain concepts are functionally related.
+% However, sometimes documentation snippets do not exist for the variables found in source code, or the documentation could be incomplete. In these cases th
+% The Equation Reading (ER) module can be used to help determine how to correctly ground variables to those found in the associated publication.
+The Equation Reading (ER) module works by transforming images of equations found in the associated publication into a programmatic structure of the computation defined by the equation.
+This structure can then be linked to the similar computation contained in the source code, thus linking the computation to the equation to variable definitions associated with domain concepts expressed in the surrounding text.
+Once this is accomplished, the variables in the computation are linked to symbols in the initial equation.
 At that point the TR module can link descriptions of variables found in the publication text to the symbols found in the equation.
 With this final linking, the variables in the source code can now be transitively grounded to the descriptions of variables found in text, without ever requiring documentation about the variables to be present in the source code.
 Using these two modules allows for the majority of variables present in the source code representation of a scientific model to be linked to observable phenomena, a process that we describe as \textit{grounding} the variables.
 This gives UMAF the information necessary to produce GrFNs that satisfy the condition of being comparable upon the variable nodes, since variables that are \textit{grounded} to the same real-world phenomena are identified as equivalent objects across GrFNs.
 
 \section{Constructing an Executable Grounded Function Network \label{sec:grfn_assembly}}
-The goal of UMAF is to transform the inputs from the PA, TR, and ER modules into a GrFN.
+The goal of UMAF is to transform the information extracted by the PA, TR, and ER modules into an integrated GrFN representation.
 The outline of this process is shown in Figure~\ref{fig:umaf_diagram} which details the algorithms contained in UMAF as well as an example output for each of the algorithms.
-The example outputs in this figure were generated by running UMAF over the PETPT evapo-transpiration model mentioned in the introduction.
+The example outputs in this figure were generated by running UMAF over the PETPT evapotranspiration model mentioned in the introduction.
 
 \begin{figure}[!htbp]
     \centering
