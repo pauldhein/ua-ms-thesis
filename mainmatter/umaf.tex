@@ -218,16 +218,19 @@ These GrFNs were translated from the actual Fortran source code for these two mo
 The visual representations of GrFNs include the variables, represented as circle nodes, with names derived from the names extracted in the source code and variable name grounding inference; the variable names also include a numeric index representing variable state changes during processing (see text for further details).
 Function nodes are depicted as squares with a single letter representing the type of function contained at the node.
 Function types include: assignment (A), conditional (C), decision (D), or literal (L).
+Once the two models are represented as GrFNs the shared variables between the two models can be identified.
+In the two figures below the shared input and output nodes are circled in blue.
+Performing this identification and linking between models of the same phenomena is an important step in supporting downstream model analysis.
 
 \FloatBarrier
 \begin{figure}[!htbp]
   \centering
   \subfloat[PETPT GrFN]{
-    \includegraphics[width=0.48\textwidth]{PETPT_GrFN_smaller}
+    \includegraphics[width=0.48\textwidth]{PETPT_GrFN}
   }
   \hfill
   \subfloat[PETASCE GrFN]{
-    \includegraphics[width=0.48\textwidth]{PETASCE_GrFN_smaller}
+    \includegraphics[width=0.48\textwidth]{PETASCE_GrFN}
   }
   \caption[Evapo-transpiration GrFN Examples]{GrFNs for the PETPT and PETASCE evapotranspiration modules.}
   \label{fig:grfn_cgs}
