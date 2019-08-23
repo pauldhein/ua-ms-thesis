@@ -3,7 +3,8 @@
 %  University of Arizona Thesis Class,     %
 %               uathesis.cls               %
 %------------------------------------------%
-\documentclass[thesis]{uathesis}
+% \documentclass[thesis]{uathesis}
+\documentclass[thesis, copyright]{uathesis}
 
 % Package Usage
 % These are the packages that we need
@@ -83,17 +84,21 @@
 \tableofcontents
 
 % Setting figures, tables, and algs list to be on the same page.
+% and adding entries for each list to the ToC
+
 \listoffigures          % Create a ``List of Figures''
+\addcontentsline{toc}{chapter}{LIST OF FIGURES}
 \listoftables           % Create a ``List of Tables''
+% \addcontentsline{toc}{chapter}{LIST OF ALGORITHMS}
+% \listofalgorithms       % Create a ``List of Algorithms''
 \begingroup
 \let\clearpage\relax
+\addcontentsline{toc}{chapter}{LIST OF TABLES}
 \listofalgorithms       % Create a ``List of Algorithms''
+\addcontentsline{toc}{chapter}{LIST OF ALGORITHMS}
 \endgroup
 
-% Adding entries for each list to the ToC
-\addcontentsline{toc}{chapter}{LIST OF FIGURES}
-\addcontentsline{toc}{chapter}{LIST OF TABLES}
-\addcontentsline{toc}{chapter}{LIST OF ALGORITHMS}
+
 
 % Include the ``Abstract''
 \incabstract{abstract}

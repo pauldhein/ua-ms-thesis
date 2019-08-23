@@ -1,7 +1,8 @@
 ## MacOS files
 *.DS_Store
 
-*.pdf
+thesis.pdf
+hein-ms-thesis.pdf
 
 ## Core latex/pdflatex auxiliary files:
 *.aux
