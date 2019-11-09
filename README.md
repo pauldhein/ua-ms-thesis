@@ -1,2 +1,15 @@
-# ua-ms-thesis
-Collection of the TeX files and figures necessary to generate my UofA CS master's thesis
+# Assembling Executable Scientific Models from Source Code and Free Text
+***
+
+## Abstract
+Modern science is increasingly driven by the use of computational models of complex systems implemented in software.
+This provides enormous opportunities, including increased precision in predictions, the possibility of better control over reproducibility of results, and the ability to aggregate models from different domains for larger-scale modeling.
+However, realizing the full potential of computational scientific modeling requires addressing a number of new challenges.
+A central challenge is that scientific model software is generally implemented in code bases that do not follow uniform conventions, so that model interpretation, selection and integration still requires very labor-intensive manual curation.
+
+In this thesis we introduce the Unified Model Assembly Framework (UMAF), which aims to assist domain scientists with the process of extracting a representation of models from source code that permits grounding variables to domain concepts and performing model analysis.
+To accomplish this task we first provide a formal structure for expressing scientific models that can be extracted from source code.
+Using this information we then show how an executable scientific model can be developed in the form of a dataflow program.
+The thesis concludes with an evaluation of the current capabilities of the UMAF framework on a real-world crop modeling code base, focusing on the kinds of source code idioms the framework can currently translate into dataflow-based scientific models and the accuracy of translation.
+***
+#### View my full thesis on the [UofA thesis repository website](https://repository.arizona.edu/handle/10150/634301)
