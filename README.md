@@ -1,5 +1,4 @@
 # Assembling Executable Scientific Models from Source Code and Free Text
-***
 
 ## Abstract
 Modern science is increasingly driven by the use of computational models of complex systems implemented in software.
